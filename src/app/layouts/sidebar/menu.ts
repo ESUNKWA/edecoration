@@ -15,17 +15,17 @@ export const MENU: MenuItem[] = [
             {
                 id: 30,
                 label: 'Catégories',
-                link: '/categories',
+                link: '/edeco/categories',
                 //parentId: 29
             },{
               id: 30,
               label: 'Produits',
-              link: '/categories',
+              link: '/edeco/categories',
               //parentId: 29
           },{
             id: 30,
             label: 'Tarifications',
-            link: '/email/inbox',
+            link: '/edeco/email/inbox',
             //parentId: 29
         },
         ]
@@ -38,19 +38,19 @@ export const MENU: MenuItem[] = [
             {
                 id: 37,
                 label: 'Communes',
-                link: '/invoices/list',
+                link: '/edeco/invoices/list',
                 parentId: 36
             },
             {
               id: 37,
               label: 'Logistiques',
-              link: '/invoices/list',
+              link: '/edeco/invoices/list',
               parentId: 36
           },
           {
             id: 37,
             label: 'Location',
-            link: '/invoices/list',
+            link: '/edeco/invoices/list',
             parentId: 36
         }
         ]
@@ -63,7 +63,7 @@ export const MENU: MenuItem[] = [
             {
                 id: 40,
                 label: 'Personnels',
-                link: '/projects/grid',
+                link: '/edeco/projects/grid',
                 parentId: 38
             }
         ]
@@ -76,7 +76,7 @@ export const MENU: MenuItem[] = [
             {
                 id: 45,
                 label: 'MENUITEMS.TASKS.LIST.TASKLIST',
-                link: '/tasks/list',
+                link: '/edeco/tasks/list',
                 parentId: 44
             }
         ]
@@ -89,13 +89,13 @@ export const MENU: MenuItem[] = [
             {
                 id: 49,
                 label: 'Profils',
-                link: '/contacts/grid',
+                link: '/edeco/contacts/grid',
                 parentId: 48
             },
             {
               id: 49,
               label: 'Utilisateurs',
-              link: '/contacts/grid',
+              link: '/edeco/contacts/grid',
               parentId: 48
           }
         ]
