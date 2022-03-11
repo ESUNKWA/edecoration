@@ -60,7 +60,7 @@ settings = {
   }
 
   ngOnInit(): void {
-    this.breadCrumbItems = [{ label: 'Tables' }, { label: 'Advanced Table', active: true }];
+    this.breadCrumbItems = [{ label: 'Eden décoration' }, { label: 'Catégories de produits', active: true }];
 
   }
 
