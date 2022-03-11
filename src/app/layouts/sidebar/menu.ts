@@ -5,7 +5,7 @@ export const MENU: MenuItem[] = [
         id: 2,
         label: 'Tableau de bords',
         icon: 'bx bxs-home',
-        link: '/dashboard',
+        link: '/edeco/dashboard',
     },
     {
         id: 29,
