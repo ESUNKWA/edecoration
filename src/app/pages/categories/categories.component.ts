@@ -3,7 +3,7 @@ import { Component, OnInit, QueryList, ViewChildren } from '@angular/core';
 import { Observable } from 'rxjs';
 import { AdvancedSortableDirective, SortEvent } from '../tables/advancedtable/advanced-sortable.directive';
 import { Table } from '../tables/advancedtable/advanced.model';
-import { AdvancedService } from '../tables/advancedtable/advanced.service';
+import { AdvancedService } from '../../core/services/advanced.service';
 import { editableTable } from '../tables/advancedtable/data';
 
 @Component({
@@ -53,14 +53,20 @@ settings = {
     },
   },
 };
+  datas: Observable<Table[]>;;
 
   constructor(public service: AdvancedService) {
+    this.datas = service.tables$;
     this.tables$ = service.tables$;
     this.total$ = service.total$;
   }
 
+
+
   ngOnInit(): void {
     this.breadCrumbItems = [{ label: 'Eden décoration' }, { label: 'Catégories de produits', active: true }];
+
+    console.log(this.datas);
 
   }
 

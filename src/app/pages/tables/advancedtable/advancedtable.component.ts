@@ -7,7 +7,7 @@ import { Table } from './advanced.model';
 
 import { tableData, editableTable } from './data';
 
-import { AdvancedService } from './advanced.service';
+import { AdvancedService } from '../../../core/services/advanced.service';
 import { AdvancedSortableDirective, SortEvent } from './advanced-sortable.directive';
 
 @Component({

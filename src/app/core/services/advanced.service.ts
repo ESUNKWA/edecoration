@@ -2,9 +2,9 @@ import { Injectable, PipeTransform } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 import { BehaviorSubject, Observable, of, Subject } from 'rxjs';
 import { debounceTime, delay, switchMap, tap } from 'rxjs/operators';
-import { Table, SearchResult } from './advanced.model';
-import { tableData } from './data';
-import { SortDirection } from './advanced-sortable.directive';
+import { Table, SearchResult } from '../../pages/tables/advancedtable/advanced.model';
+import { tableData } from '../../pages/tables/advancedtable/data';
+import { SortDirection } from '../../pages/tables/advancedtable/advanced-sortable.directive';
 
 interface State {
     page: number;
@@ -134,7 +134,28 @@ export class AdvancedService {
         const { sortColumn, sortDirection, pageSize, page, searchTerm } = this._state;
 
         // 1. sort
-        let tables = sort(tableData, sortColumn, sortDirection);
+        let tables = sort([{
+          name: 'Sammy Guyers',
+          position: 'Mechanical Systems Engineer',
+          office: 'Sanhe',
+          age: 53,
+          date: '2019/07/09',
+          salary: '$14200'
+        },{
+          name: 'Sammy Guyers',
+          position: 'Mechanical Systems Engineer',
+          office: 'Sanhe',
+          age: 53,
+          date: '2019/07/09',
+          salary: '$14200'
+        },{
+          name: 'Sammy Guyers',
+          position: 'Mechanical Systems Engineer',
+          office: 'Sanhe',
+          age: 53,
+          date: '2019/07/09',
+          salary: '$14200'
+        }], sortColumn, sortDirection);
 
         // 2. filter
         tables = tables.filter(table => matches(table, searchTerm, this.pipe));

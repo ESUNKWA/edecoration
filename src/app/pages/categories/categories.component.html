@@ -4,14 +4,12 @@
     <div class="col-12">
       <div class="card">
         <div class="card-body">
-          <h4 class="card-title">Advanced Data Table</h4>
-          <p class="card-sub-title">
-            Example of datatable.
-          </p>
+
+
           <div class="row mb-md-2">
             <div class="col-sm-12 col-md-6">
               <div class="dataTables_length" id="tickets-table_length"><label
-                  class="d-inline-flex align-items-center">Show
+                  class="d-inline-flex align-items-center">Visualiser
                   <select name="tickets-table_length" aria-controls="tickets-table" name="pageSize"
                     [(ngModel)]="service.pageSize" class="form-control form-control-sm mx-2">
                     <option [ngValue]="10">10</option>
@@ -23,7 +21,7 @@
             <!-- Search -->
             <div class="col-sm-12 col-md-6">
               <div id="tickets-table_filter" class="dataTables_filter text-md-end"><label
-                  class="d-inline-flex align-items-center">Search:
+                  class="d-inline-flex align-items-center">Rechercher:
                   <input type="text" name="searchTerm" class="form-control form-control-sm ms-2"
                     aria-controls="tickets-table" [(ngModel)]="service.searchTerm"></label></div>
             </div>
@@ -42,7 +40,7 @@
                         </tr>
                       </thead>
                       <tbody>
-                        <tr *ngFor="let table of tables$ | async; let i = index">
+                        <tr *ngFor="let table of datas | async; let i = index">
                           <td>{{table.name}}</td>
                           <td>{{table.name}}</td>
                           <td>{{table.name}}</td>
@@ -54,10 +52,10 @@
           <!-- End table -->
           <div class="row justify-content-md-between align-items-md-center mt-2">
             <div class="col-sm-12 col-md-5">
-              <div class="dataTables_info mb-2" id="tickets-table_info" role="status" aria-live="polite">Showing
-                {{service.startIndex}} to
-                {{service.endIndex}} of {{service.totalRecords}}
-                entries
+              <div class="dataTables_info mb-2" id="tickets-table_info" role="status" aria-live="polite">Affichage de
+                {{service.startIndex}} de
+                {{service.endIndex}} à {{service.totalRecords}}
+                entrées
               </div>
             </div>
             <!-- Pagination -->
