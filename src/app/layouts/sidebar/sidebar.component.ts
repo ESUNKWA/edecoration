@@ -5,7 +5,7 @@ import { Router, NavigationEnd } from '@angular/router';
 
 import { HttpClient } from '@angular/common/http';
 
-import { MENU } from './menu';
+import { MENU } from './menuolds';
 import { MenuItem } from './menu.model';
 import { TranslateService } from '@ngx-translate/core';
 
