@@ -4,7 +4,8 @@ import { Observable } from 'rxjs';
 import { AdvancedSortableDirective, SortEvent } from '../tables/advancedtable/advanced-sortable.directive';
 import { Table } from '../tables/advancedtable/advanced.model';
 import { AdvancedService } from '../../core/services/advanced.service';
-import { editableTable } from '../tables/advancedtable/data';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { CategoriesService } from 'src/app/core/services/categories/categories.service';
 
 @Component({
   selector: 'app-categories',
@@ -19,43 +20,12 @@ tables$: Observable<Table[]>;
 total$: Observable<number>;
 @ViewChildren(AdvancedSortableDirective) headers: QueryList<AdvancedSortableDirective>;
 
-settings = {
-  columns: {
-    id: {
-      title: 'ID',
-    },
-    name: {
-      title: 'Full Name',
-      filter: {
-        type: 'list',
-        config: {
-          selectText: 'Select...',
-          list: [
-            { value: 'Glenna Reichert', title: 'Glenna Reichert' },
-            { value: 'Kurtis Weissnat', title: 'Kurtis Weissnat' },
-            { value: 'Chelsey Dietrich', title: 'Chelsey Dietrich' },
-          ],
-        },
-      },
-    },
-    email: {
-      title: 'Email',
-      filter: {
-        type: 'completer',
-        config: {
-          completer: {
-            data: editableTable,
-            searchFields: 'email',
-            titleField: 'email',
-          },
-        },
-      },
-    },
-  },
-};
-  datas: Observable<Table[]>;;
+datas: Observable<Table[]>;
+modalTitle: any = '';
+modeAppel: any = 'création';
+  categoriesTab: any = [];
 
-  constructor(public service: AdvancedService) {
+  constructor(public service: AdvancedService, private modalService: NgbModal, private categories: CategoriesService) {
     this.datas = service.tables$;
     this.tables$ = service.tables$;
     this.total$ = service.total$;
@@ -66,10 +36,40 @@ settings = {
   ngOnInit(): void {
     this.breadCrumbItems = [{ label: 'Eden décoration' }, { label: 'Catégories de produits', active: true }];
 
-    console.log(this.datas);
+    this.categories._getproduits().subscribe(
+      (data: any) => {
+        this.categoriesTab = [...data._result];
+        console.log(this.categoriesTab);
+
+      },
+      (err) => {console.log(err.stack);
+      }
+    )
 
   }
 
+
+  fctSaisieCat(largeDataModal: any){
+    this.modeAppel = 'création';
+    this.modalTitle = 'Saisie d\'une nouelle catégorie de produit';
+    console.log(this.modeAppel);
+
+    this.largeModal(largeDataModal);
+  }
+  fctModiCat(largeDataModal: any){
+    this.modeAppel = 'modif';
+    this.modalTitle = 'Modification catégorie de produit';
+    console.log(this.modeAppel);
+
+    this.largeModal(largeDataModal);
+  }
+
+  //Appel de la modal
+  largeModal(exlargeModal: any) {
+    this.modalService.open(exlargeModal, { size: 'lg', centered: true });
+  }
+
+  //Filtre datatable
   onSort({ column, direction }: SortEvent) {
     // resetting other headers
     this.headers.forEach(header => {

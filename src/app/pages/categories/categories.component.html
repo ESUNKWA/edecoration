@@ -5,6 +5,12 @@
       <div class="card">
         <div class="card-body">
 
+          <div class="row mb-2">
+            <div class="col-md-12 ">
+              <button type="button" class="btn btn-primary nouveau" title="Saisir un nouvelle catégorie de produits" (click)="fctSaisieCat(largeDataModal)">Nouveau</button>
+            </div>
+          </div>
+
 
           <div class="row mb-md-2">
             <div class="col-sm-12 col-md-6">
@@ -32,19 +38,18 @@
             <table class="table mb-0 table-striped">
                       <thead class="bg-dark text-white">
                         <tr>
-                          <th>CountryName</th>
-                          <th>Price/Unit</th>
-                          <th>Sales Account</th>
-                          <th>Buy Account</th>
-
+                          <th>Catégorie</th>
+                          <th>Description</th>
+                          <th>Action</th>
                         </tr>
                       </thead>
                       <tbody>
-                        <tr *ngFor="let table of datas | async; let i = index">
-                          <td>{{table.name}}</td>
-                          <td>{{table.name}}</td>
-                          <td>{{table.name}}</td>
-                          <td>{{table.name}}</td>
+                        <tr *ngFor="let categorie of categoriesTab; let i = index">
+                          <td>{{categorie.r_libelle}}</td>
+                          <td>{{categorie.r_description}}</td>
+                          <td>
+                            <button type="button" class="btn btn-primary" (click)="fctModiCat(largeDataModal)" >Modif</button>
+                          </td>
                         </tr>
                       </tbody>
                     </table>
@@ -73,3 +78,18 @@
     </div>
   </div>
 </div>
+
+
+<!-- Large Modal -->
+<ng-template #largeDataModal let-modal>
+  <div class="modal-header">
+    <h5 class="modal-title mt-0">{{modalTitle}}</h5>
+    <button type="button" class="btn-close" (click)="modal.dismiss('Cross click')" aria-hidden="true"></button>
+  </div>
+  <div class="modal-body">
+  </div>
+  <div class="modal-footer">
+    <button type="button" title="fermer" class="btn btn-secondary" (click)="modal.close('Close click')">Fermer</button>
+    <button type="button" title="Enregistrer" class="btn btn-primary">Enregistrer</button>
+  </div>
+</ng-template>
