@@ -10,10 +10,16 @@
               <button type="button" class="btn btn-primary nouveau" title="Saisir un nouvelle catégorie de produits" (click)="fctSaisieCat(largeDataModal)">Nouveau</button>
             </div>
           </div>
+          
 
+          <!-- Search -->
+          <div class="row" >
+            
+          </div>
+          <!-- End search -->
           <!-- Table -->
           <div class="table-responsive">
-            <table class="table mb-0 table-striped" datatable >
+            <table class="table mb-0 table-striped" >
                       <thead class="bg-dark text-white">
                         <tr>
                           <th style="width:30%" >Catégorie</th>
@@ -22,7 +28,7 @@
                         </tr>
                       </thead>
                       <tbody>
-                        <tr *ngFor="let categorie of categoriesTab; let i = index">
+                        <tr *ngFor="let categorie of categoriesTab  | LockFilter : searChIn; let i = index">
                           <td style="width:30%" >{{categorie.r_libelle}}</td>
                           <td style="width:55%" >{{categorie.r_description}}</td>
                           <td style="width:15%">
@@ -31,6 +37,7 @@
                         </tr>
                       </tbody>
                     </table>
+                    
           </div>
         </div>
       </div>

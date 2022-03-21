@@ -31,6 +31,10 @@ modeAppel: any = 'création';
   categoriesData: FormGroup;
   ligneCategorie: any = {};
 
+
+  searChIn: any;
+
+
   constructor(public service: AdvancedService, private modalService: NgbModal, private categories: CategoriesService,
               public fb: FormBuilder, private notifications: NotifService) {
     this.datas = service.tables$;

@@ -7,10 +7,10 @@ import { CategoriesRoutingModule } from './categories-routing.module';
 import { Ng2SmartTableModule } from 'ng2-smart-table';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CategoriesComponent } from './categories.component';
-import { DataTablesModule } from 'angular-datatables';
+import { SearchDossierPipe, SearchPipe } from 'src/app/table.pipe';
 
 @NgModule({
-    declarations: [CategoriesComponent],
+    declarations: [CategoriesComponent,SearchPipe],
     imports: [
         CommonModule,
         CategoriesRoutingModule,
@@ -21,7 +21,8 @@ import { DataTablesModule } from 'angular-datatables';
         Ng2SmartTableModule,
         FormsModule,
         ReactiveFormsModule,
-        DataTablesModule,
+        NgbPaginationModule,
+
     ]
 })
 
