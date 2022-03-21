@@ -6,6 +6,9 @@ import { Table } from '../tables/advancedtable/advanced.model';
 import { AdvancedService } from '../../core/services/advanced.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { CategoriesService } from 'src/app/core/services/categories/categories.service';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { NotifService } from 'src/app/core/services/notif.service';
+
 
 @Component({
   selector: 'app-categories',
@@ -14,6 +17,7 @@ import { CategoriesService } from 'src/app/core/services/categories/categories.s
   providers: [AdvancedService, DecimalPipe]
 })
 export class CategoriesComponent implements OnInit {
+
 // bread crum data
 breadCrumbItems: Array<{}>;
 tables$: Observable<Table[]>;
@@ -24,8 +28,11 @@ datas: Observable<Table[]>;
 modalTitle: any = '';
 modeAppel: any = 'création';
   categoriesTab: any = [];
+  categoriesData: FormGroup;
+  ligneCategorie: any = {};
 
-  constructor(public service: AdvancedService, private modalService: NgbModal, private categories: CategoriesService) {
+  constructor(public service: AdvancedService, private modalService: NgbModal, private categories: CategoriesService,
+              public fb: FormBuilder, private notifications: NotifService) {
     this.datas = service.tables$;
     this.tables$ = service.tables$;
     this.total$ = service.total$;
@@ -36,32 +43,92 @@ modeAppel: any = 'création';
   ngOnInit(): void {
     this.breadCrumbItems = [{ label: 'Eden décoration' }, { label: 'Catégories de produits', active: true }];
 
+    this.categoriesData = this.fb.group({
+      r_libelle: ['', [Validators.required, Validators.pattern('[a-zA-Z0-9]+')]],
+      p_description: ['', [Validators.required, Validators.pattern('[a-zA-Z0-9]+')]]
+    });
+    this._listCategories();
+  }
+
+  _listCategories(): void {
     this.categories._getproduits().subscribe(
       (data: any) => {
         this.categoriesTab = [...data._result];
-        console.log(this.categoriesTab);
-
       },
       (err) => {console.log(err.stack);
       }
-    )
-
+    );
   }
 
 
   fctSaisieCat(largeDataModal: any){
-    this.modeAppel = 'création';
+    this.modeAppel = 'creation';
     this.modalTitle = 'Saisie d\'une nouelle catégorie de produit';
     console.log(this.modeAppel);
 
     this.largeModal(largeDataModal);
   }
-  fctModiCat(largeDataModal: any){
+
+  fctModiCat(largeDataModal: any, categorie){
+    this.ligneCategorie = {...categorie};
+
     this.modeAppel = 'modif';
-    this.modalTitle = 'Modification catégorie de produit';
-    console.log(this.modeAppel);
+    this.modalTitle = `Modification catégorie de produit [ ${this.ligneCategorie.r_libelle} ]`;
+
 
     this.largeModal(largeDataModal);
+  }
+
+  _register(): void {
+
+
+    this.categoriesData.value.p_utilisateur = 1;
+    console.log(this.modeAppel);
+    console.log(this.categoriesData.value);
+    switch (this.modeAppel) {
+      case 'creation':
+          this.categories._create(this.categoriesData.value).subscribe(
+            (dataServer: any) => {
+              switch(dataServer._status){
+                case -100:
+                  for (const key in dataServer._result) {
+                    this.notifications.sendMessage(dataServer._result[key],'warning');
+                    break;
+                  }
+                  break;
+
+                case 0:
+                  this.notifications.sendMessage(`${dataServer._result}`,'error');
+                  break;
+
+                case 1:
+                  this.notifications.sendMessage(`${dataServer._result}`,'success');
+                  break;
+              }
+              this.categoriesData.reset();
+
+              this._listCategories();
+            },
+            (err: any) => {
+              console.log(err);
+            }
+          );
+        break;
+
+      case 'modif':
+        this.categories._update(this.categoriesData.value, this.ligneCategorie.r_i).subscribe(
+          (dataServer: any) => {
+            this.categoriesData.reset();
+            this.notifications.sendMessage(`${dataServer._result}`,'success');
+            this._listCategories();
+          },
+          (err: any) => {
+            console.log(err);
+          }
+        );
+      default:
+        break;
+    }
   }
 
   //Appel de la modal

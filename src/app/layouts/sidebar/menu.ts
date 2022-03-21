@@ -20,7 +20,7 @@ export const MENU: MenuItem[] = [
             },{
               id: 30,
               label: 'Produits',
-              link: '/edeco/categories',
+              link: '/edeco/produits',
               //parentId: 29
           },{
             id: 30,

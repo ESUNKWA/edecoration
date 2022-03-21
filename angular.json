@@ -18,7 +18,10 @@
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
             "allowedCommonJsDependencies": [
-              "rxjs", "core-js", "chart.js", "chartist"
+              "rxjs",
+              "core-js",
+              "chart.js",
+              "chartist"
             ],
             "outputPath": "dist/skote",
             "index": "src/index.html",
@@ -33,9 +36,13 @@
               "src/styles.scss",
               "src/assets/scss/bootstrap.scss",
               "src/assets/scss/app.scss",
-              "src/assets/scss/icons.scss"
+              "src/assets/scss/icons.scss",
+              "node_modules/datatables.net-dt/css/jquery.dataTables.min.css"
             ],
-            "scripts": [],
+            "scripts": [
+              "node_modules/jquery/dist/jquery.min.js",
+              "node_modules/datatables.net/js/jquery.dataTables.min.js"
+            ],
             "vendorChunk": true,
             "extractLicenses": false,
             "buildOptimizer": false,

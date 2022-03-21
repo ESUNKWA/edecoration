@@ -23,6 +23,10 @@ export class CategoriesService {
     return this.http.get(`${this.apiHost}/categories`);
   }
 
+  _update(data: any, id: number): Observable<any>{
+    return this.http.put(`${this.apiHost}/categories/${id}`, data).pipe(catchError(this.error));
+  }
+
 
   // Handle Errors
   error(error: HttpErrorResponse) {

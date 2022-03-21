@@ -5,8 +5,9 @@ import { NgbNavModule, NgbPaginationModule, NgbTooltipModule } from "@ng-bootstr
 import { UIModule } from '../../shared/ui/ui.module';
 import { CategoriesRoutingModule } from './categories-routing.module';
 import { Ng2SmartTableModule } from 'ng2-smart-table';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CategoriesComponent } from './categories.component';
+import { DataTablesModule } from 'angular-datatables';
 
 @NgModule({
     declarations: [CategoriesComponent],
@@ -18,8 +19,9 @@ import { CategoriesComponent } from './categories.component';
         UIModule,
         NgbPaginationModule,
         Ng2SmartTableModule,
-        FormsModule
-
+        FormsModule,
+        ReactiveFormsModule,
+        DataTablesModule,
     ]
 })
 
