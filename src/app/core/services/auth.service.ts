@@ -1,8 +1,12 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
 
 import { getFirebaseBackend } from '../../authUtils';
 
 import { User } from '../models/auth.models';
+
+import { environment } from "./../../../../src/environments/environment";
 
 @Injectable({ providedIn: 'root' })
 
@@ -10,7 +14,9 @@ export class AuthenticationService {
 
     user: User;
 
-    constructor() {
+    env = environment;
+
+    constructor( private http: HttpClient ) {
     }
 
     /**
@@ -25,11 +31,8 @@ export class AuthenticationService {
      * @param email email of user
      * @param password password of user
      */
-    login(email: string, password: string) {
-        return getFirebaseBackend().loginUser(email, password).then((response: any) => {
-            const user = response;
-            return user;
-        });
+    _login(data: any): Observable<any> {
+       return this.http.post(`${this.env.backendServer}/auth`, data);
     }
 
     /**

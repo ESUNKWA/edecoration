@@ -25,9 +25,14 @@ export const MENU: MenuItem[] = [
           },{
             id: 30,
             label: 'Tarifications',
-            link: '/edeco/email/inbox',
+            link: '/edeco/tarification',
             //parentId: 29
-        },
+        },{
+            id: 30,
+            label: 'Achats de produits',
+            link: '/edeco/achat',
+            //parentId: 29
+        }
         ]
     },
     {

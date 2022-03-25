@@ -5,6 +5,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { EventService } from '../../../core/services/event.service';
 
 import { ConfigService } from '../../../core/services/config.service';
+import { UserService } from 'src/app/core/services/usersinfos/user.service';
 
 @Component({
   selector: 'app-default',
@@ -23,7 +24,8 @@ export class DefaultComponent implements OnInit {
   isActive: string;
 
   @ViewChild('content') content;
-  constructor(private modalService: NgbModal, private configService: ConfigService, private eventService: EventService) {
+  constructor(private modalService: NgbModal, private configService: ConfigService, private eventService: EventService,
+              private user: UserService) {
   }
 
   ngOnInit() {

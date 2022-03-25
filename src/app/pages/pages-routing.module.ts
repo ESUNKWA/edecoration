@@ -14,7 +14,6 @@ const routes: Routes = [
   { path: 'calendar', component: CalendarComponent },
   { path: 'chat', component: ChatComponent },
   { path: 'filemanager', component: FilemanagerComponent },
-  { path: 'dashboards', loadChildren: () => import('./dashboards/dashboards.module').then(m => m.DashboardsModule) },
   { path: 'ecommerce', loadChildren: () => import('./ecommerce/ecommerce.module').then(m => m.EcommerceModule) },
   { path: 'crypto', loadChildren: () => import('./crypto/crypto.module').then(m => m.CryptoModule) },
   { path: 'email', loadChildren: () => import('./email/email.module').then(m => m.EmailModule) },
@@ -31,8 +30,11 @@ const routes: Routes = [
   { path: 'charts', loadChildren: () => import('./chart/chart.module').then(m => m.ChartModule) },
   { path: 'maps', loadChildren: () => import('./maps/maps.module').then(m => m.MapsModule) },
 
-
+  { path: 'dashboards', loadChildren: () => import('./dashboards/dashboards.module').then(m => m.DashboardsModule) },
   { path: 'categories', loadChildren: () => import('./categories/categories.module').then(m => m.CategoriesModule) },
+  { path: 'produits', loadChildren: () => import('./produits/produits.module').then(m => m.ProduitsModule) },
+  { path: 'tarification', loadChildren: () => import('./tarifications/tarification.module').then(m => m.TarificationModule) },
+  { path: 'achat', loadChildren: () => import('./achatsproduits/achatsproduits.module').then(m => m.AchatProduitModule) },
 ];
 
 @NgModule({

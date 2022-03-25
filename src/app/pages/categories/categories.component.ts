@@ -8,6 +8,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { CategoriesService } from 'src/app/core/services/categories/categories.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NotifService } from 'src/app/core/services/notif.service';
+import { UserService } from 'src/app/core/services/usersinfos/user.service';
 
 
 @Component({
@@ -31,20 +32,19 @@ modeAppel: any = 'création';
   categoriesData: FormGroup;
   ligneCategorie: any = {};
 
-
+  viewTable: boolean = false;
   searChIn: any;
+  userData: any;
 
 
   constructor(public service: AdvancedService, private modalService: NgbModal, private categories: CategoriesService,
-              public fb: FormBuilder, private notifications: NotifService) {
-    this.datas = service.tables$;
-    this.tables$ = service.tables$;
-    this.total$ = service.total$;
-  }
+              public fb: FormBuilder, private notifications: NotifService, private user: UserService) { }
 
 
 
   ngOnInit(): void {
+    this.userData = this.user._donnesUtilisateur()[0];
+    
     this.breadCrumbItems = [{ label: 'Eden décoration' }, { label: 'Catégories de produits', active: true }];
 
     this.categoriesData = this.fb.group({
@@ -55,20 +55,21 @@ modeAppel: any = 'création';
   }
 
   _listCategories(): void {
-    this.categories._getproduits().subscribe(
+    this.categories._getCategories().subscribe(
       (data: any) => {
         this.categoriesTab = [...data._result];
+        setTimeout(() => {
+          this.viewTable = true;
+        }, 500);
       },
       (err) => {console.log(err.stack);
       }
     );
   }
 
-
   fctSaisieCat(largeDataModal: any){
     this.modeAppel = 'creation';
     this.modalTitle = 'Saisie d\'une nouelle catégorie de produit';
-    console.log(this.modeAppel);
 
     this.largeModal(largeDataModal);
   }
@@ -85,10 +86,8 @@ modeAppel: any = 'création';
 
   _register(): void {
 
+    this.categoriesData.value.p_utilisateur = parseInt(this.userData.r_i, 10);
 
-    this.categoriesData.value.p_utilisateur = 1;
-    console.log(this.modeAppel);
-    console.log(this.categoriesData.value);
     switch (this.modeAppel) {
       case 'creation':
           this.categories._create(this.categoriesData.value).subscribe(

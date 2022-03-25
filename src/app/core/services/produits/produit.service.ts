@@ -1,5 +1,5 @@
-import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
+import { Injectable } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { environment } from "../../../../../src/environments/environment";
@@ -7,7 +7,7 @@ import { environment } from "../../../../../src/environments/environment";
 @Injectable({
   providedIn: 'root'
 })
-export class CategoriesService {
+export class ProduitService {
   env = environment;
   headers = new HttpHeaders().set('Content-Type', 'application/json');
 
@@ -15,15 +15,20 @@ export class CategoriesService {
   }
 
   _create(data: any): Observable<any> {
-    return this.http.post(`${this.env.backendServer}/categories`,data).pipe(catchError(this.error));
+    return this.http.post(`${this.env.backendServer}/produits`,data).pipe(catchError(this.error));
   }
 
-  _getCategories(){
-    return this.http.get(`${this.env.backendServer}/categories`);
+  _getproduits(){
+    return this.http.get(`${this.env.backendServer}/produits`);
   }
 
-  _update(data: any, id: number): Observable<any>{
-    return this.http.put(`${this.env.backendServer}/categories/${id}`, data).pipe(catchError(this.error));
+  _update(data: any, idproduit: number): Observable<any>{
+    return this.http.put(`${this.env.backendServer}/produits/${idproduit}`, data).pipe(catchError(this.error));
+  }
+
+
+  _addTrarification(data: any): Observable<any> {
+    return this.http.post(`${this.env.backendServer}/majstock`,data).pipe(catchError(this.error));
   }
 
 
@@ -40,5 +45,5 @@ export class CategoriesService {
       return errorMessage;
     });
   }
-
+  
 }

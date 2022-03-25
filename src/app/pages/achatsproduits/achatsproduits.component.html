@@ -1,0 +1,55 @@
+<div class="container-fluid">
+    <app-page-title title="Achats des produits" [breadcrumbItems]="breadCrumbItems"></app-page-title>
+    <div class="row">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-body">
+  
+            <div class="row mb-2" hidden>
+              <div class="col-md-12 ">
+                <button type="button" class="btn btn-primary nouveau" title="Saisir un nouvelle catégorie de produits">Nouveau</button>
+              </div>
+            </div>
+            
+            <!-- Table -->
+            <div class="table-responsive">
+
+
+              <ng-template [ngIf]="viewTable == false" >
+                <app-spinner></app-spinner>
+              </ng-template>
+
+              <ng-template [ngIf]="viewTable == true" >
+                <!-- Search -->
+                  <div id="tickets-table_filter" class="dataTables_filter text-md-end"><label
+                    class="d-inline-flex align-items-center">Recherche:
+                    <input type="text" name="searchTerm" class="form-control form-control-sm ms-2"
+                      aria-controls="tickets-table"></label></div>
+                  <!-- End search -->
+                  <table class="table mb-0 table-striped" >
+                    <thead class="bg-dark text-white">
+                      <tr>
+                        <th style="width:20%" >Date d'achat</th>
+                        <th style="width:40%" >Produit</th>
+                        <th style="width:20%" >Quantité</th>
+                        <th style="width:20%;">Monatnt</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let achat of achatProduiTab ; let i = index">
+                        <td style="width:20%" >{{achat.created_at | date: 'dd/MM/yyyy à hh:mm:ss'}}</td>
+                        <td style="width:40%" >{{achat.r_libelle}}</td>
+                        <td style="width:20%" >{{achat.r_quantite}}</td>
+                        <td style="width:20%" >{{achat.r_prix_achat}}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+            </ng-template>
+                        
+              </div>
+          </div>
+        </div>
+  
+      </div>
+    </div>
+  </div>

@@ -6,8 +6,9 @@ import { NgbCollapseModule, NgbDatepickerModule, NgbTimepickerModule, NgbDropdow
 
 import { PagetitleComponent } from './pagetitle/pagetitle.component';
 import { LoaderComponent } from './loader/loader.component';
+import { SpinnerComponent } from '../spinner/spinner.component';
 @NgModule({
-  declarations: [PagetitleComponent,  LoaderComponent],
+  declarations: [PagetitleComponent,  LoaderComponent, SpinnerComponent],
   imports: [
     CommonModule,
     FormsModule,
@@ -16,6 +17,6 @@ import { LoaderComponent } from './loader/loader.component';
     NgbTimepickerModule,
     NgbDropdownModule
   ],
-  exports: [PagetitleComponent, LoaderComponent]
+  exports: [PagetitleComponent, LoaderComponent, SpinnerComponent]
 })
 export class UIModule { }

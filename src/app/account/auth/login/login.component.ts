@@ -2,13 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 import { AuthenticationService } from '../../../core/services/auth.service';
-import { AuthfakeauthenticationService } from '../../../core/services/authfake.service';
 
 import { ActivatedRoute, Router } from '@angular/router';
-import { first } from 'rxjs/operators';
-
-import { environment } from '../../../../environments/environment';
-
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
@@ -27,55 +22,42 @@ export class LoginComponent implements OnInit {
 
   // set the currenr year
   year: number = new Date().getFullYear();
+  btnspinner: boolean = false;
 
   // tslint:disable-next-line: max-line-length
-  constructor(private formBuilder: FormBuilder, private route: ActivatedRoute, private router: Router, private authenticationService: AuthenticationService,
-    private authFackservice: AuthfakeauthenticationService) { }
+  constructor(private formBuilder: FormBuilder, private route: ActivatedRoute, private router: Router, private authenticationService: AuthenticationService) { }
 
   ngOnInit() {
     this.loginForm = this.formBuilder.group({
-      email: ['admin@themesbrand.com', [Validators.required, Validators.email]],
-      password: ['123456', [Validators.required]],
+      p_login: ['admin', [Validators.required, Validators.email]],
+      p_mdp: ['admin', [Validators.required]],
     });
 
     // reset login status
     // this.authenticationService.logout();
     // get return url from route parameters or default to '/'
     // tslint:disable-next-line: no-string-literal
-    this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
+    //this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
   }
 
   // convenience getter for easy access to form fields
-  get f() { return this.loginForm.controls; }
+  //get f() { return this.loginForm.controls; }
 
   /**
    * Form submit
    */
   onSubmit() {
-    this.submitted = true;
-
-    // stop here if form is invalid
-    if (this.loginForm.invalid) {
-      return;
-    } else {
-      if (environment.defaultauth === 'firebase') {
-        this.authenticationService.login(this.f.email.value, this.f.password.value).then((res: any) => {
-          this.router.navigate(['/edeco/dashboard']);
-        })
-          .catch(error => {
-            this.error = error ? error : '';
-          });
-      } else {
-        this.authFackservice.login(this.f.email.value, this.f.password.value)
-          .pipe(first())
-          .subscribe(
-            data => {
-              this.router.navigate(['/edeco/dashboard']);
-            },
-            error => {
-              this.error = error ? error : '';
-            });
+    this.btnspinner = true;
+    this.authenticationService._login(this.loginForm.value).subscribe(
+      (res: any = {})=>{
+        if( res._status == 1 ){
+          sessionStorage.setItem('userData', JSON.stringify(res._result));
+          setTimeout(() => {
+            this.btnspinner = false;
+            this.router.navigate(['/edeco/dashboard']);
+          }, 500);
+        }
       }
-    }
+    )
   }
 }
