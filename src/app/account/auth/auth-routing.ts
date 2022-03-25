@@ -11,6 +11,10 @@ import { Recoverpwd2Component } from './recoverpwd2/recoverpwd2.component';
 
 const routes: Routes = [
     {
+        path: '',
+        component: LoginComponent
+    },
+    {
         path: 'login',
         component: LoginComponent
     },
