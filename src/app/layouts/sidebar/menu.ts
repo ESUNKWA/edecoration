@@ -43,13 +43,13 @@ export const MENU: MenuItem[] = [
             {
                 id: 37,
                 label: 'Communes',
-                link: '/edeco/invoices/list',
+                link: '/edeco/commune',
                 parentId: 36
             },
             {
               id: 37,
               label: 'Logistiques',
-              link: '/edeco/invoices/list',
+              link: '/edeco/logistik',
               parentId: 36
           },
           {

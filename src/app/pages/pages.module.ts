@@ -38,6 +38,8 @@ import { ChatComponent } from './chat/chat.component';
 
 import { FilemanagerComponent } from './filemanager/filemanager.component';
 import { AchatsproduitsComponent } from './achatsproduits/achatsproduits.component';
+import { CommunesComponent } from './communes/communes.component';
+import { LogistikComponent } from './logistik/logistik.component';
 
 FullCalendarModule.registerPlugins([ // register FullCalendar plugins
   dayGridPlugin,

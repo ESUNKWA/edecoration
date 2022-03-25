@@ -21,8 +21,6 @@ export class CategoriesComponent implements OnInit {
 
 // bread crum data
 breadCrumbItems: Array<{}>;
-tables$: Observable<Table[]>;
-total$: Observable<number>;
 @ViewChildren(AdvancedSortableDirective) headers: QueryList<AdvancedSortableDirective>;
 
 datas: Observable<Table[]>;

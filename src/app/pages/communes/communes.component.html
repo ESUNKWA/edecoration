@@ -1,0 +1,86 @@
+<div class="container-fluid">
+    <app-page-title title="Communes" [breadcrumbItems]="breadCrumbItems"></app-page-title>
+    <div class="row">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-body">
+  
+            <div class="row mb-2">
+              <div class="col-md-12 ">
+                <button type="button" class="btn btn-primary nouveau" title="Saisir un nouvelle commune" (click)="_saisieCommune(largeDataModal)">Nouveau</button>
+              </div>
+            </div>
+            
+            <ng-template [ngIf]="viewTable == false" >
+              <app-spinner></app-spinner>
+            </ng-template>
+  
+            <ng-template [ngIf]="viewTable == true" >
+              <!-- Table -->
+            <div class="table-responsive">
+              <!-- Search -->
+            <div id="tickets-table_filter" class="dataTables_filter text-md-end"><label
+              class="d-inline-flex align-items-center">Recherche:
+              <input type="text" name="searchTerm" class="form-control form-control-sm ms-2"
+                aria-controls="tickets-table" [(ngModel)]="searChIn"></label></div>
+            <!-- End search -->
+              <table class="table mb-0 table-striped" >
+                        <thead class="bg-dark text-white">
+                          <tr>
+                            <th style="width:30%" >Date création</th>
+                            <th style="width: 55%;">Commune</th>
+                            <th style="width:15%" >Action</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr *ngFor="let commune of CommunesTab; let i = index">
+                            <td style="width:30%" >{{commune.created_at | date: 'dd/MM/yyyy à hh:mm:ss'}}</td>
+                            <td style="width:55%" >{{commune.r_libelle}}</td>
+                            <td style="width:15%">
+                              <button type="button" class="btn btn-primary" (click)="_action(commune,largeDataModal)" ><i class="fas fa-edit"></i></button>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                      
+            </div>
+            </ng-template>
+  
+            
+          </div>
+        </div>
+  
+      </div>
+    </div>
+  </div>
+
+
+  
+<!-- Large Modal -->
+<ng-template #largeDataModal let-modal>
+  <div class="modal-header">
+    <h5 class="modal-title mt-0">{{modalTitle}}</h5>
+    <button type="button" class="btn-close" (click)="modal.dismiss('Cross click')" aria-hidden="true"></button>
+  </div>
+  <div class="modal-body">
+    <form class="needs-validation" [formGroup]="communesData">
+      <div class="row">
+        <div class="col-md-12">
+            <label for="validationCustom01">Commune</label>
+            <input type="text" class="form-control"  formControlName="r_libelle" [(ngModel)]="ligneCommune.r_libelle" >
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+          <label for="validationCustom05">Description</label>
+            <textarea class="form-control" rows="3" formControlName="p_description" [(ngModel)]="ligneCommune.r_description" placeholder=""></textarea>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button type="button" title="fermer" class="btn btn-secondary" (click)="modal.close('Close click')">Fermer</button>
+    <button type="button" title="Enregistrer" class="btn btn-primary" (click)="_register()">Enregistrer</button>
+  </div>
+</ng-template>
+  

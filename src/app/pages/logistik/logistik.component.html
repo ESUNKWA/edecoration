@@ -1,0 +1,88 @@
+<div class="container-fluid">
+    <app-page-title title="Catégories de produits" [breadcrumbItems]="breadCrumbItems"></app-page-title>
+    <div class="row">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-body">
+  
+            <div class="row mb-2">
+              <div class="col-md-12 ">
+                <button type="button" class="btn btn-primary nouveau" title="Saisir un nouveau Véhicule" (click)="_saisieLogistik(largeDataModal)" >Nouveau</button>
+              </div>
+            </div>
+            
+            <ng-template [ngIf]="viewTable == false" >
+              <app-spinner></app-spinner>
+            </ng-template>
+  
+            <ng-template [ngIf]="viewTable == true" >
+              <!-- Table -->
+            <div class="table-responsive">
+              <!-- Search -->
+            <div id="tickets-table_filter" class="dataTables_filter text-md-end"><label
+              class="d-inline-flex align-items-center">Recherche:
+              <input type="text" name="searchTerm" class="form-control form-control-sm ms-2"
+                aria-controls="tickets-table" [(ngModel)]="searChIn"></label></div>
+            <!-- End search -->
+              <table class="table mb-0 table-striped" >
+                        <thead class="bg-dark text-white">
+                          <tr>
+                            <th style="width:25%" >Matricule</th>
+                            <th style="width: 50%;">Véhicule</th>
+                            <th style="width:10%" >Status</th>
+                            <th style="width:15%" >Action</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr *ngFor="let logistik of logistkTab ; let i = index">
+                            <td style="width:25%" >{{logistik.r_matricule }}</td>
+                            <td style="width:50%" >{{logistik.r_vehicule}}</td>
+                            <td style="width:10%" >{{logistik.r_status}}</td>
+                            <td style="width:15%">
+                              <button type="button" class="btn btn-primary" (click)="_action(logistik,largeDataModal)" ><i class="fas fa-edit"></i></button>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                      
+            </div>
+            </ng-template>
+  
+            
+          </div>
+        </div>
+  
+      </div>
+    </div>
+  </div>
+  <!-- Large Modal -->
+<ng-template #largeDataModal let-modal>
+    <div class="modal-header">
+      <h5 class="modal-title mt-0">{{modalTitle}}</h5>
+      <button type="button" class="btn-close" (click)="modal.dismiss('Cross click')" aria-hidden="true"></button>
+    </div>
+    <div class="modal-body">
+      <form class="needs-validation" [formGroup]="logistikData">
+        <div class="row">
+          <div class="col-md-6">
+              <label for="validationCustom01">Matricule</label>
+              <input type="text" class="form-control"  formControlName="r_matricule" [(ngModel)]="ligneLogistik.r_matricule" >
+          </div>
+          <div class="col-md-6">
+            <label for="validationCustom01">Véhicule</label>
+            <input type="text" class="form-control"  formControlName="p_vehicule" [(ngModel)]="ligneLogistik.r_vehicule" >
+        </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12">
+            <label for="validationCustom05">Description</label>
+              <textarea class="form-control" rows="3" formControlName="p_description" [(ngModel)]="ligneLogistik.r_description" placeholder=""></textarea>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button type="button" title="fermer" class="btn btn-secondary" (click)="modal.close('Close click')">Fermer</button>
+      <button type="button" title="Enregistrer" class="btn btn-primary" (click)="_register()">Enregistrer</button>
+    </div>
+  </ng-template>
