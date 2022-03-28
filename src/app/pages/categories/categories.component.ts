@@ -42,15 +42,17 @@ modeAppel: any = 'création';
 
   ngOnInit(): void {
     this.userData = this.user._donnesUtilisateur()[0];
-    
+
     this.breadCrumbItems = [{ label: 'Eden décoration' }, { label: 'Catégories de produits', active: true }];
 
     this.categoriesData = this.fb.group({
-      r_libelle: ['', [Validators.required, Validators.pattern('[a-zA-Z0-9]+')]],
-      p_description: ['', [Validators.required, Validators.pattern('[a-zA-Z0-9]+')]]
+      r_libelle: ['', [Validators.required, Validators.pattern('[a-zA-Z0-9]+'), Validators.minLength(4)]],
+      p_description: ['']
     });
     this._listCategories();
   }
+
+  get f () { return this.categoriesData.controls;}
 
   _listCategories(): void {
     this.categories._getCategories().subscribe(
@@ -68,7 +70,7 @@ modeAppel: any = 'création';
   fctSaisieCat(largeDataModal: any){
     this.modeAppel = 'creation';
     this.modalTitle = 'Saisie d\'une nouelle catégorie de produit';
-
+    this.categoriesData.reset();
     this.largeModal(largeDataModal);
   }
 
@@ -80,6 +82,10 @@ modeAppel: any = 'création';
 
 
     this.largeModal(largeDataModal);
+  }
+
+  _resetForm() {
+this.categoriesData
   }
 
   _register(): void {
@@ -135,6 +141,7 @@ modeAppel: any = 'création';
   //Appel de la modal
   largeModal(exlargeModal: any) {
     this.modalService.open(exlargeModal, { size: 'lg', centered: true });
+
   }
 
   //Filtre datatable

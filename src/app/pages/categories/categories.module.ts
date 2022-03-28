@@ -8,6 +8,7 @@ import { Ng2SmartTableModule } from 'ng2-smart-table';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CategoriesComponent } from './categories.component';
 import { SearchDossierPipe, SearchPipe } from 'src/app/table.pipe';
+import { DataTablesModule } from 'angular-datatables';
 
 @NgModule({
     declarations: [CategoriesComponent,SearchPipe],
@@ -22,7 +23,7 @@ import { SearchDossierPipe, SearchPipe } from 'src/app/table.pipe';
         FormsModule,
         ReactiveFormsModule,
         NgbPaginationModule,
-
+        DataTablesModule
     ]
 })
 

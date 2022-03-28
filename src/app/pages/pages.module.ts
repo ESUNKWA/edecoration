@@ -40,6 +40,7 @@ import { FilemanagerComponent } from './filemanager/filemanager.component';
 import { AchatsproduitsComponent } from './achatsproduits/achatsproduits.component';
 import { CommunesComponent } from './communes/communes.component';
 import { LogistikComponent } from './logistik/logistik.component';
+import { TestComponent } from './test/test.component';
 
 FullCalendarModule.registerPlugins([ // register FullCalendar plugins
   dayGridPlugin,

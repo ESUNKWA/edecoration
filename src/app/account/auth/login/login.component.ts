@@ -29,7 +29,7 @@ export class LoginComponent implements OnInit {
 
   ngOnInit() {
     this.loginForm = this.formBuilder.group({
-      p_login: ['admin', [Validators.required, Validators.email]],
+      p_login: ['admin', [Validators.required, Validators.minLength(4)]],
       p_mdp: ['admin', [Validators.required]],
     });
 
@@ -40,6 +40,10 @@ export class LoginComponent implements OnInit {
     //this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
   }
 
+  get getControl(){
+    return this.loginForm.controls;
+  }
+
   // convenience getter for easy access to form fields
   //get f() { return this.loginForm.controls; }
 
@@ -47,6 +51,7 @@ export class LoginComponent implements OnInit {
    * Form submit
    */
   onSubmit() {
+
     this.btnspinner = true;
     this.authenticationService._login(this.loginForm.value).subscribe(
       (res: any = {})=>{

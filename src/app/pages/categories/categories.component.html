@@ -1,3 +1,6 @@
+
+
+
 <div class="container-fluid">
   <app-page-title title="Catégories de produits" [breadcrumbItems]="breadCrumbItems"></app-page-title>
   <div class="row">
@@ -10,7 +13,7 @@
               <button type="button" class="btn btn-primary nouveau" title="Saisir un nouvelle catégorie de produits" (click)="fctSaisieCat(largeDataModal)">Nouveau</button>
             </div>
           </div>
-          
+
           <ng-template [ngIf]="viewTable == false" >
             <app-spinner></app-spinner>
           </ng-template>
@@ -41,12 +44,12 @@
                           </td>
                         </tr>
                       </tbody>
-                    </table>
-                    
+            </table>
+
           </div>
           </ng-template>
 
-          
+
         </div>
       </div>
 
@@ -67,9 +70,20 @@
         <div class="col-md-12">
             <label for="validationCustom01">LIbellé de la catégorie</label>
             <input type="text" class="form-control"  formControlName="r_libelle" [(ngModel)]="ligneCategorie.r_libelle" >
+
+            <div *ngIf="f.r_libelle.touched && f.r_libelle.invalid" class="text-danger" >
+              <div *ngIf="f.r_libelle.errors.required" class="">
+                Veuillez saisir la catégorie
+              </div>
+              <div *ngIf="f.r_libelle.errors.minlength" >
+                  <p>Veuillez saisir une catégorie valide</p>
+              </div>
+            </div>
+
+
         </div>
       </div>
-      <div class="row">
+      <div class="row mt-2">
         <div class="col-md-12">
           <label for="validationCustom05">Description de la catégorie</label>
             <textarea class="form-control" rows="3" formControlName="p_description" [(ngModel)]="ligneCategorie.r_description" placeholder=""></textarea>
@@ -78,7 +92,7 @@
     </form>
   </div>
   <div class="modal-footer">
-    <button type="button" title="fermer" class="btn btn-secondary" (click)="modal.close('Close click')">Fermer</button>
-    <button type="button" title="Enregistrer" class="btn btn-primary" (click)="_register()">Enregistrer</button>
+    <button type="button" title="fermer" class="btn btn-secondary" (click)="modal.close('Close click'); _resetForm()">Fermer</button>
+    <button [hidden]="categoriesData.invalid" type="button" title="Enregistrer" class="btn btn-primary" (click)="_register()">Enregistrer</button>
   </div>
 </ng-template>
