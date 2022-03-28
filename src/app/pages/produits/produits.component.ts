@@ -50,15 +50,17 @@ export class ProduitsComponent implements OnInit {
     });
     this.produitsData = this.fb.group({
       p_libelle: ['', [Validators.required, Validators.pattern('[a-zA-Z0-9]+')]],
-      p_stock: ['', [Validators.required, Validators.pattern('[a-zA-Z0-9]+')]],
+      p_stock: ['', [Validators.required]],
       p_categories: ['', [Validators.required, Validators.pattern('[a-zA-Z0-9]+')]],
       p_image: ['', [Validators.required, Validators.pattern('[a-zA-Z0-9]+')]],
-      p_description: ['', [Validators.required, Validators.pattern('[a-zA-Z0-9]+')]]
+      p_description: ['', []]
     });
 
     this._listProduits();
     this._listCategories();
   }
+
+  get f(){ return this.produitsData.controls;}
 
   _listCategories(): void {
     this.categorieServices._getCategories().subscribe(
@@ -203,6 +205,11 @@ export class ProduitsComponent implements OnInit {
   
 
   _register(): void {
+
+    if (this.produitsData.invalid) {
+      console.table(this.produitsData.value);
+      return;
+    }
     
     this.produitsData.value.p_utilisateur = parseInt(this.userData.r_i, 10);;
     this.produitsData.value.p_categories = parseInt(this.idservice,10);
@@ -300,6 +307,11 @@ export class ProduitsComponent implements OnInit {
   //Appel de la modal
   largeModal(exlargeModal: any) {
     this.modalService.open(exlargeModal, { size: 'lg', centered: true });
+  }
+
+  _resetForm(){
+    this.ligneTarification = {}
+    this.produitsData.reset();
   }
 
 }

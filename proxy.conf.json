@@ -1,8 +1,6 @@
 {
   "/api/*": {
-    "target": "https://apidkem.hoteletiada.com",
-    "secure": false,
-    "logLevel": "debug",
-    "changeOrigin": true
+    "target": "https://ws.edecoration-ci.com",
+    "secure": false
   }
 }

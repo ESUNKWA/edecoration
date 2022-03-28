@@ -35,7 +35,7 @@
                   <label for="p_login">Identifiant</label>
                   <input type="email" formControlName="p_login" class="form-control" id="p_login" autocomplete="off" placeholder="" />
                   <div *ngIf="getControl.p_login.touched && getControl.p_login.invalid" class="text-danger">
-                    <div *ngIf="getControl.p_login.errors.required">Identifiant obligatoire.</div>
+                    <div *ngIf="getControl.p_login.errors.required">Veuillez saisir votre Identifiant.</div>
                   </div>
                 </div>
 

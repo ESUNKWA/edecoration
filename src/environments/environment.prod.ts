@@ -11,5 +11,5 @@ export const environment = {
     appId: '',
     measurementId: ''
   },
-  backendServer: 'https://192.168.40.58'
+  backendServer: 'https://ws.edecoration-ci.com/api'
 };

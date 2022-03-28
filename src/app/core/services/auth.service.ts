@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
@@ -15,7 +15,7 @@ export class AuthenticationService {
     user: User;
 
     env = environment;
-
+    headers = new HttpHeaders().set('Content-Type', 'application/json');
     constructor( private http: HttpClient ) {
     }
 

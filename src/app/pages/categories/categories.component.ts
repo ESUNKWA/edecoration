@@ -85,10 +85,15 @@ modeAppel: any = 'création';
   }
 
   _resetForm() {
-this.categoriesData
+this.categoriesData.reset()
   }
 
   _register(): void {
+
+    if (this.categoriesData.invalid) {
+      console.table(this.categoriesData.value);
+      return;
+    }
 
     this.categoriesData.value.p_utilisateur = parseInt(this.userData.r_i, 10);
 

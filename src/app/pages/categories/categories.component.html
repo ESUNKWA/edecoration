@@ -93,6 +93,6 @@
   </div>
   <div class="modal-footer">
     <button type="button" title="fermer" class="btn btn-secondary" (click)="modal.close('Close click'); _resetForm()">Fermer</button>
-    <button [hidden]="categoriesData.invalid" type="button" title="Enregistrer" class="btn btn-primary" (click)="_register()">Enregistrer</button>
+    <button [disabled]="categoriesData.invalid" type="button" title="Enregistrer" class="btn btn-primary" (click)="_register()">Enregistrer</button>
   </div>
 </ng-template>
