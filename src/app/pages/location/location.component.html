@@ -57,16 +57,16 @@
                             <tbody>
                               <tr *ngFor="let produit of tarificationTab ; let i = index">
                                 <td style="width:5%;">
-                                  <input class="form-check-input" type="checkbox" value="" id="invalidCheck">
+                                  <input #inpcheck class="form-check-input" type="checkbox" (change)="_changeValcheck(inpcheck.checked,i)" >
                                 </td>
                                 <td style="width:30%" >{{produit?.r_libelle}}</td>
                                 <td style="width:10%" >{{produit?.r_prix_location | mask: 'separator':' '}}</td>
                                 <td style="width:15%" >{{produit?.r_duree}} jour</td>
                                 <td style="width: 15%;">
-                                  <input #inp class="form-control" min="1" type="number" (change)="_valueQte(inp.value,i)" placeholder="">
+                                  <input #inpqte class="form-control" min="0" value="0" type="number" [(disabled)]="!produit.check" (change)="_valueQte(inpqte.value,i)" placeholder="">
                                 </td>
                                 <td style="width: 15%;">
-                                  <input readonly class="form-control" type="text" value="{{produit?.total}}" mask="separator.2" placeholder="">
+                                  <input disabled class="form-control" type="text" value="{{produit?.total}}" mask="separator.2" placeholder="">
                                 </td>
                               </tr>
                             </tbody>

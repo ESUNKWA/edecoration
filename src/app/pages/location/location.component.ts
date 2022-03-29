@@ -32,9 +32,19 @@ viewTable: boolean = false;
   }
 
   _valueQte(val,i){
+
+    console.log(val);
+    
+
     this.tarificationTab[i].qte = val;
     this.tarificationTab[i].total =  this.tarificationTab[i].qte*this.tarificationTab[i].r_prix_location;
 
+  }
+
+  _changeValcheck(val,i){
+    console.log(val);
+    
+    this.tarificationTab[i].check = val;
   }
 
   _listProduits(): void {
