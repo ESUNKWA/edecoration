@@ -41,6 +41,7 @@ import { AchatsproduitsComponent } from './achatsproduits/achatsproduits.compone
 import { CommunesComponent } from './communes/communes.component';
 import { LogistikComponent } from './logistik/logistik.component';
 import { TestComponent } from './test/test.component';
+import { LocationComponent } from './location/location.component';
 
 FullCalendarModule.registerPlugins([ // register FullCalendar plugins
   dayGridPlugin,

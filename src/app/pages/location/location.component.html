@@ -1,0 +1,45 @@
+<div class="container-fluid">
+    <app-page-title title="Catégories de produits" [breadcrumbItems]="breadCrumbItems"></app-page-title>
+    <div class="row">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-body">
+  
+            <div class="row mb-2">
+              <div class="col-md-12 ">
+                <button type="button" class="btn btn-primary nouveau" title="Saisir un nouvelle catégorie de produits" (click)="_saisie_location(largeDataModal)">Nouveau</button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+</div>
+
+
+<!-- Large Modal -->
+<ng-template #largeDataModal let-modal>
+    <div class="modal-header">
+      <h5 class="modal-title mt-0">{{modalTitle}}</h5>
+      <button type="button" class="btn-close" (click)="modal.dismiss('Cross click')" aria-hidden="true"></button>
+    </div>
+    <div class="modal-body">
+      <form class="needs-validation">
+        <div class="row">
+          <div class="col-md-12">
+              <label for="validationCustom01">LIbellé de la catégorie</label>
+              <input type="text" class="form-control">
+  
+  
+  
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button type="button" title="fermer" class="btn btn-secondary" (click)="modal.close('Close click')">Fermer</button>
+      <button type="button" title="Enregistrer" class="btn btn-primary">Enregistrer</button>
+    </div>
+  </ng-template>
+  

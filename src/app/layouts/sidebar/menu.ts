@@ -55,7 +55,7 @@ export const MENU: MenuItem[] = [
           {
             id: 37,
             label: 'Location',
-            link: '/edeco/invoices/list',
+            link: '/edeco/location',
             parentId: 36
         }
         ]

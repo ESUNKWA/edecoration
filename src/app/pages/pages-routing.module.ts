@@ -37,6 +37,8 @@ const routes: Routes = [
   { path: 'achat', loadChildren: () => import('./achatsproduits/achatsproduits.module').then(m => m.AchatProduitModule) },
   { path: 'commune', loadChildren: () => import('./communes/communes.module').then(m => m.CommunesModule) },
   { path: 'logistik', loadChildren: () => import('./logistik/logistik.module').then(m => m.LogistikModule) },
+  { path: 'location', loadChildren: () => import('./location/location.module').then(m => m.LocationModule) },
+
   { path: 'test', loadChildren: () => import('./test/test.module').then(m => m.TestModule) },
 ];
 
