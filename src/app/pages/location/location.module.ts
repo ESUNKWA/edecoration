@@ -1,6 +1,8 @@
 import { CommonModule } from "@angular/common";
 import { NgModule } from "@angular/core";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
+import { ArchwizardModule } from "angular-archwizard";
+import { NgxMaskModule } from "ngx-mask";
 import { UIModule } from "src/app/shared/ui/ui.module";
 import { LocationRoutingModule } from "./location-routing.module";
 import { LocationComponent } from "./location.component";
@@ -12,7 +14,9 @@ import { LocationComponent } from "./location.component";
         UIModule,
         FormsModule,
         ReactiveFormsModule,
-        LocationRoutingModule
+        LocationRoutingModule,
+        ArchwizardModule,
+        NgxMaskModule.forRoot(),
     ]
 })
 
