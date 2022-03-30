@@ -23,7 +23,7 @@
 
       <!--Block des saisie des location-->
       <div class="col-md-8">
-        <form class="needs-validation">
+        <form class="needs-validation" [formGroup]="locationData" >
           <div class="row">
             <div class="col-lg-12">
               <div class="card">
@@ -32,7 +32,7 @@
                   <aw-wizard [navBarLayout]="'large-empty-symbols'">
                     <aw-wizard-step>
                       <ng-template awWizardStepSymbol>
-                        <i class="fas fa-user"></i>
+                        <i class="fas fa-cash-register"></i>
                       </ng-template>
 
                       <!-- Table -->
@@ -76,6 +76,52 @@
                       </div>
 
                       <ul class="list-inline wizard mt-2">
+                        <li class="next list-inline-item float-end"><button class="btn btn-primary" [disabled]="totalLocation.mntTotal == 0" awNextStep>Suivant</button>
+                        </li>
+                      </ul>
+                    </aw-wizard-step>
+
+                    <aw-wizard-step>
+                      <ng-template awWizardStepSymbol>
+                        <i class="fas fa-user-edit"></i>
+                      </ng-template>
+                      <div class="row">
+                        <div class="col-12">
+                          <div class="row mb-3">
+                            <label class="col-md-3 col-form-label">Nom</label>
+                            <div class="col-md-9">
+                              <input class="form-control" name="nom" type="text" formControlName="p_nom" placeholder="">
+                            </div>
+                          </div>
+                          <div class="row mb-3">
+                            <label class="col-md-3 col-form-label">Prenoms</label>
+                            <div class="col-md-9">
+                              <input class="form-control" name="prenoms" type="text" formControlName="p_prenoms" placeholder="">
+                            </div>
+                          </div>
+                          <div class="row mb-3">
+                            <label class="col-md-3 col-form-label">Numéro de téléphone</label>
+                            <div class="col-md-9">
+                              <input class="form-control" name="tel" type="text" formControlName="p_telephone" placeholder="">
+                            </div>
+                          </div>
+                          <div class="row mb-3">
+                            <label class="col-md-3 col-form-label">Adresse email</label>
+                            <div class="col-md-9">
+                              <input class="form-control" name="email" type="password" formControlName="p_email" placeholder="">
+                            </div>
+                          </div>
+                          <div class="row mb-3">
+                            <label class="col-md-3 col-form-label">Description</label>
+                            <div class="col-md-9">
+                              <textarea class="form-control" formControlName="p_description"></textarea>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <ul class="list-inline wizard mb-0">
+                        <li class="previous list-inline-item"><button class="btn btn-primary" awPreviousStep>Précédent</button>
+                        </li>
                         <li class="next list-inline-item float-end"><button class="btn btn-primary" awNextStep>Suivant</button>
                         </li>
                       </ul>
@@ -83,34 +129,100 @@
 
                     <aw-wizard-step>
                       <ng-template awWizardStepSymbol>
-                        <i class="fas fa-user-circle"></i>
+                        <i class="fas fa-list-alt"></i>
                       </ng-template>
                       <div class="row">
-                        <div class="col-12">
+                        <div class="col-6">
                           <div class="row mb-3">
-                            <label class="col-md-3 col-form-label">First name</label>
-                            <div class="col-md-9">
-                              <input class="form-control" name="email" type="text" placeholder="Enter email">
+                            <label class="col-md-4 col-form-label">Date de livraison</label>
+                            <div class="col-md-8">
+                              <div class="input-group clockpicker">
+                                <input ngbDatepicker class="form-control" placeholder="yyyy-mm-dd" formControlName="p_date_envoie" #d="ngbDatepicker">
+                                <div class="input-group-append" (click)="d.toggle()">
+                                  <span class="input-group-text"><i class="mdi mdi-calendar"></i></span>
+                                </div>
+                              </div>
                             </div>
                           </div>
+                        </div>
+                        <div class="col-6">
                           <div class="row mb-3">
-                            <label class="col-md-3 col-form-label">Last name</label>
-                            <div class="col-md-9">
-                              <input class="form-control" name="username" type="text" placeholder="Enter Username">
-                            </div>
-                          </div>
-                          <div class="row mb-3">
-                            <label class="col-md-3 col-form-label">Password</label>
-                            <div class="col-md-9">
-                              <input class="form-control" name="password" type="password" placeholder="Enter Password">
+                            <label class="col-md-4 col-form-label">Date de retour</label>
+                            <div class="col-md-8">
+                              <div class="input-group clockpicker">
+                                <input ngbDatepicker class="form-control" placeholder="yyyy-mm-dd" formControlName="p_date_retour" #f="ngbDatepicker">
+                                <div class="input-group-append" (click)="f.toggle()">
+                                  <span class="input-group-text"><i class="mdi mdi-calendar"></i></span>
+                                </div>
+                              </div>
                             </div>
                           </div>
                         </div>
                       </div>
+
+                      <div class="row mb-3">
+                        <label class="col-md-2 col-form-label">Description</label>
+                        <div class="col-md-10">
+                          <textarea class="form-control"></textarea>
+                        </div>
+                      </div>
+
+                      <div class="mb-2">
+                        <label class="">Gérer la logistique</label>&nbsp;
+                        <input #inplogistik class="form-check-input" type="checkbox" (click)="_gestionLogistik(inplogistik.checked)">
+                      </div>
+
+
+                      <fieldset class="form-control mb-4" *ngIf="logistik" >
+
+                        <div class="row mb-3">
+                          <div class="col-md-6">
+                            <div class="row mb-3">
+                              <label class="col-md-4 col-form-label">Commune depart</label>
+                              <div class="col-md-8">
+                                <ng-select [items]="selectValue" (change)="_test($event)" formControlName="p_commune_depart" [(ngModel)]="selectedCity" disabled ></ng-select>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="col-md-6">
+                            <div class="row mb-3">
+                              <label class="col-md-4 col-form-label">Destination</label>
+                              <div class="col-md-8">
+                                <ng-select [items]="selectValue" (change)="_test($event)" formControlName="p_commune_arrive" [(ngModel)]="selectedCity" ></ng-select>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+  
+                        <div class="row mb-3">
+
+                          <div class="col-md-6">
+                            <div class="row mb-3">
+                              <label class="col-md-4 col-form-label">Véhicule</label>
+                              <div class="col-md-8">
+                                <ng-select [items]="selectValue" formControlName="p_vehicule" (change)="_test($event)" ></ng-select>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div class="col-md-6">
+                            <div class="row mb-3">
+                              <label class="col-md-4 col-form-label">Frais de transport</label>
+                              <div class="col-md-8">
+                                <input class="form-control" name="tel" type="text" formControlName="p_frais" placeholder="">
+                              </div>
+                            </div>
+                          </div>
+                          
+                        </div>
+
+                      </fieldset>
+
+
                       <ul class="list-inline wizard mb-0">
-                        <li class="previous list-inline-item"><button class="btn btn-primary" awPreviousStep>Previous</button>
+                        <li class="previous list-inline-item"><button class="btn btn-primary" awPreviousStep>Précédent</button>
                         </li>
-                        <li class="next list-inline-item float-end"><button class="btn btn-primary" awNextStep>Next</button>
+                        <li class="next list-inline-item float-end"><button class="btn btn-primary" awNextStep>Suivant</button>
                         </li>
                       </ul>
                     </aw-wizard-step>
@@ -133,7 +245,9 @@
                         </div>
                       </div>
                       <ul class="list-inline wizard mb-0">
-                        <li class="previous list-inline-item"><button class="btn btn-primary" awPreviousStep>Previous</button>
+                        <li class="previous list-inline-item">
+                          <button class="btn btn-primary" awPreviousStep>Précédent</button>
+                          <button class="btn btn-primary" type="button" style="float: right" (click)="_registerLocations()">Enregistrer</button>
                         </li>
                       </ul>
                     </aw-wizard-step>
@@ -161,12 +275,40 @@
             <div class="col-lg-12">
               <div class="card">
                 <div class="card-body">
-                  <h4 class="card-title mb-4">Saisie de commande</h4>
-                    <ol>
-                      <li *ngFor="let prd of recapTab" >{{prd.r_libelle}}
-                        <a href="">{{prd.qte}} x {{prd.r_prix_location}} = {{prd.total}}</a>
-                      </li>
-                    </ol>
+                  <h4 class="card-title mb-4">Total Produits: ({{totalLocation.qteproduits}})</h4>
+                  <div class="mt-2" *ngFor="let prd of recapTab">
+                    <h5 class="font-size-15 text-uppercase">{{prd.r_libelle}}</h5>
+                    <span class="text-muted mb-0">{{prd.qte}} x {{prd.r_prix_location}} = {{prd.total}}</span>
+                    <hr>
+                  </div>
+                  <h5 class="card-title mb-4">Total : <span class="text-danger" ><strong>{{totalLocation.mntTotal | mask: 'separator':' '}}</strong></span></h5>
+                  <h5 class="card-title mb-4">Nouveau Total : <span class="text-danger" ><strong>{{totalLocation.mewTotal | mask: 'separator':' '}}</strong></span></h5>
+
+
+                  <fieldset class="form-group border p-3">
+                    <legend class="w-auto px-2">Rémises</legend>
+                    <div class="row mb-3">
+                      <label class="col-md-5 col-form-label">en %</label>
+                      <div class="col-md-7">
+                        <input #percent class="form-control" name="remise" type="text" value="0" mask="000" [(ngModel)]="remisepercent" [disabled]="totalLocation.mntTotal == 0" (keyup)="_calculateRemise(percent.value, 'percent')" placeholder="">
+                      </div>
+                    </div>
+                    <div class="row mb-3">
+                      <label class="col-md-5 col-form-label">Montant fixe </label>
+                      <div class="col-md-7">
+                        <input #mtnreduce class="form-control" name="remise" type="text" value="0" [(ngModel)]="remisemnt" [disabled]="totalLocation.mntTotal == 0" (keyup)="_calculateRemise(mtnreduce.value, 'mntfixe')" placeholder="">
+                      </div>
+                    </div>
+                    <div class="row mb-3">
+                      <label class="col-md-5 col-form-label">Nouveau montant</label>
+                      <div class="col-md-7">
+                        <input #newMntTotal class="form-control" name="remise" type="text" value="0" [(ngModel)]="remisenewmnt" [disabled]="totalLocation.mntTotal == 0" (keyup)="_calculateRemise(newMntTotal.value, 'newmnt')" placeholder="">
+                      </div>
+                    </div>
+                  </fieldset>
+
+                  
+
                 </div>
               </div>
             </div>
@@ -202,19 +344,19 @@
                         <div class="row mb-3">
                           <label class="col-md-3 col-form-label">Email</label>
                           <div class="col-md-9">
-                            <input class="form-control" name="email" type="text" placeholder="Enter email">
+                            <input class="form-control" name="email" type="text" placeholder="">
                           </div>
                         </div>
                         <div class="row mb-3">
                           <label class="col-md-3 col-form-label">Username</label>
                           <div class="col-md-9">
-                            <input class="form-control" name="username" type="text" placeholder="Enter Username">
+                            <input class="form-control" name="username" type="text" placeholder="">
                           </div>
                         </div>
                         <div class="row mb-3">
                           <label class="col-md-3 col-form-label">Password</label>
                           <div class="col-md-9">
-                            <input class="form-control" name="password" type="password" placeholder="Enter Password">
+                            <input class="form-control" name="password" type="password" placeholder="">
                           </div>
                         </div>
                       </div>
@@ -234,19 +376,19 @@
                         <div class="row mb-3">
                           <label class="col-md-3 col-form-label">First name</label>
                           <div class="col-md-9">
-                            <input class="form-control" name="email" type="text" placeholder="Enter email">
+                            <input class="form-control" name="email" type="text" placeholder="">
                           </div>
                         </div>
                         <div class="row mb-3">
                           <label class="col-md-3 col-form-label">Last name</label>
                           <div class="col-md-9">
-                            <input class="form-control" name="username" type="text" placeholder="Enter Username">
+                            <input class="form-control" name="username" type="text" placeholder="">
                           </div>
                         </div>
                         <div class="row mb-3">
                           <label class="col-md-3 col-form-label">Password</label>
                           <div class="col-md-9">
-                            <input class="form-control" name="password" type="password" placeholder="Enter Password">
+                            <input class="form-control" name="password" type="password" placeholder="">
                           </div>
                         </div>
                       </div>
