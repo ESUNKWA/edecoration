@@ -19,6 +19,7 @@ modalTitle: any = '';
 modeAppel: any = 'création';
 tarificationTab: any = [];
 viewTable: boolean = false;
+  recapTab: any;
 
   constructor(private notifications: NotifService, private user: UserService, private modalService: NgbModal, private tarifService: TarificationsService,) { }
 
@@ -32,19 +33,23 @@ viewTable: boolean = false;
   }
 
   _valueQte(val,i){
-
-    console.log(val);
-    
-
-    this.tarificationTab[i].qte = val;
+    this.tarificationTab[i].qte = parseInt(val, 10);
     this.tarificationTab[i].total =  this.tarificationTab[i].qte*this.tarificationTab[i].r_prix_location;
 
+    this.recapTab = this.tarificationTab.filter( el => el.qte >= 1);
+
+    const a = this.recapTab.reduce((accumulator, curValue) => accumulator.total + curValue.total, 0)
+    console.log(a)
   }
 
   _changeValcheck(val,i){
-    console.log(val);
-    
     this.tarificationTab[i].check = val;
+    if(val == false){
+      this.tarificationTab[i].qte = 0;
+      this.tarificationTab[i].total =  this.tarificationTab[i].qte*this.tarificationTab[i].r_prix_location;
+    }
+    this.recapTab = this.tarificationTab.filter( el => el.qte >= 1);
+
   }
 
   _listProduits(): void {

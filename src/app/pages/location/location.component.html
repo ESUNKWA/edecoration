@@ -4,7 +4,7 @@
       <div class="col-12">
         <div class="card">
           <div class="card-body">
-  
+
             <div class="row mb-2">
               <div class="col-md-12 ">
                 <button type="button" class="btn btn-primary nouveau" title="Saisir un nouvelle catégorie de produits" (click)="_saisie_location(largeDataModal)">Nouveau</button>
@@ -63,7 +63,7 @@
                                 <td style="width:10%" >{{produit?.r_prix_location | mask: 'separator':' '}}</td>
                                 <td style="width:15%" >{{produit?.r_duree}} jour</td>
                                 <td style="width: 15%;">
-                                  <input #inpqte class="form-control" min="0" value="0" type="number" [(disabled)]="!produit.check" (change)="_valueQte(inpqte.value,i)" placeholder="">
+                                  <input #inpqte class="form-control" min="0" value="{{produit?.qte}}" type="number" [(disabled)]="!produit.check" (change)="_valueQte(inpqte.value,i)" placeholder="">
                                 </td>
                                 <td style="width: 15%;">
                                   <input disabled class="form-control" type="text" value="{{produit?.total}}" mask="separator.2" placeholder="">
@@ -74,13 +74,13 @@
                         </ng-template>
 
                       </div>
-                      
+
                       <ul class="list-inline wizard mt-2">
                         <li class="next list-inline-item float-end"><button class="btn btn-primary" awNextStep>Suivant</button>
                         </li>
                       </ul>
                     </aw-wizard-step>
-        
+
                     <aw-wizard-step>
                       <ng-template awWizardStepSymbol>
                         <i class="fas fa-user-circle"></i>
@@ -114,7 +114,7 @@
                         </li>
                       </ul>
                     </aw-wizard-step>
-        
+
                     <aw-wizard-step>
                       <ng-template awWizardStepSymbol>
                         <i class="fas fa-check-circle"></i>
@@ -146,9 +146,9 @@
             <div class="col-md-12">
                 <label for="validationCustom01">LIbellé de la catégorie</label>
                 <input type="text" class="form-control">
-    
-    
-    
+
+
+
             </div>
           </div> -->
         </form>
@@ -162,7 +162,11 @@
               <div class="card">
                 <div class="card-body">
                   <h4 class="card-title mb-4">Saisie de commande</h4>
-				  
+                    <ol>
+                      <li *ngFor="let prd of recapTab" >{{prd.r_libelle}}
+                        <a href="">{{prd.qte}} x {{prd.r_prix_location}} = {{prd.total}}</a>
+                      </li>
+                    </ol>
                 </div>
               </div>
             </div>
@@ -220,7 +224,7 @@
                       </li>
                     </ul>
                   </aw-wizard-step>
-      
+
                   <aw-wizard-step>
                     <ng-template awWizardStepSymbol>
                       <i class="fas fa-user-circle"></i>
@@ -254,7 +258,7 @@
                       </li>
                     </ul>
                   </aw-wizard-step>
-      
+
                   <aw-wizard-step>
                     <ng-template awWizardStepSymbol>
                       <i class="fas fa-check-circle"></i>
@@ -286,9 +290,9 @@
           <div class="col-md-12">
               <label for="validationCustom01">LIbellé de la catégorie</label>
               <input type="text" class="form-control">
-  
-  
-  
+
+
+
           </div>
         </div> -->
       </form>
@@ -298,4 +302,3 @@
       <button type="button" title="Enregistrer" class="btn btn-primary">Enregistrer</button>
     </div>
   </ng-template>
-  
