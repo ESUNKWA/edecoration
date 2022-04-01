@@ -17,9 +17,9 @@ export class LogistikComponent implements OnInit {
   userData: any;
   logistkTab: any = [];
   modalTitle: any = '';
-modeAppel: any = 'création';
-logistikData: FormGroup;
-ligneLogistik: any = {};
+  modeAppel: any = 'création';
+  logistikData: FormGroup;
+  ligneLogistik: any = {};
 
   constructor(private user: UserService, private logistkService: LogistikService, private modalService: NgbModal,
               private fb: FormBuilder, private notifications: NotifService) { 

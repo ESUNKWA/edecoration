@@ -1,6 +1,9 @@
 import { Component, OnInit, QueryList, SimpleChanges, ViewChildren } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { CommunesService } from 'src/app/core/services/communes/communes.service';
+import { LocationService } from 'src/app/core/services/location/location.service';
+import { LogistikService } from 'src/app/core/services/logistik/logistik.service';
 import { NotifService } from 'src/app/core/services/notif.service';
 import { TarificationsService } from 'src/app/core/services/tarifications/tarifications.service';
 import { UserService } from 'src/app/core/services/usersinfos/user.service';
@@ -19,55 +22,87 @@ userData: any;
 modalTitle: any = '';
 modeAppel: any = 'création';
 tarificationTab: any = [];
+produitsTab: any = [];
 viewTable: boolean = false;
   recapTab: any;
   totalLocation: any={};
   selectValue: any[];
   logistik: boolean;
-  selectedCity: any;
+  selectedCityarrive: any;
+  selectedCityDapart: any;
   remisepercent: any;
   remisemnt: any;
   remisenewmnt: any;
 
   locationData: FormGroup;
+  clientsData: FormGroup;
+  showLocationData: FormGroup;
+  valremise: any = 0;
+
+  CommunesTab: any = [];
+  logistkTab: any = [];
+  locationtab: any[];
+  interface: any = 'liste';
+  ligneLocation: any = {};
+  detailsLocationTab: any[];
+  dateEnvoie: any;
+  dateretour: any;
 
   constructor(private notifications: NotifService, private user: UserService, private modalService: NgbModal, private tarifService: TarificationsService,
-              private fb: FormBuilder) { }
+              private fb: FormBuilder, private communeService: CommunesService, private logistkService: LogistikService, private location: LocationService,
+              ) { }
 
   ngOnInit(): void {
 
     this.locationData = this.fb.group({
-      p_details: [],
-      p_nom: [],
-      p_prenoms: [],
-      p_telephone: [],
-      p_email: [],
-      p_description: [],
-      p_date_envoie: [],
-      p_date_retour: [],
-      p_commune_depart: [],
-      p_commune_arrive: [],
-      p_vehicule: [],
-      p_frais: [],
+      p_details: ['', [Validators.required]],
+      p_nom: ['', [Validators.required]],
+      p_prenoms: ['', [Validators.required]],
+      p_telephone: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(10)]],
+      p_email: [''],
+      p_description: [''],
+      p_date_envoie: ['',[Validators.required]],
+      p_date_retour: ['',[Validators.required]],
+      p_commune_depart: ['',[Validators.required]],
+      p_commune_arrive: ['',[Validators.required]],
+      p_vehicule: [''],
+      p_frais: [0],
+    });
+    this.showLocationData = this.fb.group({
+      p_details: ['', [Validators.required]],
+    
+      p_description: [''],
+      p_date_envoie: ['',[Validators.required]],
+      p_date_retour: ['',[Validators.required]],
+      p_commune_depart: ['',[Validators.required]],
+      p_commune_arrive: ['',[Validators.required]],
+      p_vehicule: [''],
+      p_frais: [0],
+    });
+    this.clientsData = this.fb.group({
+      p_nom: ['', [Validators.required]],
+      p_prenoms: ['', [Validators.required]],
+      p_telephone: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(10)]],
+      p_email: [''],
+      p_description: ['']
     });
 
     this.userData = this.user._donnesUtilisateur()[0];
     this.breadCrumbItems = [{ label: 'Eden décoration' }, { label: 'Liste des locations', active: true }];
+
     this.totalLocation.qteproduits = 0;
     this.totalLocation.mntTotal = 0;
     this.totalLocation.mewTotal = 0;
     
-    //this.selectValue = ['Alaska', 'Hawaii', 'California', 'Nevada', 'Oregon', 'Washington', 'Arizona', 'Colorado', 'Idaho', 'Montana', 'Nebraska', 'New Mexico', 'North Dakota', 'Utah', 'Wyoming', 'Alabama', 'Arkansas', 'Illinois', 'Iowa'];
-    this.selectValue = [
-      { value: 1, label: 'Abobo' },
-        { value: 2, label: 'Koumassi' },
-        { value: 3, label: 'Marcory'},
-        { value: 4, label: 'Yopougon'}
-    ];
-    this.selectedCity = this.selectValue[3];
-
+    this._liste_location();
     this._listProduits();
+    this._listCommunes();
+    this._listLogistik();
+    
+    //this.selectedCityDapart = this.CommunesTab[8];
   }
+
+  get formvalidate() { return this.locationData.controls;}
 
   //Calcul de la remise de la remise
   _calculateRemise(val, typeremise){
@@ -91,8 +126,10 @@ viewTable: boolean = false;
           this.remisemnt = 0;
           const valeur3 = parseInt(val, 10);
           this.totalLocation.mewTotal = valeur3;
+          this.valremise = this.totalLocation.mntTotal - valeur2;
           break;
       }
+      this.valremise = this.remisepercent || this.remisemnt || this.remisenewmnt;
   }
 
   _test(a){
@@ -134,6 +171,28 @@ viewTable: boolean = false;
     
   }
 
+  //Liste des communes
+  _listCommunes(): void {
+    this.communeService._getCommunes().subscribe(
+      (data: any) => {
+        this.CommunesTab = [...data._result];
+      },
+      (err) => {console.log(err.stack);
+      }
+    );
+  }
+
+  //Liste des véhicules
+  _listLogistik(): void {
+    this.logistkService._getlogistik().subscribe(
+      (data: any) => {
+        this.logistkTab = [...data._result];
+      },
+      (err) => {console.log(err.stack);
+      }
+    );
+  }
+
   //Cocher la ligne produit à sélectionner
   _changeValcheck(val,i){
     this.tarificationTab[i].check = val;
@@ -141,6 +200,7 @@ viewTable: boolean = false;
       this.tarificationTab[i].qte = 0;
       this.tarificationTab[i].total =  this.tarificationTab[i].qte*this.tarificationTab[i].r_prix_location;
     }
+    
     this.recapTab = this.tarificationTab.filter( el => el.qte >= 1);
 
   }
@@ -149,14 +209,94 @@ viewTable: boolean = false;
   _registerLocations(){
     this.locationData.value.p_details = this.recapTab;
     this.locationData.value.p_mnt_total = this.totalLocation.mntTotal;
+    this.locationData.value.p_remise = parseInt(this.valremise, 10);
+    this.locationData.value.p_mnt_total_remise = this.totalLocation.mewTotal;
+    this.locationData.value.p_vehicule = this.locationData.value.p_vehicule?.value;
+
+
+    this.locationData.value.p_commune_depart = this.selectedCityDapart?.value;
+    this.locationData.value.p_commune_arrive = this.selectedCityarrive?.value;
+    this.locationData.value.p_utilisateur = this.userData.r_i;
+
+    this.locationData.value.p_date_envoie = this.locationData.value.p_date_envoie.replace('T', ' ');
+    this.locationData.value.p_date_retour = this.locationData.value.p_date_retour.replace('T', ' ');
+
+    this.location._create(this.locationData.value,1).subscribe(
+      (data: any = {})=>{
+
+        if( data._status == 1){
+          this.notifications.sendMessage(data._result,'success');
+          this.locationData.reset();
+          
+        }
+        
+      },
+      (err)=>{console.log(err);
+      }
+    )
+
     console.log(this.locationData.value);
     
   }
 
+  _actionLocation(largeDataModal,ligneLocation){
+   
+    this.ligneLocation = {...ligneLocation};
+this.dateEnvoie = this.ligneLocation.r_date_envoie.replace(' ', 'T');
+this.dateretour = this.ligneLocation.r_date_retour.replace(' ', 'T');
+
+this.logistik = (this.ligneLocation.r_frais_transport == 0)? false: true;
+
+    this._listDetailLocationByidLocation(this.ligneLocation.r_i);
+    this._produits();
+    
+    this.largeModal(largeDataModal)
+  }
+
+  _liste_location() {
+    this.location._getLocation().subscribe(
+      (res: any)=>{
+        this.locationtab = [...res._result];
+        setTimeout(() => {
+          this.viewTable = true;
+        }, 500);
+      }
+    )
+  }
   _listProduits(): void {
     this.tarifService._getTarifications().subscribe(
       (data: any) => {
         this.tarificationTab = [...data._result];
+
+        setTimeout(() => {
+          this.viewTable = true;
+        }, 500);
+      },
+      (err) => {console.log(err.stack);
+      }
+    );
+  }
+
+  _produits(){
+    let obj;
+    this.tarificationTab.forEach((el)=>{
+        obj = {};
+        obj.value = el.idproduit;
+        obj.label = el.r_libelle;
+        obj.prixLocation = el.r_prix_location;
+        this.produitsTab.push(obj)
+    });
+    
+    console.log(this.tarificationTab);
+    console.log(this.produitsTab);
+    
+  }
+
+  _listDetailLocationByidLocation(idlocation: number): void {
+    this.location._getDetailLocationByid(idlocation).subscribe(
+      (data: any) => {
+        this.detailsLocationTab = [...data._result];
+        
         setTimeout(() => {
           this.viewTable = true;
         }, 500);
@@ -167,7 +307,12 @@ viewTable: boolean = false;
   }
 
   _saisie_location(largeDataModal){
-    this.largeModal(largeDataModal);
+    this.interface = 'saisie';
+    //this.largeModal(largeDataModal);
+  }
+  _affiche_location(){
+    this.interface = 'liste';
+    this._liste_location();
   }
 
   //Appel de la modal

@@ -36,7 +36,7 @@
                         <tbody>
                           <tr *ngFor="let logistik of logistkTab ; let i = index">
                             <td style="width:25%" >{{logistik.r_matricule }}</td>
-                            <td style="width:50%" >{{logistik.r_vehicule}}</td>
+                            <td style="width:50%" >{{logistik.label}}</td>
                             <td style="width:10%" >{{logistik.r_status}}</td>
                             <td style="width:15%">
                               <button type="button" class="btn btn-primary" (click)="_action(logistik,largeDataModal)" ><i class="fas fa-edit"></i></button>
