@@ -47,6 +47,22 @@ viewTable: boolean = false;
   detailsLocationTab: any[];
   dateEnvoie: any;
   dateretour: any;
+  selectDemandeStat: any;
+
+  demandeStat: any = [
+    {
+      value: 0,
+      label: 'Demande de locations en cours'
+    },
+    {
+      value: 1,
+      label: 'Demandes de locations validés'
+    },
+    {
+      value: 2,
+      label: 'Demande de locations annulée'
+    }
+  ];
 
   constructor(private notifications: NotifService, private user: UserService, private modalService: NgbModal, private tarifService: TarificationsService,
               private fb: FormBuilder, private communeService: CommunesService, private logistkService: LogistikService, private location: LocationService,
@@ -70,7 +86,7 @@ viewTable: boolean = false;
     });
     this.showLocationData = this.fb.group({
       p_details: ['', [Validators.required]],
-    
+
       p_description: [''],
       p_date_envoie: ['',[Validators.required]],
       p_date_retour: ['',[Validators.required]],
@@ -93,12 +109,11 @@ viewTable: boolean = false;
     this.totalLocation.qteproduits = 0;
     this.totalLocation.mntTotal = 0;
     this.totalLocation.mewTotal = 0;
-    
-    this._liste_location();
+
     this._listProduits();
     this._listCommunes();
     this._listLogistik();
-    
+
     //this.selectedCityDapart = this.CommunesTab[8];
   }
 
@@ -108,6 +123,7 @@ viewTable: boolean = false;
   _calculateRemise(val, typeremise){
       switch (typeremise) {
         case 'percent':
+          console.log(this.remisepercent)
           this.remisemnt = 0;
           this.remisenewmnt = 0;
           const valeur1 = parseInt(val, 10) * (1/100);
@@ -130,11 +146,8 @@ viewTable: boolean = false;
           break;
       }
       this.valremise = this.remisepercent || this.remisemnt || this.remisenewmnt;
-  }
+      console.log(this.valremise)
 
-  _test(a){
-    console.log(a);
-    
   }
 
   _gestionLogistik(val: boolean): void {
@@ -147,7 +160,7 @@ viewTable: boolean = false;
     //Modification de la ligne en cours
     this.tarificationTab[i].qte = parseInt(val, 10);
     this.tarificationTab[i].total =  this.tarificationTab[i].qte*this.tarificationTab[i].r_prix_location;
-    
+
     this.recapTab = this.tarificationTab.filter( el => el.qte >= 1);
 
     //Calcul de la somme total et du nombre total de produits de la location
@@ -155,11 +168,11 @@ viewTable: boolean = false;
       case 1:
         this.totalLocation.mntTotal = this.tarificationTab[i].total;
         this.totalLocation.qteproduits = this.tarificationTab[i].qte;
-        
+
         break;
-    
+
       default:
-        
+
         //const a = this.recapTab.reduce((a, b) => ({total: a.total + b.total}));
         const a = this.recapTab.reduce(function (acc, obj) { return acc + obj.total; }, 0);
         const b = this.recapTab.reduce(function (acc, obj) { return acc + obj.qte; }, 0);
@@ -168,7 +181,7 @@ viewTable: boolean = false;
         this.totalLocation.qteproduits = b;
         break;
     }
-    
+
   }
 
   //Liste des communes
@@ -200,7 +213,7 @@ viewTable: boolean = false;
       this.tarificationTab[i].qte = 0;
       this.tarificationTab[i].total =  this.tarificationTab[i].qte*this.tarificationTab[i].r_prix_location;
     }
-    
+
     this.recapTab = this.tarificationTab.filter( el => el.qte >= 1);
 
   }
@@ -227,34 +240,35 @@ viewTable: boolean = false;
         if( data._status == 1){
           this.notifications.sendMessage(data._result,'success');
           this.locationData.reset();
-          
+
         }
-        
+
       },
       (err)=>{console.log(err);
       }
     )
 
     console.log(this.locationData.value);
-    
+
   }
 
   _actionLocation(largeDataModal,ligneLocation){
-   
-    this.ligneLocation = {...ligneLocation};
-this.dateEnvoie = this.ligneLocation.r_date_envoie.replace(' ', 'T');
-this.dateretour = this.ligneLocation.r_date_retour.replace(' ', 'T');
 
-this.logistik = (this.ligneLocation.r_frais_transport == 0)? false: true;
+    this.ligneLocation = {...ligneLocation};
+    this.modalTitle = `Demande de location N [ ${this.ligneLocation.r_num} ]`;
+    this.dateEnvoie = this.ligneLocation.r_date_envoie.replace(' ', 'T');
+    this.dateretour = this.ligneLocation.r_date_retour.replace(' ', 'T');
+
+    this.logistik = (this.ligneLocation.r_frais_transport == 0)? false: true;
 
     this._listDetailLocationByidLocation(this.ligneLocation.r_i);
     this._produits();
-    
+
     this.largeModal(largeDataModal)
   }
 
   _liste_location() {
-    this.location._getLocation().subscribe(
+    this.location._getLocation(this.selectDemandeStat.value).subscribe(
       (res: any)=>{
         this.locationtab = [...res._result];
         setTimeout(() => {
@@ -286,17 +300,14 @@ this.logistik = (this.ligneLocation.r_frais_transport == 0)? false: true;
         obj.prixLocation = el.r_prix_location;
         this.produitsTab.push(obj)
     });
-    
-    console.log(this.tarificationTab);
-    console.log(this.produitsTab);
-    
+
   }
 
   _listDetailLocationByidLocation(idlocation: number): void {
     this.location._getDetailLocationByid(idlocation).subscribe(
       (data: any) => {
         this.detailsLocationTab = [...data._result];
-        
+
         setTimeout(() => {
           this.viewTable = true;
         }, 500);

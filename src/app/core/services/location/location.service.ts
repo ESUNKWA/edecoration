@@ -18,8 +18,8 @@ export class LocationService {
     return this.http.post(`${this.env.backendServer}/location/${mode}`, data).pipe(catchError(this.error));
   }
 
-  _getLocation(){
-    return this.http.get(`${this.env.backendServer}/location`);
+  _getLocation(status){
+    return this.http.get(`${this.env.backendServer}/location/${status}`);
   }
   _getDetailLocationByid(idlocation: number): Observable<any> {
     return this.http.get(`${this.env.backendServer}/detailslocation/${idlocation}`);
