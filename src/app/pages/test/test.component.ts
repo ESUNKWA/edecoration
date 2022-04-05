@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import * as moment from 'moment'; 
 
 @Component({
   selector: 'app-test',
@@ -22,6 +23,9 @@ export class TestComponent implements OnInit {
       col: 'Contact'
     }
   ]; //
+
+  a = moment([2022,4,7]);
+  b = moment([2022,4,1]);
 
   constructor() { }
 
@@ -55,6 +59,12 @@ export class TestComponent implements OnInit {
         status:"Actif"
       }
     ];
+    let now1 = moment("2022-04-04T16:52", "YYYYMMDD");
+
+     // 1
+    
+    console.log(this.a.diff(this.b, 'days'));
+    
   }
 
 }

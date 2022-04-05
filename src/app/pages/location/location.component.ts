@@ -8,6 +8,7 @@ import { NotifService } from 'src/app/core/services/notif.service';
 import { TarificationsService } from 'src/app/core/services/tarifications/tarifications.service';
 import { UserService } from 'src/app/core/services/usersinfos/user.service';
 import { AdvancedSortableDirective } from '../tables/advancedtable/advanced-sortable.directive';
+import * as moment from 'moment'; 
 
 @Component({
   selector: 'app-location',
@@ -41,7 +42,7 @@ viewTable: boolean = false;
 
   CommunesTab: any = [];
   logistkTab: any = [];
-  locationtab: any[];
+  locationtab: any = [];
   interface: any = 'liste';
   ligneLocation: any = {};
   detailsLocationTab: any[];
@@ -50,6 +51,10 @@ viewTable: boolean = false;
   selectDemandeStat: any;
 
   demandeStat: any = [
+    {
+      value: -1,
+      label: '---Sélectionner---'
+    },
     {
       value: 0,
       label: 'Demande de locations en cours'
@@ -63,12 +68,21 @@ viewTable: boolean = false;
       label: 'Demande de locations annulée'
     }
   ];
+  searchData: FormGroup;
+  submit: boolean = false;
+
+  cboDefaultValue: any;
+  selectedVehicule: any;
+  majStatusData: any = {};
+  dateData: any = {};
+  nbreJrLocation: any = 1;
 
   constructor(private notifications: NotifService, private user: UserService, private modalService: NgbModal, private tarifService: TarificationsService,
-              private fb: FormBuilder, private communeService: CommunesService, private logistkService: LogistikService, private location: LocationService,
-              ) { }
+              private fb: FormBuilder, private communeService: CommunesService, private logistkService: LogistikService, private location: LocationService,) { }
 
   ngOnInit(): void {
+    //this.cboDefaultValue,this.searchData.value.p_date.split('T')[0]
+    this.cboDefaultValue = -1;
 
     this.locationData = this.fb.group({
       p_details: ['', [Validators.required]],
@@ -102,6 +116,10 @@ viewTable: boolean = false;
       p_email: [''],
       p_description: ['']
     });
+    this.searchData = this.fb.group({
+      p_date: ['', [Validators.required]],
+      p_status: ['', [Validators.required]]
+    });
 
     this.userData = this.user._donnesUtilisateur()[0];
     this.breadCrumbItems = [{ label: 'Eden décoration' }, { label: 'Liste des locations', active: true }];
@@ -113,11 +131,12 @@ viewTable: boolean = false;
     this._listProduits();
     this._listCommunes();
     this._listLogistik();
-
+  
     //this.selectedCityDapart = this.CommunesTab[8];
   }
 
   get formvalidate() { return this.locationData.controls;}
+  get searchValidate() { return this.searchData.controls;}
 
   //Calcul de la remise de la remise
   _calculateRemise(val, typeremise){
@@ -127,14 +146,14 @@ viewTable: boolean = false;
           this.remisemnt = 0;
           this.remisenewmnt = 0;
           const valeur1 = parseInt(val, 10) * (1/100);
-          this.totalLocation.mewTotal = this.totalLocation.mntTotal - (this.totalLocation.mntTotal * valeur1);
+          this.totalLocation.mewTotal = (this.totalLocation.mntTotal - (this.totalLocation.mntTotal * valeur1)) * this.nbreJrLocation;
           break;
 
         case 'mntfixe':
           this.remisepercent = 0;
           this.remisenewmnt = 0;
           const valeur2 = parseInt(val, 10);
-          this.totalLocation.mewTotal = this.totalLocation.mntTotal - valeur2;
+          this.totalLocation.mewTotal = (this.totalLocation.mntTotal - valeur2) * this.nbreJrLocation;
           break;
 
         case 'newmnt':
@@ -142,7 +161,7 @@ viewTable: boolean = false;
           this.remisemnt = 0;
           const valeur3 = parseInt(val, 10);
           this.totalLocation.mewTotal = valeur3;
-          this.valremise = this.totalLocation.mntTotal - valeur2;
+          this.valremise = (this.totalLocation.mntTotal - valeur2) * this.nbreJrLocation;
           break;
       }
       this.valremise = this.remisepercent || this.remisemnt || this.remisenewmnt;
@@ -258,6 +277,10 @@ viewTable: boolean = false;
     this.modalTitle = `Demande de location N [ ${this.ligneLocation.r_num} ]`;
     this.dateEnvoie = this.ligneLocation.r_date_envoie.replace(' ', 'T');
     this.dateretour = this.ligneLocation.r_date_retour.replace(' ', 'T');
+    this.selectedCityarrive = this.ligneLocation.r_destination;
+    this.selectedCityDapart = 12;
+    this.selectedVehicule = this.ligneLocation.r_logistik;
+
 
     this.logistik = (this.ligneLocation.r_frais_transport == 0)? false: true;
 
@@ -267,8 +290,19 @@ viewTable: boolean = false;
     this.largeModal(largeDataModal)
   }
 
-  _liste_location() {
-    this.location._getLocation(this.selectDemandeStat.value).subscribe(
+  _search_location(statusLocation, dateLivraison) {
+     
+    this.submit = true;
+    this.viewTable = false;
+
+    if (this.searchData.invalid) {
+      this.viewTable = true;
+      return;
+    }
+
+    
+    //this.location._getLocations(this.cboDefaultValue,this.searchData.value.p_date.split('T')[0]).subscribe(
+    this.location._getLocations(statusLocation,dateLivraison).subscribe(
       (res: any)=>{
         this.locationtab = [...res._result];
         setTimeout(() => {
@@ -277,6 +311,12 @@ viewTable: boolean = false;
       }
     )
   }
+
+  _exe_search_location(){
+    this._search_location(this.cboDefaultValue,this.searchData.value.p_date.split('T')[0]);
+  }
+
+
   _listProduits(): void {
     this.tarifService._getTarifications().subscribe(
       (data: any) => {
@@ -307,7 +347,6 @@ viewTable: boolean = false;
     this.location._getDetailLocationByid(idlocation).subscribe(
       (data: any) => {
         this.detailsLocationTab = [...data._result];
-
         setTimeout(() => {
           this.viewTable = true;
         }, 500);
@@ -317,13 +356,59 @@ viewTable: boolean = false;
     );
   }
 
-  _saisie_location(largeDataModal){
+  _saisie_location(){
     this.interface = 'saisie';
-    //this.largeModal(largeDataModal);
+    this.selectedCityDapart = '';
+    this.selectedCityarrive = '';
   }
   _affiche_location(){
     this.interface = 'liste';
-    this._liste_location();
+    this._search_location(this.cboDefaultValue,this.searchData.value.p_date.split('T')[0]);
+    
+  }
+
+  _majStatuslocation(data){
+    this.majStatusData.p_idlocation = parseInt(this.ligneLocation.r_i, 10);
+    this.majStatusData.p_status = data;
+   
+    this.location._majStatusLocation(this.majStatusData).subscribe(
+      (response: any) => {
+        
+        if( response._status == 1 ){
+
+          switch(this.majStatusData.p_status) {
+          
+            case 0:
+              this.notifications.sendMessage('La demande de location à été rejetté','warning');
+              break;
+              
+            case 1:
+              this.notifications.sendMessage('La demande de location à bien été validée','success');
+              break;
+  
+          }
+          this._search_location(this.cboDefaultValue,this.searchData.value.p_date.split('T')[0]);
+          
+        }
+        
+      },
+      (err) => {console.log(err.stack)}
+    )
+  }
+
+  _getdatedebut(){
+    const a = this.locationData.value.p_date_envoie.split('T')[0];
+    this.dateData.debut = [...a.split('-')]; 
+  }
+
+  _getdatefin(){
+    const a = this.locationData.value.p_date_retour.split('T')[0];
+    this.dateData.fin = [...a.split('-')]; 
+
+    let c = moment(this.dateData.fin);
+    let d = moment(this.dateData.debut);
+    this.nbreJrLocation = c.diff(d, 'days');
+    this.totalLocation.mewTotal = this.totalLocation.mntTotal * this.nbreJrLocation;
   }
 
   //Appel de la modal

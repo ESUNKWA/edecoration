@@ -10,53 +10,103 @@
             <div class="card-body">
 
               <div class="row mb-2">
-                <div class="col-md-6" >
-                  <label class="col-form-label">Type de demande de location</label>
-                  <ng-select [items]="demandeStat" [(ngModel)]="selectDemandeStat" ></ng-select>
-                </div>
-                <div class="col-md-2 ">
-                  <button type="button" class="btn btn-primary" title="Saisir un nouvelle catégorie de produits" (click)="_liste_location()">Recherche</button>
-                </div>
-                <div class="col-md-4 ">
-                  <button style="float: right;" type="button" class="btn btn-primary nouveau" title="Saisir un nouvelle catégorie de produits" (click)="_saisie_location(largeDataModal)">Nouveau</button>
-                </div>
+                  <div class="col-md-9">
+                    <form [formGroup]="searchData">
+                      <div class="row">
+                        <div class="col-md-3">
+                          <label class="col-form-label">Type de demande de location</label>
+                          <ng-select [items]="demandeStat" [(ngModel)]="cboDefaultValue" bindLabel = "label" bindValue = "value" formControlName="p_status" ></ng-select>
+                          <div *ngIf="submit == true && searchValidate.p_status?.invalid" class="text-danger">
+                            <div *ngIf="searchValidate.p_status.errors.required">Veuillez selectionnez le status de la location.</div>
+                          </div>
+                        </div>
+                        <div class="col-md-3">
+                          <label class="col-form-label">Date de livraison</label>
+                          <input class="form-control" type="datetime-local" formControlName="p_date" value="2019-08-19"
+                                      id="example-datetime-local-input">
+                            <div *ngIf="submit == true && searchValidate.p_date.invalid" class="text-danger">
+                                  <div *ngIf="searchValidate.p_date.errors.required">Veuillez selectionnez le date de livraison.</div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-3 ">
+                          <br><br>
+                          <button type="button" class="btn btn-primary" title="Saisir un nouvelle catégorie de produits" (click)="_exe_search_location()"><i class="fas fa-search"></i></button>
+                        </div>
+                      </div>
+                    </form>
+                  </div>
+                  <div class="col-md-3 ">
+                    <button style="float: right;" type="button" class="btn btn-primary nouveau" title="Saisir un nouvelle catégorie de produits" (click)="_saisie_location()">Nouveau</button>
+                  </div>
               </div>
 
 
 
-              <div class="table-responsive">
-                <table class="table mb-0 table-striped" >
-                  <thead class="bg-dark text-white">
-                    <tr>
-                      <th style="width:15%" >Client</th>
-                      <th style="width:10%" >Téléphone</th>
-                      <th style="width:10%;">N° Location</th>
-                      <th style="width:10%" >total</th>
-                      <th style="width:5%" >Remise</th>
-                      <th style="width:10%" >total remise</th>
-                      <th style="width:15%" >Date de retour</th>
-                      <th style="width:15%" >Destination</th>
-                      <th style="width:10%" >Action</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr *ngFor="let location of locationtab ; let i = index">
-                      <td style="width:15%" >{{location.r_nom + ' ' + location.r_prenoms}}</td>
-                      <td style="width:10%" >{{location.r_telephone}}</td>
-                      <td style="width:10%" >{{location.r_num}}</td>
-                      <td style="width:10%" >{{location.r_mnt_total | mask: 'separator':' '}}</td>
-                      <td style="width:5%" >{{location.r_remise}}</td>
-                      <td style="width:10%" >{{location.r_mnt_total_remise | mask: 'separator':' '}}</td>
-                      <td style="width:15%" >{{location.r_date_retour | date: 'dd-MM-YYYY à hh:mm:ss'}}</td>
-                      <td style="width:15%" >{{location.r_libelle}}</td>
-                      <td style="width:10%">
-                        <button type="button" class="btn btn-primary" title="Modification" (click)="_actionLocation(largeDataModal, location)" ><i class="fas fa-edit"></i></button>&nbsp;
-                        <button type="button" class="btn btn-warning" title="Tarification" (click)="_actionLocation(largeDataModal, location)" ><i class="fas fa-bars"></i></button>&nbsp;
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
+              <ng-template [ngIf]="viewTable == false" >
+                <app-spinner></app-spinner>
+              </ng-template>
+                
+              <ng-template [ngIf]="viewTable == true" >
+
+                <div class="row" *ngIf="locationtab.length == 0">
+                  <div class="col-lg-12">
+                    <div class="border p-3 rounded mt-4 text-center">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="avatar-xs me-3">
+                                <span
+                                    class="avatar-title rounded-circle bg-warning bg-soft text-warning font-size-18">
+                                    <i class="mdi mdi-bitcoin"></i>
+                                </span>
+                            </div>
+                            <h5 class="font-size-14 mb-0">Aucune données</h5>
+                        </div>
+                    </div>
+                </div>
+                </div>
+
+                <div class="table-responsive" *ngIf="locationtab.length >= 1" >
+                  <table class="table mb-0 table-striped" >
+                    <thead class="bg-dark text-white">
+                      <tr>
+                        <th style="width:8%;">N° Location</th>
+                        <th style="width:15%" >Client</th>
+                        <!-- <th style="width:12%" >Téléphone</th> -->
+          
+                        <th style="width:10%" >total</th>
+                        <th style="width:5%" >Remise</th>
+                        <th style="width:10%" >total remise</th>
+                        <th style="width:10%" >Date de livraison</th>
+                        <th style="width:10%" >Date de retour</th>
+                        <th style="width:10%" >Destination</th>
+                        <th style="width:5%" >Status</th>
+                        <th style="width:10%" >Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let location of locationtab ; let i = index">
+                        <td style="width:8%" >{{location.r_num}}</td>
+                        <td style="width:15%" >{{location.r_nom + ' ' + location.r_prenoms}}</td>
+                        <!-- <td style="width:12%" >{{location.r_telephone | mask: "(000) 00-00-00-00-00"}}</td> -->
+                        
+                        <td style="width:10%" >{{location.r_mnt_total | mask: 'separator':' '}}</td>
+                        <td style="width:5%" >{{location.r_remise}}</td>
+                        <td style="width:10%" >{{location.r_mnt_total_remise | mask: 'separator':' '}}</td>
+                        <td style="width:10%" >{{location.r_date_envoie | date: 'dd-MM-YYYY à hh:mm:ss'}}</td>
+                        <td style="width:10%" >{{location.r_date_retour | date: 'dd-MM-YYYY à hh:mm:ss'}}</td>
+                        <td style="width:10%" >{{location.r_libelle}}</td>
+                        <td style="width:5%" *ngIf="location.r_status==0" ><span class="badge badge-pill badge-soft-warning font-size-12">En attente de validation</span></td>
+                        <td style="width:5%" *ngIf="location.r_status==1" ><span class="badge badge-pill badge-soft-success font-size-12">Validée</span></td>
+                        <td style="width:5%" *ngIf="location.r_status==2"><span class="badge badge-pill badge-soft-danger font-size-12">Annulée</span></td>
+                        <td style="width:10%">
+                          <button type="button" class="btn btn-primary" title="Modification" (click)="_actionLocation(largeDataModal, location)" ><i class="fas fa-edit"></i></button>&nbsp;
+                          <button type="button" class="btn btn-warning" title="Tarification" (click)="_actionLocation(largeDataModal, location)" ><i class="fas fa-bars"></i></button>&nbsp;
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </ng-template>
 
             </div>
           </div>
@@ -201,7 +251,7 @@
                               <label class="col-md-4 col-form-label">Date de livraison</label>
                               <div class="col-md-8">
                                 <input class="form-control" type="datetime-local" formControlName="p_date_envoie" value="2019-08-19T13:45:00"
-                                          id="example-datetime-local-input">
+                                          id="example-datetime-local-input" (change)="_getdatedebut()">
                                 <div *ngIf="formvalidate.p_date_envoie.touched && formvalidate.p_date_envoie.invalid" class="text-danger">
                                       <div *ngIf="formvalidate.p_date_envoie.errors.required">Veuillez selectionnez le date de livraison.</div>
                                 </div>
@@ -213,7 +263,7 @@
                               <label class="col-md-4 col-form-label">Date de retour</label>
                               <div class="col-md-8">
                                 <input class="form-control" type="datetime-local" formControlName="p_date_retour" value="2019-08-19T13:45:00"
-                                          id="example-datetime-local-input">
+                                          id="example-datetime-local-input" (change)="_getdatefin()">
                                 <div *ngIf="formvalidate.p_date_retour.touched && formvalidate.p_date_retour.invalid" class="text-danger">
                                     <div *ngIf="formvalidate.p_date_retour.errors.required">Veuillez selectionnez le date de retour des produits.</div>
                                 </div>
@@ -350,8 +400,8 @@
                       <span class="text-muted mb-0">{{prd.qte}} x {{prd.r_prix_location}} = {{prd.total}}</span>
                       <hr>
                     </div>
-                    <h5 class="card-title mb-4">Nombre de jours : <span class="text-danger" ><strong>{{totalLocation.mntTotal | mask: 'separator':' '}}</strong></span></h5>
-                    <h5 class="card-title mb-4">Total : <span class="text-danger" ><strong>{{totalLocation.mntTotal | mask: 'separator':' '}}</strong></span></h5>
+                    <h5 class="card-title mb-4">Nombre de jours : <span class="text-danger" ><strong>{{nbreJrLocation | mask: 'separator':' '}}</strong></span></h5>
+                    <h5 class="card-title mb-4">Total : <span class="text-danger" ><strong>{{totalLocation.mntTotal | mask: 'separator':' '}} x {{ nbreJrLocation }} = {{(totalLocation.mntTotal * nbreJrLocation) | mask: 'separator':' '}}</strong></span></h5>
                     <h5 class="card-title mb-4">Nouveau Total : <span class="text-danger" ><strong>{{totalLocation.mewTotal | mask: 'separator':' '}}</strong></span></h5>
 
 
@@ -428,6 +478,16 @@
 
               </ul>
               <div [ngbNavOutlet]="customNav"></div>
+              <div class="row mb-3" >
+                <div class="col" *ngIf="cboDefaultValue == 0" >
+                  <button type="button" class="btn btn-success btn-label waves-light btn-block" (click)="_majStatuslocation(1)" ><i
+                    class="bx bx-check-double label-icon"></i> Valider la commande</button>
+                </div>
+                <div class="col" *ngIf="cboDefaultValue == 1">
+                  <button type="button" class="btn btn-danger btn-label waves-light" (click)="_majStatuslocation(0)"><i
+                    class="bx bx-block label-icon "></i> Annulée la commande</button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -480,13 +540,13 @@
           <div class="row mb-3">
             <label class="col-md-3 col-form-label">Adresse email</label>
             <div class="col-md-9">
-              <input class="form-control" name="email" type="email" formControlName="p_email" [(ngModel)]="ligneLocation.r_nom" placeholder="">
+              <input class="form-control" name="email" type="email" formControlName="p_email" [(ngModel)]="ligneLocation.r_email" placeholder="">
             </div>
           </div>
           <div class="row mb-3">
             <label class="col-md-3 col-form-label">Description</label>
             <div class="col-md-9">
-              <textarea class="form-control" formControlName="p_description" [(ngModel)]="ligneLocation.r_nom"></textarea>
+              <textarea class="form-control" formControlName="p_description" [(ngModel)]="ligneLocation.r_description"></textarea>
             </div>
           </div>
         </div>
@@ -500,6 +560,8 @@
     <!-- Table -->
     <!-- End search -->
     <table class="table mb-0 table-striped" >
+      <caption>Liste des produits</caption>
+
       <thead class="bg-dark text-white">
         <tr>
           <th style="width:35%" >Produit</th>
@@ -511,9 +573,14 @@
       </thead>
       <tbody>
         <tr *ngFor="let produit of detailsLocationTab ; let i = index">
-          <td style="width:35%" ><ng-select [items]="produitsTab"  bindValue="1"></ng-select>
+          <td style="width:35%" >
+            <ng-select [items]="produitsTab"
+            bindLabel = "label"
+            bindValue = "value"
+            [(ngModel)]="produit.r_produit" >
+          </ng-select></td>
           <td style="width:15%" ><input class="form-control" name="prenoms" type="number" [(ngModel)]="produit.r_quantite" placeholder=""></td>
-          <td style="width:10%" >{{produit.r_prix_unitaire}}</td>
+          <td style="width:10%" >{{produit.r_prix_location}}</td>
           <td style="width:10%" >{{produit.r_sous_total}}</td>
           <td style="width:20%">
             <button type="button" class="btn btn-primary" title="Modification" ><i class="fas fa-edit"></i></button>
@@ -522,7 +589,7 @@
       </tbody>
     </table>
 
-    <div class="clearfix" >&nbsp;</div>
+    <div class="clearfix" >&nbsp;&nbsp;</div>
 
     <form [formGroup]="showLocationData" class="needs-validation">
       <div class="row">
@@ -557,7 +624,11 @@
           <div class="row mb-3">
             <label class="col-md-4 col-form-label">Commune depart</label>
             <div class="col-md-8">
-              <ng-select [items]="CommunesTab" formControlName="p_commune_depart" [(ngModel)]="selectedCityDapart" ></ng-select>
+              <ng-select  [items]="CommunesTab" 
+                          formControlName="p_commune_depart" 
+                          [(ngModel)]="selectedCityDapart" 
+                          bindLabel = "label"
+                          bindValue = "value"></ng-select>
               <div *ngIf="formvalidate.p_commune_depart.touched && formvalidate.p_commune_depart.invalid" class="text-danger">
                 <div *ngIf="formvalidate.p_commune_depart.errors.required">Veuillez selectionnez votre localité.</div>
               </div>
@@ -568,7 +639,11 @@
           <div class="row mb-3">
             <label class="col-md-4 col-form-label">Destination</label>
             <div class="col-md-8">
-              <ng-select [items]="CommunesTab" formControlName="p_commune_arrive" [(ngModel)]="selectedCityarrive" ></ng-select>
+              <ng-select [items]="CommunesTab" 
+                          formControlName="p_commune_arrive" 
+                          [(ngModel)]="selectedCityarrive"
+                          bindLabel = "label"
+                          bindValue = "value" ></ng-select>
               <div *ngIf="formvalidate.p_commune_arrive.touched && formvalidate.p_commune_arrive.invalid" class="text-danger">
                 <div *ngIf="formvalidate.p_commune_arrive.errors.required">Veuillez selectionnez la commune de destination.</div>
               </div>
@@ -598,7 +673,11 @@
             <div class="row mb-3">
               <label class="col-md-4 col-form-label">Véhicule</label>
               <div class="col-md-8">
-                <ng-select [items]="logistkTab" formControlName="p_vehicule"  ></ng-select>
+                <ng-select [items]="logistkTab"
+                          [(ngModel)]="selectedVehicule"
+                          bindLabel = "label"
+                          bindValue = "value"
+                          formControlName="p_vehicule"></ng-select>
               </div>
             </div>
           </div>
@@ -615,7 +694,6 @@
         </div>
 
       </fieldset>
-
     </form>
 
   </ng-template>

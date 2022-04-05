@@ -18,12 +18,18 @@ export class LocationService {
     return this.http.post(`${this.env.backendServer}/location/${mode}`, data).pipe(catchError(this.error));
   }
 
-  _getLocation(status){
-    return this.http.get(`${this.env.backendServer}/location/${status}`);
+  _getLocations(status, p_date){
+    return this.http.get(`${this.env.backendServer}/location/${status}/${p_date}`);
   }
+
+  _majStatusLocation(data: any): Observable<any>{
+    return this.http.post(`${this.env.backendServer}/updatestatlocation`, data).pipe(catchError(this.error));
+  }
+
   _getDetailLocationByid(idlocation: number): Observable<any> {
     return this.http.get(`${this.env.backendServer}/detailslocation/${idlocation}`);
   }
+
   _update(data: any, id: number): Observable<any>{
     return this.http.put(`${this.env.backendServer}/location/${id}`, data).pipe(catchError(this.error));
   }

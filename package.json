@@ -51,6 +51,7 @@
     "firebase": "^8.6.8",
     "jquery": "^3.6.0",
     "metismenujs": "^1.2.1",
+    "moment": "^2.29.2",
     "ng-apexcharts": "^1.5.12",
     "ng-chartist": "^4.1.0",
     "ng-click-outside": "^8.0.0",
