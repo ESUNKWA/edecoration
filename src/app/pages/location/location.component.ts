@@ -50,6 +50,8 @@ viewTable: boolean = false;
   dateretour: any;
   selectDemandeStat: any;
 
+  libDatedete: any = 'Date de livraison';
+
   demandeStat: any = [
     {
       value: -1,
@@ -57,15 +59,19 @@ viewTable: boolean = false;
     },
     {
       value: 0,
-      label: 'Demande de locations en cours'
+      label: 'Locations en attente de validation'
     },
     {
       value: 1,
-      label: 'Demandes de locations validés'
+      label: 'Locations validée et en cours'
     },
     {
       value: 2,
-      label: 'Demande de locations annulée'
+      label: 'Locations terminée'
+    },
+    {
+      value: 3,
+      label: 'Locations annulée'
     }
   ];
   searchData: FormGroup;
@@ -76,6 +82,7 @@ viewTable: boolean = false;
   majStatusData: any = {};
   dateData: any = {};
   nbreJrLocation: any = 1;
+  modeDate: number;
 
   constructor(private notifications: NotifService, private user: UserService, private modalService: NgbModal, private tarifService: TarificationsService,
               private fb: FormBuilder, private communeService: CommunesService, private logistkService: LogistikService, private location: LocationService,) { }
@@ -118,6 +125,7 @@ viewTable: boolean = false;
     });
     this.searchData = this.fb.group({
       p_date: ['', [Validators.required]],
+      p_date_retour: ['', [Validators.required]],
       p_status: ['', [Validators.required]]
     });
 
@@ -137,6 +145,33 @@ viewTable: boolean = false;
 
   get formvalidate() { return this.locationData.controls;}
   get searchValidate() { return this.searchData.controls;}
+
+
+  _dateOption(option){
+
+    switch (option) {
+
+      case 'option1':
+          this.libDatedete = 'Date de livraison';
+           this.modeDate = 1;
+        break;
+
+      case 'option2':
+          this.libDatedete = 'Date de retour';
+          this.modeDate = 2;
+         break;
+
+      case 'option3':
+            this.libDatedete = 'Date de livraison';
+            this.modeDate = 3;
+          break;
+    
+      default:
+        break;
+    }
+    
+    
+  }
 
   //Calcul de la remise de la remise
   _calculateRemise(val, typeremise){
@@ -290,7 +325,7 @@ viewTable: boolean = false;
     this.largeModal(largeDataModal)
   }
 
-  _search_location(statusLocation, dateLivraison) {
+  _search_location(statusLocation, dateLivraison, modeDate) {
      
     this.submit = true;
     this.viewTable = false;
@@ -302,7 +337,7 @@ viewTable: boolean = false;
 
     
     //this.location._getLocations(this.cboDefaultValue,this.searchData.value.p_date.split('T')[0]).subscribe(
-    this.location._getLocations(statusLocation,dateLivraison).subscribe(
+    this.location._getLocations(statusLocation,dateLivraison, modeDate).subscribe(
       (res: any)=>{
         this.locationtab = [...res._result];
         setTimeout(() => {
@@ -313,7 +348,7 @@ viewTable: boolean = false;
   }
 
   _exe_search_location(){
-    this._search_location(this.cboDefaultValue,this.searchData.value.p_date.split('T')[0]);
+    this._search_location(this.cboDefaultValue,this.searchData.value.p_date.split('T')[0],this.modeDate);
   }
 
 
@@ -363,7 +398,7 @@ viewTable: boolean = false;
   }
   _affiche_location(){
     this.interface = 'liste';
-    this._search_location(this.cboDefaultValue,this.searchData.value.p_date.split('T')[0]);
+    this._search_location(this.cboDefaultValue,this.searchData.value.p_date.split('T')[0],this.modeDate);
     
   }
 
@@ -387,7 +422,7 @@ viewTable: boolean = false;
               break;
   
           }
-          this._search_location(this.cboDefaultValue,this.searchData.value.p_date.split('T')[0]);
+          this._search_location(this.cboDefaultValue,this.searchData.value.p_date.split('T')[0],this.modeDate);
           
         }
         

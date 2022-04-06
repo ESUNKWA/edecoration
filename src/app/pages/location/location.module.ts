@@ -8,6 +8,9 @@ import { NgxMaskModule } from "ngx-mask";
 import { UIModule } from "src/app/shared/ui/ui.module";
 import { LocationRoutingModule } from "./location-routing.module";
 import { LocationComponent } from "./location.component";
+import { NgxDocViewerModule } from 'ngx-doc-viewer';
+
+
 
 @NgModule({
     declarations: [LocationComponent],
@@ -22,7 +25,8 @@ import { LocationComponent } from "./location.component";
         NgbDatepickerModule,
         NgSelectModule,
         NgbAccordionModule,
-        NgbNavModule
+        NgbNavModule,
+        NgxDocViewerModule
     ]
 })
 
