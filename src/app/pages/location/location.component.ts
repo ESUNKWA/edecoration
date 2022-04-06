@@ -142,7 +142,6 @@ viewTable: boolean = false;
   _calculateRemise(val, typeremise){
       switch (typeremise) {
         case 'percent':
-          console.log(this.remisepercent)
           this.remisemnt = 0;
           this.remisenewmnt = 0;
           const valeur1 = parseInt(val, 10) * (1/100);
@@ -153,7 +152,7 @@ viewTable: boolean = false;
           this.remisepercent = 0;
           this.remisenewmnt = 0;
           const valeur2 = parseInt(val, 10);
-          this.totalLocation.mewTotal = (this.totalLocation.mntTotal - valeur2) * this.nbreJrLocation;
+          this.totalLocation.mewTotal = ((this.totalLocation.mntTotal* this.nbreJrLocation) - valeur2) ;
           break;
 
         case 'newmnt':
@@ -161,11 +160,10 @@ viewTable: boolean = false;
           this.remisemnt = 0;
           const valeur3 = parseInt(val, 10);
           this.totalLocation.mewTotal = valeur3;
-          this.valremise = (this.totalLocation.mntTotal - valeur2) * this.nbreJrLocation;
+          this.valremise = (this.totalLocation.mntTotal - valeur3) * this.nbreJrLocation;
           break;
       }
       this.valremise = this.remisepercent || this.remisemnt || this.remisenewmnt;
-      console.log(this.valremise)
 
   }
 
@@ -240,11 +238,10 @@ viewTable: boolean = false;
 
   _registerLocations(){
     this.locationData.value.p_details = this.recapTab;
-    this.locationData.value.p_mnt_total = this.totalLocation.mntTotal;
+    this.locationData.value.p_mnt_total = this.totalLocation.mntTotal * this.nbreJrLocation;
     this.locationData.value.p_remise = parseInt(this.valremise, 10);
     this.locationData.value.p_mnt_total_remise = this.totalLocation.mewTotal;
     this.locationData.value.p_vehicule = this.locationData.value.p_vehicule?.value;
-
 
     this.locationData.value.p_commune_depart = this.selectedCityDapart?.value;
     this.locationData.value.p_commune_arrive = this.selectedCityarrive?.value;
@@ -259,15 +256,18 @@ viewTable: boolean = false;
         if( data._status == 1){
           this.notifications.sendMessage(data._result,'success');
           this.locationData.reset();
-
+          this._listProduits();
         }
-
+        this.nbreJrLocation = 0;
+        this.remisemnt = 0;
+        this.remisepercent = 0;
+        this.remisenewmnt = 0;
+        this.totalLocation = {};
+        //this.nbreJrLocation = 0;
       },
       (err)=>{console.log(err);
       }
-    )
-
-    console.log(this.locationData.value);
+    );
 
   }
 
@@ -409,6 +409,9 @@ viewTable: boolean = false;
     let d = moment(this.dateData.debut);
     this.nbreJrLocation = c.diff(d, 'days');
     this.totalLocation.mewTotal = this.totalLocation.mntTotal * this.nbreJrLocation;
+    this.remisepercent = 0;
+    this.remisemnt = 0;
+    this.remisenewmnt = 0;
   }
 
   //Appel de la modal

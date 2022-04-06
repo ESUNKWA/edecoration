@@ -400,34 +400,33 @@
                       <span class="text-muted mb-0">{{prd.qte}} x {{prd.r_prix_location}} = {{prd.total}}</span>
                       <hr>
                     </div>
-                    <h5 class="card-title mb-4">Nombre de jours : <span class="text-danger" ><strong>{{nbreJrLocation | mask: 'separator':' '}}</strong></span></h5>
-                    <h5 class="card-title mb-4">Total : <span class="text-danger" ><strong>{{totalLocation.mntTotal | mask: 'separator':' '}} x {{ nbreJrLocation }} = {{(totalLocation.mntTotal * nbreJrLocation) | mask: 'separator':' '}}</strong></span></h5>
+                    <h5 class="card-title mb-4">Nombre de jours : <span class="text-info" ><strong>{{nbreJrLocation | mask: 'separator':' '}}</strong></span></h5>
+                    <h5 class="card-title mb-4">Total : <span class="text-info" ><strong>{{totalLocation.mntTotal | mask: 'separator':' '}} x {{ nbreJrLocation }} = {{(totalLocation.mntTotal * nbreJrLocation) | mask: 'separator':' '}}</strong></span></h5>
+                    <h5 class="card-title mb-4">Frais de transport : <span class="text-info" ><strong>{{locationData.value.p_frais | mask: 'separator':' '}} </strong></span></h5>
                     <h5 class="card-title mb-4">Nouveau Total : <span class="text-danger" ><strong>{{totalLocation.mewTotal | mask: 'separator':' '}}</strong></span></h5>
 
 
-                    <fieldset class="form-group border p-3">
-                      <legend class="w-auto px-2">Rémises</legend>
+                    <fieldset class="form-group border p-3 scheduler-border">
+                      <legend class="w-auto px-2 scheduler-border">Rémises</legend>
                       <div class="row mb-3">
-                        <label class="col-md-5 col-form-label">en %</label>
+                        <label for="percent" class="col-md-5 col-form-label">en %</label>
                         <div class="col-md-7">
-                          <input #percent class="form-control" name="remise" type="text" [(ngModel)]="remisepercent" mask="000" [disabled]="totalLocation.mntTotal == 0" (keyup)="_calculateRemise(percent.value, 'percent')" placeholder="">
+                          <input #percent class="form-control" name="percent" type="text" [(ngModel)]="remisepercent" mask="000" [disabled]="totalLocation.mntTotal == 0" (keyup)="_calculateRemise(percent.value, 'percent')" placeholder="">
                         </div>
                       </div>
                       <div class="row mb-3">
-                        <label class="col-md-5 col-form-label">Montant fixe </label>
+                        <label for="remisemnt" class="col-md-5 col-form-label">Montant fixe </label>
                         <div class="col-md-7">
-                          <input #mtnreduce class="form-control" name="remise" type="text" [(ngModel)]="remisemnt" [disabled]="totalLocation.mntTotal == 0" (keyup)="_calculateRemise(mtnreduce.value, 'mntfixe')" placeholder="">
+                          <input #mtnreduce class="form-control" name="remisemnt" type="text" [(ngModel)]="remisemnt" [disabled]="totalLocation.mntTotal == 0" (keyup)="_calculateRemise(mtnreduce.value, 'mntfixe')" placeholder="">
                         </div>
                       </div>
                       <div class="row mb-3">
-                        <label class="col-md-5 col-form-label">Nouveau montant</label>
+                        <label for="remisenewmnt" class="col-md-5 col-form-label">Nouveau montant</label>
                         <div class="col-md-7">
-                          <input #newMntTotal class="form-control" name="remise" type="text" [(ngModel)]="remisenewmnt" [disabled]="totalLocation.mntTotal == 0" (keyup)="_calculateRemise(newMntTotal.value, 'newmnt')" placeholder="">
+                          <input #newMntTotal class="form-control" name="remisenewmnt" type="text" [(ngModel)]="remisenewmnt" [disabled]="totalLocation.mntTotal == 0" (keyup)="_calculateRemise(newMntTotal.value, 'newmnt')" placeholder="">
                         </div>
                       </div>
                     </fieldset>
-
-
 
                   </div>
                 </div>
@@ -530,7 +529,7 @@
           <div class="row mb-3">
             <label class="col-md-3 col-form-label">Numéro de téléphone</label>
             <div class="col-md-9">
-              <input class="form-control" name="tel" type="text" formControlName="p_telephone" [(ngModel)]="ligneLocation.r_telephone" mask="00-00-00-00-00" placeholder="">
+              <input class="form-control" name="tel" type="text" formControlName="p_telephone" [(ngModel)]="ligneLocation.r_telephone" mask="(000)-00-00-00-00-00" placeholder="">
               <div *ngIf="formvalidate.p_telephone.touched && formvalidate.p_telephone.invalid" class="text-danger">
                 <div *ngIf="formvalidate.p_telephone.errors.required">Veuillez saisir le numéro de téléphone du client.</div>
                 <div *ngIf="formvalidate.p_telephone.errors?.minLength">Numéro de téléphone invalide.</div>
@@ -567,7 +566,7 @@
           <th style="width:35%" >Produit</th>
           <th style="width:15%" >Quantité</th>
           <th style="width: 10%;">Prix unitaire</th>
-          <th style="width: 10%;">Total</th>
+          <th style="width: 10%;">Sous total</th>
           <th style="width:20%" >Action</th>
         </tr>
       </thead>
@@ -581,7 +580,7 @@
           </ng-select></td>
           <td style="width:15%" ><input class="form-control" name="prenoms" type="number" [(ngModel)]="produit.r_quantite" placeholder=""></td>
           <td style="width:10%" >{{produit.r_prix_location}}</td>
-          <td style="width:10%" >{{produit.r_sous_total}}</td>
+          <td style="width:10%" >{{produit.r_sous_total | mask: 'separator':' '}}</td>
           <td style="width:20%">
             <button type="button" class="btn btn-primary" title="Modification" ><i class="fas fa-edit"></i></button>
           </td>
@@ -589,111 +588,112 @@
       </tbody>
     </table>
 
-    <div class="clearfix" >&nbsp;&nbsp;</div>
+    <div class="clearfix" >&nbsp;</div>
 
-    <form [formGroup]="showLocationData" class="needs-validation">
-      <div class="row">
-        <div class="col-6">
-          <div class="row mb-3">
-            <label class="col-md-4 col-form-label">Date de livraison</label>
-            <div class="col-md-8">
-              <input class="form-control" type="datetime-local" formControlName="p_date_envoie" value="2019-08-19T13:45:00"
-                        id="example-datetime-local-input" [(ngModel)]="dateEnvoie">
-              <div *ngIf="formvalidate.p_date_envoie.touched && formvalidate.p_date_envoie.invalid" class="text-danger">
-                    <div *ngIf="formvalidate.p_date_envoie.errors.required">Veuillez selectionnez le date de livraison.</div>
+    <fieldset class="form-group border p-3 scheduler-border">
+      <legend class="w-auto px-2 scheduler-border">Détails</legend>
+      <form [formGroup]="showLocationData" class="needs-validation">
+        <div class="row">
+          <div class="col-6">
+            <div class="row mb-3">
+              <label class="col-md-4 col-form-label">Date de livraison</label>
+              <div class="col-md-8">
+                <input class="form-control" type="datetime-local" formControlName="p_date_envoie" value="2019-08-19T13:45:00"
+                          id="example-datetime-local-input" [(ngModel)]="dateEnvoie">
+                <div *ngIf="formvalidate.p_date_envoie.touched && formvalidate.p_date_envoie.invalid" class="text-danger">
+                      <div *ngIf="formvalidate.p_date_envoie.errors.required">Veuillez selectionnez le date de livraison.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="row mb-3">
+              <label class="col-md-4 col-form-label">Date de retour</label>
+              <div class="col-md-8">
+                <input class="form-control" type="datetime-local" formControlName="p_date_retour" value="2019-08-19T13:45:00"
+                          id="example-datetime-local-input" [(ngModel)]="dateretour">
+                <div *ngIf="formvalidate.p_date_retour.touched && formvalidate.p_date_retour.invalid" class="text-danger">
+                    <div *ngIf="formvalidate.p_date_retour.errors.required">Veuillez selectionnez le date de retour des produits.</div>
+                </div>
               </div>
             </div>
           </div>
         </div>
-        <div class="col-6">
-          <div class="row mb-3">
-            <label class="col-md-4 col-form-label">Date de retour</label>
-            <div class="col-md-8">
-              <input class="form-control" type="datetime-local" formControlName="p_date_retour" value="2019-08-19T13:45:00"
-                        id="example-datetime-local-input" [(ngModel)]="dateretour">
-              <div *ngIf="formvalidate.p_date_retour.touched && formvalidate.p_date_retour.invalid" class="text-danger">
-                  <div *ngIf="formvalidate.p_date_retour.errors.required">Veuillez selectionnez le date de retour des produits.</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="row mb-3">
-        <div class="col-md-6">
-          <div class="row mb-3">
-            <label class="col-md-4 col-form-label">Commune depart</label>
-            <div class="col-md-8">
-              <ng-select  [items]="CommunesTab" 
-                          formControlName="p_commune_depart" 
-                          [(ngModel)]="selectedCityDapart" 
-                          bindLabel = "label"
-                          bindValue = "value"></ng-select>
-              <div *ngIf="formvalidate.p_commune_depart.touched && formvalidate.p_commune_depart.invalid" class="text-danger">
-                <div *ngIf="formvalidate.p_commune_depart.errors.required">Veuillez selectionnez votre localité.</div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-6">
-          <div class="row mb-3">
-            <label class="col-md-4 col-form-label">Destination</label>
-            <div class="col-md-8">
-              <ng-select [items]="CommunesTab" 
-                          formControlName="p_commune_arrive" 
-                          [(ngModel)]="selectedCityarrive"
-                          bindLabel = "label"
-                          bindValue = "value" ></ng-select>
-              <div *ngIf="formvalidate.p_commune_arrive.touched && formvalidate.p_commune_arrive.invalid" class="text-danger">
-                <div *ngIf="formvalidate.p_commune_arrive.errors.required">Veuillez selectionnez la commune de destination.</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="row mb-3">
-        <label class="col-md-2 col-form-label">Description</label>
-        <div class="col-md-10">
-          <textarea class="form-control"></textarea>
-        </div>
-      </div>
-
-      <div class="mb-2">
-        <label class="">Gérer la logistique</label>&nbsp;
-        <input #inplogistik class="form-check-input" type="checkbox" [(ngModel)]="logistik" [ngModelOptions]="{standalone: true}">
-      </div>
-
-
-      <fieldset class="form-control mb-4" *ngIf="logistik" >
-
+  
         <div class="row mb-3">
-
           <div class="col-md-6">
             <div class="row mb-3">
-              <label class="col-md-4 col-form-label">Véhicule</label>
+              <label class="col-md-4 col-form-label">Commune depart</label>
               <div class="col-md-8">
-                <ng-select [items]="logistkTab"
-                          [(ngModel)]="selectedVehicule"
-                          bindLabel = "label"
-                          bindValue = "value"
-                          formControlName="p_vehicule"></ng-select>
+                <ng-select  [items]="CommunesTab" 
+                            formControlName="p_commune_depart" 
+                            [(ngModel)]="selectedCityDapart" 
+                            bindLabel = "label"
+                            bindValue = "value"></ng-select>
+                <div *ngIf="formvalidate.p_commune_depart.touched && formvalidate.p_commune_depart.invalid" class="text-danger">
+                  <div *ngIf="formvalidate.p_commune_depart.errors.required">Veuillez selectionnez votre localité.</div>
+                </div>
               </div>
             </div>
           </div>
-
           <div class="col-md-6">
             <div class="row mb-3">
-              <label class="col-md-4 col-form-label">Frais de transport</label>
+              <label class="col-md-4 col-form-label">Destination</label>
               <div class="col-md-8">
-                <input class="form-control" name="tel" type="text" formControlName="p_frais" [(ngModel)]="ligneLocation.r_frais_transport" placeholder="">
+                <ng-select [items]="CommunesTab" 
+                            formControlName="p_commune_arrive" 
+                            [(ngModel)]="selectedCityarrive"
+                            bindLabel = "label"
+                            bindValue = "value" ></ng-select>
+                <div *ngIf="formvalidate.p_commune_arrive.touched && formvalidate.p_commune_arrive.invalid" class="text-danger">
+                  <div *ngIf="formvalidate.p_commune_arrive.errors.required">Veuillez selectionnez la commune de destination.</div>
+                </div>
               </div>
             </div>
           </div>
-
         </div>
+  
+        <div class="row mb-3">
+          <label class="col-md-2 col-form-label">Description</label>
+          <div class="col-md-10">
+            <textarea class="form-control"></textarea>
+          </div>
+        </div>
+  
+        <div class="mb-2">
+          <label class="">Gérer la logistique</label>&nbsp;
+          <input #inplogistik class="form-check-input" type="checkbox" [(ngModel)]="logistik" [ngModelOptions]="{standalone: true}">
+        </div>
+  
+  
+          <div class="row mb-3" *ngIf="logistik == true" >
+  
+            <div class="col-md-6">
+              <div class="row mb-3">
+                <label class="col-md-4 col-form-label">Véhicule</label>
+                <div class="col-md-8">
+                  <ng-select [items]="logistkTab"
+                            [(ngModel)]="selectedVehicule"
+                            bindLabel = "label"
+                            bindValue = "value"
+                            formControlName="p_vehicule"></ng-select>
+                </div>
+              </div>
+            </div>
+  
+            <div class="col-md-6">
+              <div class="row mb-3">
+                <label class="col-md-4 col-form-label">Frais de transport</label>
+                <div class="col-md-8">
+                  <input class="form-control" name="tel" type="text" formControlName="p_frais" [(ngModel)]="ligneLocation.r_frais_transport" placeholder="">
+                </div>
+              </div>
+            </div>
+  
+          </div>
+  
 
-      </fieldset>
-    </form>
+      </form>
+    </fieldset>
 
   </ng-template>
