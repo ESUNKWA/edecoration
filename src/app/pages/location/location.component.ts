@@ -54,8 +54,8 @@ viewTable: boolean = false;
 
   demandeStat: any = [
     {
-      value: -1,
-      label: '---Sélectionner---'
+      value: "null",
+      label: '---Tous sélectionner---'
     },
     {
       value: 0,
@@ -89,7 +89,7 @@ viewTable: boolean = false;
 
   ngOnInit(): void {
     //this.cboDefaultValue,this.searchData.value.p_date.split('T')[0]
-    this.cboDefaultValue = -1;
+    this.cboDefaultValue = "null";
 
     this.locationData = this.fb.group({
       p_details: ['', [Validators.required]],
@@ -125,8 +125,8 @@ viewTable: boolean = false;
     });
     this.searchData = this.fb.group({
       p_date: ['', [Validators.required]],
-      p_date_retour: ['', [Validators.required]],
-      p_status: ['', [Validators.required]]
+      p_date_retour: ['', ],
+      p_status: ['']
     });
 
     this.userData = this.user._donnesUtilisateur()[0];
@@ -148,7 +148,7 @@ viewTable: boolean = false;
 
 
   _dateOption(option){
-
+    this.searchData.reset();
     switch (option) {
 
       case 'option1':
@@ -325,7 +325,7 @@ viewTable: boolean = false;
     this.largeModal(largeDataModal)
   }
 
-  _search_location(statusLocation, dateLivraison, modeDate) {
+  _search_location(dataRequest: any): void{
      
     this.submit = true;
     this.viewTable = false;
@@ -337,9 +337,11 @@ viewTable: boolean = false;
 
     
     //this.location._getLocations(this.cboDefaultValue,this.searchData.value.p_date.split('T')[0]).subscribe(
-    this.location._getLocations(statusLocation,dateLivraison, modeDate).subscribe(
+    this.location._getLocationByCrteres(dataRequest).subscribe(
       (res: any)=>{
         this.locationtab = [...res._result];
+        
+        //this.modeDate = null;
         setTimeout(() => {
           this.viewTable = true;
         }, 500);
@@ -348,7 +350,15 @@ viewTable: boolean = false;
   }
 
   _exe_search_location(){
-    this._search_location(this.cboDefaultValue,this.searchData.value.p_date.split('T')[0],this.modeDate);
+    
+    this.searchData.value.p_date = this.searchData.value.p_date.split('T')[0];
+    this.searchData.value.p_date_retour = this.searchData.value.p_date_retour?.split('T')[0];
+    this.searchData.value.p_mode = this.modeDate;
+    //this.searchData.value.p_status = this.p_status;
+    console.log(this.searchData.value);
+    
+    //this._search_location(this.cboDefaultValue,this.searchData.value.p_date.split('T')[0],this.modeDate);
+    this._search_location(this.searchData.value);
   }
 
 
@@ -398,7 +408,7 @@ viewTable: boolean = false;
   }
   _affiche_location(){
     this.interface = 'liste';
-    this._search_location(this.cboDefaultValue,this.searchData.value.p_date.split('T')[0],this.modeDate);
+    this._search_location(this.searchData.value);
     
   }
 
@@ -420,9 +430,17 @@ viewTable: boolean = false;
             case 1:
               this.notifications.sendMessage('La demande de location à bien été validée','success');
               break;
+
+            case 2:
+                this.notifications.sendMessage('Location terminée','success');
+                break;
+
+            case 3:
+                this.notifications.sendMessage('Location annulée','success');
+                break;
   
           }
-          this._search_location(this.cboDefaultValue,this.searchData.value.p_date.split('T')[0],this.modeDate);
+          this._search_location(this.searchData.value);
           
         }
         

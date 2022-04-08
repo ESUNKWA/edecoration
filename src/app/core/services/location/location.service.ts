@@ -22,6 +22,10 @@ export class LocationService {
     return this.http.get(`${this.env.backendServer}/location/${status}/${p_date}/${modeDate}`);
   }
 
+  _getLocationByCrteres(data: any): Observable<any> {
+    return this.http.post(`${this.env.backendServer}/location`, data).pipe(catchError(this.error));
+  }
+
   _majStatusLocation(data: any): Observable<any>{
     return this.http.post(`${this.env.backendServer}/updatestatlocation`, data).pipe(catchError(this.error));
   }

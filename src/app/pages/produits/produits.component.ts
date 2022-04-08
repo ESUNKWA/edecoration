@@ -19,7 +19,7 @@ export class ProduitsComponent implements OnInit {
   tarificationData: FormGroup;
   ligneProduit: any = {};
   modeAppel: any;
-  produitsTab: any[];
+  produitsTab: any = [];
   modalTitle: any = '';
   breadCrumbItems: Array<{}>;
   @ViewChildren(AdvancedSortableDirective) headers: QueryList<AdvancedSortableDirective>;

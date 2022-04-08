@@ -9,7 +9,7 @@
             <div class="card-body">
 
               <div class="mb-3">
-                <label class="d-block mb-3">Type de recherche :</label>
+                <label class="d-block mb-3">Recherche :</label>
 
                 <!-- <div class="form-check form-check-inline">
                   <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1"
@@ -99,7 +99,7 @@
                             <h5 class="font-size-14 mb-0">Aucune données</h5>
                         </div>
                     </div>
-                </div>
+                  </div>
                 </div>
 
                 <div class="table-responsive" *ngIf="locationtab.length >= 1" >
@@ -134,7 +134,7 @@
                         <td style="width:10%" >{{location.r_libelle}}</td>
                         <td style="width:5%" *ngIf="location.r_status==0" ><span class="badge badge-pill badge-soft-warning font-size-12">En attente de validation</span></td>
                         <td style="width:5%" *ngIf="location.r_status==1" ><span class="badge badge-pill badge-soft-success font-size-12">En cours</span></td>
-                        <td style="width:5%" *ngIf="location.r_status==2"><span class="badge badge-pill badge-soft-danger font-size-12">terminée</span></td>
+                        <td style="width:5%" *ngIf="location.r_status==2"><span class="badge badge-pill badge-soft-primary font-size-12">terminée</span></td>
                         <td style="width:5%" *ngIf="location.r_status==3"><span class="badge badge-pill badge-soft-danger font-size-12">Annulée</span></td>
                         <td style="width:10%">
                           <button type="button" class="btn btn-primary" title="Modification" (click)="_actionLocation(largeDataModal, location)" ><i class="fas fa-edit"></i></button>&nbsp;
@@ -177,47 +177,68 @@
                           <i class="fas fa-cash-register"></i>
                         </ng-template>
 
-                        <!-- Table -->
-                        <div class="table-responsive">
-
-                          <ng-template [ngIf]="viewTable == false" >
-                              <app-spinner></app-spinner>
-                          </ng-template>
-
-                          <ng-template [ngIf]="viewTable == true" >
-                            <table class="table mb-0 table-striped" >
-                              <thead class="bg-dark text-white">
-                                <tr>
-                                  <th style="width:5%" >Choix</th>
-                                  <th style="width:20%" >Produits</th>
-                                  <th style="width:10%" >Stock actuel</th>
-                                  <th style="width:10%" >Prix location</th>
-                                  <th style="width: 10%;">Durée</th>
-                                  <th style="width: 10%;">Quantité</th>
-                                  <th style="width: 15%;">Montant total</th>
-                                </tr>
-                              </thead>
-                              <tbody>
-                                <tr *ngFor="let produit of tarificationTab ; let i = index">
-                                  <td style="width:5%;">
-                                    <input #inpcheck class="form-check-input" type="checkbox" (change)="_changeValcheck(inpcheck.checked,i)" >
-                                  </td>
-                                  <td style="width:20%" >{{produit?.r_libelle}}</td>
-                                  <td style="width:10%" >{{produit?.r_stock}}</td>
-                                  <td style="width:10%" >{{produit?.r_prix_location | mask: 'separator':' '}}</td>
-                                  <td style="width:10%" >{{produit?.r_duree}} jour</td>
-                                  <td style="width: 10%;">
-                                    <input #inpqte class="form-control" min="0" value="{{produit?.qte}}" type="number" [(disabled)]="!produit.check" (change)="_valueQte(inpqte.value,i)" placeholder="">
-                                  </td>
-                                  <td style="width: 15%;">
-                                    <input disabled class="form-control" type="text" value="{{produit?.total}}" mask="separator.2" placeholder="">
-                                  </td>
-                                </tr>
-                              </tbody>
-                            </table>
-                          </ng-template>
-
+                        <div class="row" *ngIf="tarificationTab.length == 0">
+                          <div class="col-lg-12">
+                            <div class="border p-3 rounded mt-4 text-center">
+                                <div class="d-flex align-items-center mb-3">
+                                    <div class="avatar-xs me-3">
+                                        <span
+                                            class="avatar-title rounded-circle bg-warning bg-soft text-warning font-size-18">
+                                            <i class="mdi mdi-bitcoin"></i>
+                                        </span>
+                                    </div>
+                                    <h5 class="font-size-14 mb-0">Aucune données</h5>
+                                </div>
+                            </div>
+                          </div>
                         </div>
+
+                        <div class="table-responsive" *ngIf="locationtab.length >= 1" >
+                          <!-- Table -->
+                          <div class="table-responsive">
+
+                            <ng-template [ngIf]="viewTable == false" >
+                                <app-spinner></app-spinner>
+                            </ng-template>
+
+                              <ng-template [ngIf]="viewTable == true" >
+                                <table class="table mb-0 table-striped" >
+                                  <thead class="bg-dark text-white">
+                                    <tr>
+                                      <th style="width:5%" >Choix</th>
+                                      <th style="width:20%" >Produits</th>
+                                      <th style="width:10%" >Stock actuel</th>
+                                      <th style="width:10%" >Prix location</th>
+                                      <th style="width: 10%;">Durée</th>
+                                      <th style="width: 10%;">Quantité</th>
+                                      <th style="width: 15%;">Montant total</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    <tr *ngFor="let produit of tarificationTab ; let i = index">
+                                      <td style="width:5%;">
+                                        <input #inpcheck class="form-check-input" type="checkbox" (change)="_changeValcheck(inpcheck.checked,i)" >
+                                      </td>
+                                      <td style="width:20%" >{{produit?.r_libelle}}</td>
+                                      <td style="width:10%" >{{produit?.r_stock}}</td>
+                                      <td style="width:10%" >{{produit?.r_prix_location | mask: 'separator':' '}}</td>
+                                      <td style="width:10%" >{{produit?.r_duree}} jour</td>
+                                      <td style="width: 10%;">
+                                        <input #inpqte class="form-control" min="0" value="{{produit?.qte}}" type="number" [(disabled)]="!produit.check" (change)="_valueQte(inpqte.value,i)" placeholder="">
+                                      </td>
+                                      <td style="width: 15%;">
+                                        <input disabled class="form-control" type="text" value="{{produit?.total}}" mask="separator.2" placeholder="">
+                                      </td>
+                                    </tr>
+                                  </tbody>
+                                </table>
+                              </ng-template>
+                            
+
+                          </div>
+                        </div>
+
+                        
 
                         <ul class="list-inline wizard mt-2">
                           <li class="next list-inline-item float-end"><button class="btn btn-primary" [disabled]="totalLocation.mntTotal == 0" awNextStep>Suivant</button>
@@ -523,8 +544,12 @@
                     class="bx bx-check-double label-icon"></i> Valider la commande</button>
                 </div>
                 <div class="col" *ngIf="cboDefaultValue == 1">
-                  <button type="button" class="btn btn-danger btn-label waves-light" (click)="_majStatuslocation(0)"><i
-                    class="bx bx-block label-icon "></i> Annulée la commande</button>
+                  <button type="button" class="btn btn-warning btn-label waves-light" (click)="_majStatuslocation(2)"><i
+                    class="bx bx-block label-icon "></i>Terminer la location</button>
+                </div>
+                <div class="col" *ngIf="cboDefaultValue == 0" >
+                  <button type="button" style="float: right" class="btn btn-danger btn-label waves-light" (click)="_majStatuslocation(3)"><i
+                    class="bx bx-block label-icon "></i>Annuler la demande de la location</button>
                 </div>
               </div>
             </div>
