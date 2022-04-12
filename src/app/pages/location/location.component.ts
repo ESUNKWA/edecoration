@@ -8,7 +8,17 @@ import { NotifService } from 'src/app/core/services/notif.service';
 import { TarificationsService } from 'src/app/core/services/tarifications/tarifications.service';
 import { UserService } from 'src/app/core/services/usersinfos/user.service';
 import { AdvancedSortableDirective } from '../tables/advancedtable/advanced-sortable.directive';
+
 import * as moment from 'moment'; 
+
+import pdfmake from 'pdfmake/build/pdfmake';
+import pdfFonts from 'pdfmake/build/vfs_fonts';
+import { DataprintformatService } from 'src/app/core/services/dataprintformat/dataprintformat.service';
+pdfmake.vfs = pdfFonts.pdfMake.vfs;
+
+const fc = async (idlocation: any)=> {
+  
+}
 
 @Component({
   selector: 'app-location',
@@ -16,6 +26,7 @@ import * as moment from 'moment';
   styleUrls: ['./location.component.scss']
 })
 export class LocationComponent implements OnInit {
+  
 // bread crum data
 breadCrumbItems: Array<{}>;
 @ViewChildren(AdvancedSortableDirective) headers: QueryList<AdvancedSortableDirective>;
@@ -45,7 +56,7 @@ viewTable: boolean = false;
   locationtab: any = [];
   interface: any = 'liste';
   ligneLocation: any = {};
-  detailsLocationTab: any[];
+  detailsLocationTab: any = [];
   dateEnvoie: any;
   dateretour: any;
   selectDemandeStat: any;
@@ -83,9 +94,12 @@ viewTable: boolean = false;
   dateData: any = {};
   nbreJrLocation: any = 1;
   modeDate: number;
+  btnValidation: any;
+  desactiver: boolean = false;
 
   constructor(private notifications: NotifService, private user: UserService, private modalService: NgbModal, private tarifService: TarificationsService,
-              private fb: FormBuilder, private communeService: CommunesService, private logistkService: LogistikService, private location: LocationService,) { }
+              private fb: FormBuilder, private communeService: CommunesService, private logistkService: LogistikService, private location: LocationService,
+              private exportpdf: DataprintformatService) { }
 
   ngOnInit(): void {
     //this.cboDefaultValue,this.searchData.value.p_date.split('T')[0]
@@ -126,7 +140,7 @@ viewTable: boolean = false;
     this.searchData = this.fb.group({
       p_date: ['', [Validators.required]],
       p_date_retour: ['', ],
-      p_status: ['']
+      p_status: ['',[Validators.required]]
     });
 
     this.userData = this.user._donnesUtilisateur()[0];
@@ -135,6 +149,7 @@ viewTable: boolean = false;
     this.totalLocation.qteproduits = 0;
     this.totalLocation.mntTotal = 0;
     this.totalLocation.mewTotal = 0;
+    this.modeDate = 1;
 
     this._listProduits();
     this._listCommunes();
@@ -148,7 +163,6 @@ viewTable: boolean = false;
 
 
   _dateOption(option){
-    this.searchData.reset();
     switch (option) {
 
       case 'option1':
@@ -212,6 +226,12 @@ viewTable: boolean = false;
     //Modification de la ligne en cours
     this.tarificationTab[i].qte = parseInt(val, 10);
     this.tarificationTab[i].total =  this.tarificationTab[i].qte*this.tarificationTab[i].r_prix_location;
+    
+    if( this.tarificationTab[i].qte > this.tarificationTab[i].r_stock){
+      this.notifications.sendMessage('Stock insuffisant','warning');
+      this.tarificationTab[i].qte = 0;
+      return false;
+    }
 
     this.recapTab = this.tarificationTab.filter( el => el.qte >= 1);
 
@@ -280,7 +300,9 @@ viewTable: boolean = false;
 
     this.locationData.value.p_commune_depart = this.selectedCityDapart?.value;
     this.locationData.value.p_commune_arrive = this.selectedCityarrive?.value;
+    this.locationData.value.p_duree = this.nbreJrLocation;
     this.locationData.value.p_utilisateur = this.userData.r_i;
+    this.locationData.value.p_signe = "-";
 
     this.locationData.value.p_date_envoie = this.locationData.value.p_date_envoie.replace('T', ' ');
     this.locationData.value.p_date_retour = this.locationData.value.p_date_retour.replace('T', ' ');
@@ -306,26 +328,89 @@ viewTable: boolean = false;
 
   }
 
-  _actionLocation(largeDataModal,ligneLocation){
+  _actionLocation(largeDataModal,ligneLocation, mode){
 
     this.ligneLocation = {...ligneLocation};
-    this.modalTitle = `Demande de location N [ ${this.ligneLocation.r_num} ]`;
+    
     this.dateEnvoie = this.ligneLocation.r_date_envoie.replace(' ', 'T');
     this.dateretour = this.ligneLocation.r_date_retour.replace(' ', 'T');
     this.selectedCityarrive = this.ligneLocation.r_destination;
     this.selectedCityDapart = 12;
     this.selectedVehicule = this.ligneLocation.r_logistik;
 
-
     this.logistik = (this.ligneLocation.r_frais_transport == 0)? false: true;
 
-    this._listDetailLocationByidLocation(this.ligneLocation.r_i);
-    this._produits();
+  
+    switch(mode){
+      case 'modif':
+        this._listDetailLocationByidLocation(this.ligneLocation.r_i);
+        this.modalTitle = `Modification de la location N° [ ${this.ligneLocation.r_num} ]`;
+        this.desactiver = false;
+        this.clientsData.enable();
+        this.showLocationData.enable();
+        this._produits();
+        this.largeModal(largeDataModal)
+        break;
 
-    this.largeModal(largeDataModal)
+      case 'validation':
+        this.btnValidation = 'validation';
+        this._listDetailLocationByidLocation(this.ligneLocation.r_i);
+        this.modalTitle = `Validation de la location N° [ ${this.ligneLocation.r_num} ]`;
+        this.desactiver = true;
+        this.clientsData.disable();
+        this.showLocationData.disable();
+        this._produits();
+        this.largeModal(largeDataModal)
+        break;
+
+      default:
+
+        this.detailsLocationTab = [];
+        let totalMnt = []
+        let dataPrint: any = []; 
+        let dataPrintTitle: any = ['Produits','Quantités','Prix unitaire','Sous total'];
+   
+        dataPrint.push(dataPrintTitle);
+
+        this.location._getDetailLocationByid(this.ligneLocation.r_i).subscribe(
+          (data: any) => {
+            this.detailsLocationTab = [...data._result];
+           
+            //Produts à imprimer
+            this.detailsLocationTab.forEach((el)=>{
+              let obj: any = {}
+              obj.produit = el.lib_produit,
+              obj.quantite = el.r_quantite,
+              obj.prix_location = el.r_prix_location,
+              obj.sous_total = el.r_sous_total
+              
+              dataPrint.push(obj);
+            });
+            dataPrint.push([{text: 'Total', colSpan:3},'','', {text:this.ligneLocation.r_mnt_total/this.ligneLocation.r_duree, color: "green"}]);
+            dataPrint.push([{text: 'Durée', colSpan:3},'','', {text:this.ligneLocation.r_duree, color: "red"}]);
+            dataPrint.push([{text: 'Rémise', colSpan:3},'','', this.ligneLocation.r_remise]);
+            dataPrint.push([{text: 'Total TTC', colSpan:3},'','', {text:this.ligneLocation.r_mnt_total, color: "blue"}]);
+           //Formatage des données pour la génération du pdf
+            let dd = this.exportpdf.printData(dataPrint);
+            
+            this.export(dd, this.ligneLocation);
+            dd = [];
+            dataPrintTitle = [];
+            dataPrint = [];
+            
+            
+          },
+          (err) => {console.log(err.stack);
+          }
+        );
+
+        break;
+    }
   }
 
+
   _search_location(dataRequest: any): void{
+    
      
     this.submit = true;
     this.viewTable = false;
@@ -355,7 +440,6 @@ viewTable: boolean = false;
     this.searchData.value.p_date_retour = this.searchData.value.p_date_retour?.split('T')[0];
     this.searchData.value.p_mode = this.modeDate;
     //this.searchData.value.p_status = this.p_status;
-    console.log(this.searchData.value);
     
     //this._search_location(this.cboDefaultValue,this.searchData.value.p_date.split('T')[0],this.modeDate);
     this._search_location(this.searchData.value);
@@ -367,9 +451,11 @@ viewTable: boolean = false;
       (data: any) => {
         this.tarificationTab = [...data._result];
 
+
         setTimeout(() => {
           this.viewTable = true;
-        }, 500);
+         
+        }, 200);
       },
       (err) => {console.log(err.stack);
       }
@@ -388,13 +474,32 @@ viewTable: boolean = false;
 
   }
 
-  _listDetailLocationByidLocation(idlocation: number): void {
+  _listDetailLocationByidLocation(idlocation: number) {
+
     this.location._getDetailLocationByid(idlocation).subscribe(
       (data: any) => {
         this.detailsLocationTab = [...data._result];
+        
         setTimeout(() => {
           this.viewTable = true;
         }, 500);
+
+      },
+      (err) => {console.log(err.stack);
+      }
+    );
+  }
+
+  _print(idlocation: number) {
+
+    this.location._getDetailLocationByid(idlocation).subscribe(
+      (data: any) => {
+        this.detailsLocationTab = [...data._result];
+        
+        setTimeout(() => {
+          this.viewTable = true;
+        }, 500);
+
       },
       (err) => {console.log(err.stack);
       }
@@ -405,6 +510,7 @@ viewTable: boolean = false;
     this.interface = 'saisie';
     this.selectedCityDapart = '';
     this.selectedCityarrive = '';
+
   }
   _affiche_location(){
     this.interface = 'liste';
@@ -413,8 +519,18 @@ viewTable: boolean = false;
   }
 
   _majStatuslocation(data){
+    let obj: any = {},tab: any =[];
     this.majStatusData.p_idlocation = parseInt(this.ligneLocation.r_i, 10);
     this.majStatusData.p_status = data;
+
+    this.detailsLocationTab.forEach((el)=>{
+      obj = {};
+        obj.idproduit = el.r_produit,
+        obj.qte = el.r_quantite
+        tab.push(obj);
+    });
+    this.majStatusData.p_details = tab;
+    this.majStatusData.p_signe = "+";
    
     this.location._majStatusLocation(this.majStatusData).subscribe(
       (response: any) => {
@@ -455,7 +571,7 @@ viewTable: boolean = false;
   }
 
   _getdatefin(){
-    const a = this.locationData.value.p_date_retour.split('T')[0];
+    const a = this.locationData.value?.p_date_retour.split('T')[0];
     this.dateData.fin = [...a.split('-')]; 
 
     let c = moment(this.dateData.fin);
@@ -471,6 +587,138 @@ viewTable: boolean = false;
   largeModal(exlargeModal: any) {
     this.modalService.open(exlargeModal, { size: 'xl', centered: true });
 
+  }
+
+
+  //PDF
+  public export(data, dataClient): void {
+
+    //this._listDetailLocationByidLocation(this.ligneLocation.r_i);
+
+    const docDefinition = {
+
+
+      footer: {
+        columns: [
+          'Left part',
+          { text: 'Right part', alignment: 'right' }
+        ]
+      },
+      
+    
+      content: [
+       
+        { 
+          columns: [
+            [
+              {
+                text: 'Facture N° : ' + dataClient.r_num,
+                
+              },
+              {
+                text: dataClient.created_at
+              }
+            ]
+          ],
+          style: 'facture'
+        },
+
+        {
+          columns: [
+            [{
+              text: 'Boutique/Commerce :',
+              decoration: 'underline'
+            },
+            // {
+            //   text: "this.infosPatenaire[0].r_nom"
+            // },
+            // {
+            //   text: "this.infosPatenaire[0].r_quartier"
+            // },
+            // {
+            //   text:"this.infosPatenaire[0].email || '',"
+            // },
+            // {
+            //   text: "this.infosPatenaire[0].phone || ''",
+            // }
+            ],
+          ],
+
+        },
+        {
+          columns: [
+            [{
+              text: 'A : Client/ Destinataire :',
+              decoration: 'underline'
+            },
+              {
+                text: dataClient.r_nom + ' ' + dataClient.r_prenoms,
+                style: 'nomclient'
+              },
+              {
+                text: dataClient.r_telephone || 'Pas de numéro',
+                style: 'phoneclient'
+              },
+              {
+                text: 'Abidjan',
+                style: 'ville'
+              }
+            ]
+          ],
+          alignment: 'right'
+        },
+        {
+          text: 'Intitulé: Produits facturés',
+          style: 'header'
+        },
+
+
+        {
+          style: "tableExample",
+          table: {
+            headerRows: 1,
+            widths: [ '*', '*', '*', '*'],
+            body: data
+          }
+        },
+
+        {
+          columns: [
+            [{
+              text: 'En votre aimable règlement'
+            },
+            {
+              text: 'Cordialement'
+            },
+            {
+              text: 'Devise de l’opération est le Franc cfa (Fcfa).'
+            }]
+          ],
+          style: 'note'
+        }
+
+      ],
+
+
+
+      styles: {
+        header: {
+          fontSize: 18,
+          bold: true,
+          margin: [0, 0, 0, 10]
+        },
+        subheader: {
+          fontSize: 16,
+          bold: true,
+          margin: [0, 10, 0, 5]
+        },
+        tableExample: {
+          margin: [0, 5, 0, 15]
+        }
+      }
+    };
+
+    pdfmake.createPdf(docDefinition).open();
   }
 
 }

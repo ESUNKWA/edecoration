@@ -86,29 +86,45 @@
         <div class="row mb-3">
             <div class="col-md-6">
                 <label>Selectionner la catégorie</label>
-                <select class="form-select" [(ngModel)]="idservice" formControlName="p_categories" >
-                    <option>--Selectionner--</option>
+                <select class="form-select" [(ngModel)]="idCategory" formControlName="p_categories" >
+                    <option value="0" >--Selectionner--</option>
                     <option [value]="categorie.r_i"  class="form-control" *ngFor="let categorie of categoriesTab" >{{categorie.r_libelle}}</option>
                 </select>
+                <div *ngIf="f.p_categories.touched && f.p_categories.invalid" >
+                  <div *ngIf="f.p_categories.errors.required" class="text-danger">
+                    Veuillez sélectionner la catégorie
+                  </div>
+                </div>
             </div>
             <div class="col-md-6">
                 <label for="validationCustom01">LIbellé du produit</label>
                 <input type="text" class="form-control"  formControlName="p_libelle" [(ngModel)]="ligneProduit.r_libelle" >
                 <div *ngIf="f.p_libelle.touched && f.p_libelle.invalid" >
-                  <div *ngIf="f.p_libelle.errors.required" class="">
+                  <div *ngIf="f.p_libelle.errors.required" class="text-danger">
                     Veuillez saisir le libellé du produit
+                  </div>
+                  <div *ngIf="f.p_libelle.errors.pattern" class="text-danger">
+                    Le Nom du produit est incorrect (Pas de symbole dans la chaine)
                   </div>
                 </div>
             </div>
         </div>
         <div class="row mb-3">
             <div class="col-md-6">
-                <label for="validationCustom01">Stock</label>
+                <label for="validationCustom01">Stock initial</label>
                 <input type="number" min="0" class="form-control" [readonly]=" modeAppel == 'modif'" formControlName="p_stock" [(ngModel)]="ligneProduit.r_stock" >
-            </div>
+                <div *ngIf="f.p_stock.touched && f.p_stock.invalid" >
+                  <div *ngIf="f.p_stock.errors.required" class="text-danger">
+                    Stock initial obligatoire
+                  </div>
+                  <div *ngif="f.p_stock.errors?.min" >
+                    Le stock minimum est de 1
+                  </div>
+                </div>
+              </div>
             <div class="col-md-6">
                 <label for="validationCustom01">En saisie par</label>
-                <input type="text" class="form-control" [(ngModel)]="userData.r_nom +' '+ userData.r_prenoms" [ngModelOptions]="{standalone: true}" >
+                <input type="text" disabled class="form-control" [(ngModel)]="userData.r_nom +' '+ userData.r_prenoms" [ngModelOptions]="{standalone: true}" >
             </div>
         </div>
         <div class="row">
@@ -125,7 +141,7 @@
     </div>
     <div class="modal-footer">
       <button type="button" title="fermer" class="btn btn-secondary" (click)="modal.close('Close click'); _resetForm();">Fermer</button>
-      <button type="button" title="Enregistrer" class="btn btn-primary" (click)="_register()">Enregistrer</button>
+      <button [disabled]="produitsData.invalid" type="button" title="Enregistrer" class="btn btn-primary" (click)="_register()">Enregistrer</button>
     </div>
   </ng-template>
 
@@ -143,14 +159,14 @@
             <div class="row mb-3">
                 <div class="col-md-6">
                     <label>Selectionner la catégorie</label>
-                    <select class="form-select" disabled [(ngModel)]="idservice" [ngModelOptions]="{standalone: true}" >
+                    <select class="form-select" disabled [(ngModel)]="idCategory" [ngModelOptions]="{standalone: true}" >
                         <option>--Selectionner--</option>
                         <option [value]="categorie.r_i"  class="form-control" *ngFor="let categorie of categoriesTab" >{{categorie.r_libelle}}</option>
                     </select>
                 </div>
                 <div class="col-md-6">
                     <label for="validationCustom01">LIbellé du produit</label>
-                    <input type="text" class="form-control" [(ngModel)]="ligneProduit.r_libelle" [ngModelOptions]="{standalone: true}" >
+                    <input type="text" class="form-control" readonly [(ngModel)]="ligneProduit.r_libelle" [ngModelOptions]="{standalone: true}" >
                 </div>
             </div>
             <div class="row mb-3">

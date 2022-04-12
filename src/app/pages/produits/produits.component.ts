@@ -26,12 +26,15 @@ export class ProduitsComponent implements OnInit {
 
   categoriesTab: any[];
   idservice: any;
+  idCategory: any;
   ligneTarification: any = {};
   qteRetour: any;
   datastock: any = {};
   searChIn: any;
   viewTable: boolean = false;
   userData: any;
+
+  pattern: any;
   
   constructor( private fb: FormBuilder, private produitServices: ProduitService, private notifications: NotifService,
                 private modalService: NgbModal, private categorieServices: CategoriesService, 
@@ -40,6 +43,8 @@ export class ProduitsComponent implements OnInit {
   ngOnInit(): void {
     this.userData = this.user._donnesUtilisateur()[0];
     this.breadCrumbItems = [{ label: 'Eden décoration' }, { label: 'Catégories de produits', active: true }];
+    this.idCategory = 0;
+    this.pattern = '[a-z A-Z0-9]+';
 
     this.tarificationData = this.fb.group({
       p_produit: ['', [Validators.required, Validators.pattern('[a-zA-Z0-9]+')]],
@@ -49,10 +54,10 @@ export class ProduitsComponent implements OnInit {
       p_description: ['', [Validators.required, Validators.pattern('[a-zA-Z0-9]+')]]
     });
     this.produitsData = this.fb.group({
-      p_libelle: ['', [Validators.required, Validators.pattern('[a-zA-Z0-9]+')]],
-      p_stock: ['', [Validators.required]],
-      p_categories: ['', [Validators.required, Validators.pattern('[a-zA-Z0-9]+')]],
-      p_image: ['', [Validators.required, Validators.pattern('[a-zA-Z0-9]+')]],
+      p_libelle: ['', [Validators.required, Validators.pattern(this.pattern)]],
+      p_stock: [0, [Validators.required, Validators.min(1)]],
+      p_categories: ['', [Validators.required]],
+      //p_image: ['', [Validators.required, Validators.pattern('[a-zA-Z0-9]+')]],
       p_description: ['', []]
     });
 
@@ -100,8 +105,7 @@ export class ProduitsComponent implements OnInit {
 
   _actionProduits(modal: any, categorie,action){
     this.ligneProduit = {...categorie};
-    this.idservice = this.ligneProduit.r_categorie;
-    
+    this.idCategory = this.ligneProduit.r_categorie;
     
     switch (action) {
 
@@ -110,7 +114,7 @@ export class ProduitsComponent implements OnInit {
         this.modalTitle = `Modification catégorie de produit [ ${this.ligneProduit.r_libelle} ]`;
         setTimeout(() => {
           this.largeModal(modal);
-        }, 500);
+        }, 200);
        
       break;
 
@@ -131,7 +135,6 @@ export class ProduitsComponent implements OnInit {
               this.tarificationData.reset();
             }
            
-            console.log(this.ligneTarification, this.qteRetour);
           }
         );
         setTimeout(() => {
@@ -199,7 +202,6 @@ export class ProduitsComponent implements OnInit {
         })
         break;
     }
-    console.log(this.modeAppel);
   }
 
   
@@ -212,7 +214,7 @@ export class ProduitsComponent implements OnInit {
     }
     
     this.produitsData.value.p_utilisateur = parseInt(this.userData.r_i, 10);;
-    this.produitsData.value.p_categories = parseInt(this.idservice,10);
+    this.produitsData.value.p_categories = parseInt(this.idCategory,10);
   
     
     
@@ -222,7 +224,6 @@ export class ProduitsComponent implements OnInit {
       
           this.produitServices._create(this.produitsData.value).subscribe(
             (dataServer: any) => {
-              console.log(dataServer);
               
               switch(dataServer._status){
                 case -100:
@@ -238,9 +239,10 @@ export class ProduitsComponent implements OnInit {
 
                 case 1:
                   this.notifications.sendMessage(`${dataServer._result}`,'success');
+                  this.produitsData.reset();
                   break;
               }
-              this.produitsData.reset();
+              
 
               this._listProduits();
             },
@@ -251,7 +253,6 @@ export class ProduitsComponent implements OnInit {
         break;
 
       case 'modif':
-        console.log(this.produitsData.value);
         
         this.produitServices._update(this.produitsData.value, this.ligneProduit.r_i).subscribe(
           (dataServer: any) => {
@@ -274,7 +275,6 @@ export class ProduitsComponent implements OnInit {
 
     this.taficationService._create(this.tarificationData.value).subscribe(
       (dataServer: any) => {
-        console.log(dataServer);
         
         switch(dataServer._status){
           case -100:
@@ -290,9 +290,10 @@ export class ProduitsComponent implements OnInit {
 
           case 1:
             this.notifications.sendMessage(`${dataServer._result}`,'success');
+            this.tarificationData.reset();
             break;
         }
-        this.tarificationData.reset();
+        
 
         //this._listProduits();
       },
@@ -300,8 +301,6 @@ export class ProduitsComponent implements OnInit {
         console.log(err);
       }
     );
-
-    console.log(this.tarificationData.value);
     
   }
   //Appel de la modal

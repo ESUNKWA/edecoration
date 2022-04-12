@@ -10,19 +10,8 @@
 
               <div class="mb-3">
                 <label class="d-block mb-3">Recherche :</label>
-
-                <!-- <div class="form-check form-check-inline">
-                  <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1"
-                    value="option1">
-                  <label class="form-check-label" for="inlineRadio1">Location à validée</label>
-                </div>
                 <div class="form-check form-check-inline">
-                  <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2"
-                    value="option2">
-                  <label class="form-check-label" for="inlineRadio2">Location terminée</label>
-                </div> -->
-                <div class="form-check form-check-inline">
-                  <input class="form-check-input" #depart type="radio" (change)="_dateOption(depart.value)" name="inlineRadioOptions" id="inlineRadio25"
+                  <input class="form-check-input" #depart type="radio" (change)="_dateOption(depart.value)" checked name="inlineRadioOptions" id="inlineRadio25"
                     value="option1">
                   <label class="form-check-label" for="inlineRadio25">Par date de livraison</label>
                 </div>
@@ -68,7 +57,7 @@
                         
                         <div class="col-md-3 ">
                           <br><br>
-                          <button type="button" class="btn btn-primary" title="Saisir un nouvelle catégorie de produits" (click)="_exe_search_location()"><i class="fas fa-search"></i></button>
+                          <button type="submit" class="btn btn-primary" title="Saisir un nouvelle catégorie de produits" (click)="_exe_search_location()"><i class="fas fa-search"></i></button>
                         </div>
                       </div>
                     </form>
@@ -127,7 +116,7 @@
                         <!-- <td style="width:12%" >{{location.r_telephone | mask: "(000) 00-00-00-00-00"}}</td> -->
                         
                         <td style="width:10%" >{{location.r_mnt_total | mask: 'separator':' '}}</td>
-                        <td style="width:5%" >{{location.r_remise}}</td>
+                        <td style="width:5%" >{{location.r_remise | mask: 'separator':' '}}</td>
                         <td style="width:10%" >{{location.r_mnt_total_remise | mask: 'separator':' '}}</td>
                         <td style="width:10%" >{{location.r_date_envoie | date: 'dd-MM-YYYY à hh:mm:ss'}}</td>
                         <td style="width:10%" >{{location.r_date_retour | date: 'dd-MM-YYYY à hh:mm:ss'}}</td>
@@ -137,8 +126,11 @@
                         <td style="width:5%" *ngIf="location.r_status==2"><span class="badge badge-pill badge-soft-primary font-size-12">terminée</span></td>
                         <td style="width:5%" *ngIf="location.r_status==3"><span class="badge badge-pill badge-soft-danger font-size-12">Annulée</span></td>
                         <td style="width:10%">
-                          <button type="button" class="btn btn-primary" title="Modification" (click)="_actionLocation(largeDataModal, location)" ><i class="fas fa-edit"></i></button>&nbsp;
-                          <button type="button" class="btn btn-warning" title="Tarification" (click)="_actionLocation(largeDataModal, location)" ><i class="fas fa-bars"></i></button>&nbsp;
+                          <button type="button" class="btn btn-secondary" title="Modification"
+                           (click)="_actionLocation(largeDataModal, location, 'modif')"
+                           [disabled]="location.r_status !== 0" ><i class="fas fa-edit"></i></button>&nbsp;
+                          <button type="button" class="btn btn-warning" title="Validation de la location" (click)="_actionLocation(largeDataModal, location, 'validation')" ><i class="fas fa-check-square"></i></button>&nbsp;
+                          <button type="button" class="btn btn-info" title="Imprimer la facture" (click)="_actionLocation(null, location, '')" ><i class="fas fa-print"></i></button>&nbsp;
                         </td>
                       </tr>
                     </tbody>
@@ -193,7 +185,10 @@
                           </div>
                         </div>
 
-                        <div class="table-responsive" *ngIf="locationtab.length >= 1" >
+                       
+
+                        <div *ngIf="tarificationTab.length >= 1" >
+                          
                           <!-- Table -->
                           <div class="table-responsive">
 
@@ -202,6 +197,9 @@
                             </ng-template>
 
                               <ng-template [ngIf]="viewTable == true" >
+
+                                
+
                                 <table class="table mb-0 table-striped" >
                                   <thead class="bg-dark text-white">
                                     <tr>
@@ -538,16 +536,16 @@
 
               </ul>
               <div [ngbNavOutlet]="customNav"></div>
-              <div class="row mb-3" >
-                <div class="col" *ngIf="cboDefaultValue == 0" >
+              <div class="row mb-3" *ngIf="btnValidation == 'validation'" >
+                <div class="col" *ngIf="ligneLocation.r_status == 0" >
                   <button type="button" class="btn btn-success btn-label waves-light btn-block" (click)="_majStatuslocation(1)" ><i
                     class="bx bx-check-double label-icon"></i> Valider la commande</button>
                 </div>
-                <div class="col" *ngIf="cboDefaultValue == 1">
+                <div class="col" *ngIf="ligneLocation.r_status == 1">
                   <button type="button" class="btn btn-warning btn-label waves-light" (click)="_majStatuslocation(2)"><i
                     class="bx bx-block label-icon "></i>Terminer la location</button>
                 </div>
-                <div class="col" *ngIf="cboDefaultValue == 0" >
+                <div class="col" *ngIf="ligneLocation.r_status == 0" >
                   <button type="button" style="float: right" class="btn btn-danger btn-label waves-light" (click)="_majStatuslocation(3)"><i
                     class="bx bx-block label-icon "></i>Annuler la demande de la location</button>
                 </div>
@@ -623,7 +621,7 @@
   <ng-template #TabContent1>
     <!-- Table -->
     <!-- End search -->
-    <table class="table mb-0 table-striped" >
+    <table class="table mb-0 table-striped" disable >
       <caption>Liste des produits</caption>
 
       <thead class="bg-dark text-white">
@@ -641,10 +639,10 @@
             <ng-select [items]="produitsTab"
             bindLabel = "label"
             bindValue = "value"
-            [(ngModel)]="produit.r_produit" >
+            [(ngModel)]="produit.r_produit" [disabled]="desactiver" >
           </ng-select></td>
-          <td style="width:15%" ><input class="form-control" name="prenoms" type="number" [(ngModel)]="produit.r_quantite" placeholder=""></td>
-          <td style="width:10%" >{{produit.r_prix_location}}</td>
+          <td style="width:15%"><input class="form-control" [disabled]="desactiver" type="number" [(ngModel)]="produit.r_quantite" placeholder=""></td>
+          <td style="width:10%" >{{produit.r_prix_location | mask: 'separator':' '}}</td>
           <td style="width:10%" >{{produit.r_sous_total | mask: 'separator':' '}}</td>
           <td style="width:20%">
             <button type="button" class="btn btn-primary" title="Modification" ><i class="fas fa-edit"></i></button>
@@ -721,13 +719,13 @@
         <div class="row mb-3">
           <label class="col-md-2 col-form-label">Description</label>
           <div class="col-md-10">
-            <textarea class="form-control"></textarea>
+            <textarea class="form-control" formControlName="p_description" ></textarea>
           </div>
         </div>
   
         <div class="mb-2">
           <label class="">Gérer la logistique</label>&nbsp;
-          <input #inplogistik class="form-check-input" type="checkbox" [(ngModel)]="logistik" [ngModelOptions]="{standalone: true}">
+          <input #inplogistik class="form-check-input" [disabled]="desactiver" type="checkbox" [(ngModel)]="logistik" [ngModelOptions]="{standalone: true}">
         </div>
   
   

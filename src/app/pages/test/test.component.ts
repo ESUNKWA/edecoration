@@ -71,6 +71,8 @@ export class TestComponent implements OnInit {
     
   }
 
+  
+
   public export(): void {
 
     const docDefinition = {
@@ -85,23 +87,109 @@ export class TestComponent implements OnInit {
       
     
       content: [
-        { text: "Tables", style: "header" },
-        {text:"Official documentation is in progress, this document is just a glimpse of what is possible with pdfmake and its layout engine."},
-        {
-          text:
-            "A simple table (no headers, no width specified, no spans, no styling)",
-          style: "subheader"
+       
+        { 
+          columns: [
+            [
+              {
+                text: 'Facture N° : ' + "this.detailsFacture.r_num",
+                
+              },
+              {
+                text: "this.detailsFacture.created_at"
+              }
+            ]
+          ],
+          style: 'facture'
         },
-        "The following table has nothing more than a body array",
+
+        {
+          columns: [
+            [{
+              text: 'Boutique/Commerce :',
+              decoration: 'underline'
+            },
+            {
+              text: "this.infosPatenaire[0].r_nom"
+            },
+            {
+              text: "this.infosPatenaire[0].r_quartier"
+            },
+            {
+              text:"this.infosPatenaire[0].email || '',"
+            },
+            {
+              text: "this.infosPatenaire[0].phone || ''",
+            }
+            ],
+          ],
+
+        },
+        {
+          columns: [
+            [{
+              text: 'A : Client/ Destinataire :',
+              decoration: 'underline'
+            },
+              {
+                text: "this.detailsFacture.r_nom + ' ' + this.detailsFacture.r_prenoms",
+                style: 'nomclient'
+              },
+              {
+                text: "this.detailsFacture.r_phone || 'Pas de numéro'",
+                style: 'phoneclient'
+              },
+              {
+                text: 'Abidjan',
+                style: 'ville'
+              }
+            ]
+          ],
+          alignment: 'right'
+        },
+        {
+          text: 'Intitulé: Produits facturés',
+          style: 'header'
+        },
+
+
         {
           style: "tableExample",
           table: {
+            headerRows: 1,
+            widths: [ '*', '*', '*'],
             body: [
               ["Column 1", "Column 2", "Column 3"],
+              ["One value goes here", "Another one here", "OK?"],
+              ["One value goes here", "Another one here", "OK?"],
               ["One value goes here", "Another one here", "OK?"]
             ]
           }
-        }
+        },
+
+        {
+          columns: [
+            [{
+              text: 'En votre aimable règlement'
+            },
+            {
+              text: 'Cordialement'
+            },
+            {
+              text: 'Devise de l’opération est le Franc cfa (Fcfa).'
+            }]
+          ],
+          style: 'note'
+        },
+        {
+          columns: [
+            {
+              text: "his.infosPatenaire[0].r_quartier + ' '+ this.infosPatenaire[0].r_situation_geo"
+            }
+          ],
+          style: 'piedpage'
+        },
+
       ],
 
 
@@ -123,7 +211,7 @@ export class TestComponent implements OnInit {
       }
     };
 
-    pdfmake.createPdf(docDefinition).download("test.pdf");
+    pdfmake.createPdf(docDefinition).open();
   }
 
 }
