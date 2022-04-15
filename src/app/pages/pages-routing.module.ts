@@ -39,6 +39,7 @@ const routes: Routes = [
   { path: 'commune', loadChildren: () => import('./communes/communes.module').then(m => m.CommunesModule) },
   { path: 'logistik', loadChildren: () => import('./logistik/logistik.module').then(m => m.LogistikModule) },
   { path: 'location', loadChildren: () => import('./location/location.module').then(m => m.LocationModule) },
+  { path: 'utilisateurs', loadChildren: () => import('./utilisateurs/utilisateurs.module').then(m => m.UtilisateursModule) },
 
   { path: 'test', loadChildren: () => import('./test/test.module').then(m => m.TestModule) },
 ];

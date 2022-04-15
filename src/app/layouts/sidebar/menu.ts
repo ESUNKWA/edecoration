@@ -5,7 +5,7 @@ export const MENU: MenuItem[] = [
         id: 2,
         label: 'Tableau de bords',
         icon: 'bx bxs-home',
-        link: '/edeco/dashboards', 
+        link: '/edeco/dashboards',
     },
     {
         id: 29,
@@ -100,7 +100,7 @@ export const MENU: MenuItem[] = [
             {
               id: 49,
               label: 'Utilisateurs',
-              link: '/edeco/contacts/grid',
+              link: '/edeco/utilisateurs',
               parentId: 48
           }
         ]
