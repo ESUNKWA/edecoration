@@ -1,23 +1,24 @@
 <app-loader></app-loader>
 <div class="container-fluid">
+    
     <!-- start page title -->
     <div class="row">
         <div class="col-12">
             <div class="page-title-box d-flex align-items-center justify-content-between">
-                <h4 class="mb-0 font-size-18">Dashboard</h4>
+                <h4 class="mb-0 font-size-18">Tableau de bord</h4>
                 <div class="page-title-right">
                     <ol class="breadcrumb m-0">
-                        <li class="breadcrumb-item active">Welcome to Dashboard</li>
+                        <li class="breadcrumb-item active">Bienvenue</li>
                     </ol>
                 </div>
             </div>
         </div>
     </div>
     <!-- end page title -->
-
+ 
     <div class="row">
         <div class="col-xl-4">
-            <div class="card overflow-hidden">
+            <!-- <div class="card overflow-hidden">
                 <div class="bg-primary bg-soft">
                     <div class="row">
                         <div class="col-7">
@@ -62,7 +63,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> -->
             <div class="card">
                 <div class="card-body">
                     <h4 class="card-title mb-4">Monthly Earning</h4>
@@ -94,13 +95,13 @@
         </div>
         <div class="col-xl-8">
             <div class="row">
-                <div *ngFor="let stat of statData" class="col-md-4">
+                <!-- <div *ngFor="let stat of statData" class="col-md-4">
                     <app-stat [title]="stat.title" [value]="stat.value" [icon]="stat.icon"></app-stat>
-                </div>
+                </div> -->
             </div>
             <!-- end row -->
 
-            <div class="card">
+            <!-- <div class="card">
                 <div class="card-body">
                     <div class="d-sm-flex flex-wrap">
                         <h4 class="card-title mb-4">Email Sent</h4>
@@ -128,7 +129,7 @@
                         [plotOptions]="emailSentBarChart.plotOptions">
                     </apx-chart>
                 </div>
-            </div>
+            </div> -->
         </div>
     </div>
     <!-- end row -->

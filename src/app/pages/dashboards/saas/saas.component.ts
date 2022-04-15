@@ -4,6 +4,7 @@ import { FormBuilder, Validators, FormGroup } from '@angular/forms';
 import { earningLineChart, salesAnalyticsDonutChart, ChatData } from './data';
 import { ChartType, ChatMessage } from './saas.model';
 import { ConfigService } from '../../../core/services/config.service';
+import { DashService } from 'src/app/core/services/dash/dash.service';
 
 @Component({
   selector: 'app-saas',
@@ -31,8 +32,11 @@ export class SaasComponent implements OnInit, AfterViewInit {
 
   // Form submit
   chatSubmit: boolean;
+  dashOne: any = {};
+  dashTwo: any = [];
+  dashThree: any = [];
 
-  constructor(public formBuilder: FormBuilder, private configService: ConfigService) { }
+  constructor(public formBuilder: FormBuilder, private configService: ConfigService, private dashServices: DashService,) { }
 
   /**
    * Returns form
@@ -42,8 +46,18 @@ export class SaasComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
-    this.breadCrumbItems = [{ label: 'Dashboards' }, { label: 'Saas', active: true }];
+    this.breadCrumbItems = [{ label: 'Eden décoration' }, { label: 'Tableau de bords', active: true }];
+    this.dashServices._dashbord().subscribe(
+      (data) => {
+        this.dashOne = {...data[0][0]};
+        //this.dashTwo = [...data[1][0]];
+        this.dashThree = [...data[2]];
 
+        
+        console.log(this.dashThree);
+        
+      },
+      (err) => {console.log(err.stack)})
     this._fetchData();
 
     this.formData = this.formBuilder.group({
@@ -83,7 +97,25 @@ export class SaasComponent implements OnInit, AfterViewInit {
 
   private _fetchData() {
     this.earningLineChart = earningLineChart;
-    this.salesAnalyticsDonutChart = salesAnalyticsDonutChart;
+    this.salesAnalyticsDonutChart = {
+      series: [56, 38, 26],
+      chart: {
+          type: 'donut',
+          height: 240,
+      },
+      labels: ['Series A', 'Series B', 'Series C'],
+      colors: ['#556ee6', '#34c38f', '#f46a6a'],
+      legend: {
+          show: false,
+      },
+      plotOptions: {
+          pie: {
+              donut: {
+                  size: '70%',
+              }
+          }
+      }
+  };
     this.ChatData = ChatData;
   }
 

@@ -1,12 +1,12 @@
 <div class="container-fluid">
 
-    <app-page-title title="Saas" [breadcrumbItems]="breadCrumbItems"></app-page-title>
+    <app-page-title title="Tableau de bord" [breadcrumbItems]="breadCrumbItems"></app-page-title>
     <div class="row">
         <div class="col-lg-12">
             <div class="card">
                 <div class="card-body">
                     <div class="row">
-                        <div class="col-lg-4">
+                        <!-- <div class="col-lg-4">
                             <div class="media">
                                 <div class="me-3">
                                     <img src="assets/images/users/avatar-1.jpg" alt=""
@@ -20,27 +20,36 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </div> -->
 
                         <div class="col-lg-4 align-self-center">
-                            <div class="text-lg-center mt-4 mt-lg-0">
+                            <h6 >Locations</h6><br>
+                            <div class="text-lg-center mt-1 mt-lg-0">
+                               
                                 <div class="row">
-                                    <div class="col-4">
+                                    <div class="col-3">
                                         <div>
-                                            <p class="text-muted text-truncate mb-2">Total Projects</p>
-                                            <h5 class="mb-0">48</h5>
+                                            <p class="text-muted text-truncate mb-2">Total du mois</p>
+                                            <h5 class="mb-0">{{dashOne.total_location_mois}}</h5>
                                         </div>
                                     </div>
-                                    <div class="col-4">
+                                    <div class="col-3">
                                         <div>
-                                            <p class="text-muted text-truncate mb-2">Projects</p>
-                                            <h5 class="mb-0">40</h5>
+                                            <p class="text-success text-truncate mb-2">Total validées</p>
+                                            <h5 class="mb-0">{{dashOne.total_location_mois_val}}</h5>
                                         </div>
                                     </div>
-                                    <div class="col-4">
+                                    <div class="col-3">
                                         <div>
-                                            <p class="text-muted text-truncate mb-2">Clients</p>
-                                            <h5 class="mb-0">18</h5>
+                                            <p class="text-info text-truncate mb-2">Total en Attente</p>
+                                            <h5 class="mb-0">{{dashOne.total_location_mois_att}}</h5>
+
+                                        </div>
+                                    </div>
+                                    <div class="col-3">
+                                        <div>
+                                            <p class="text-danger text-truncate mb-2">Total rejettés</p>
+                                            <h5 class="mb-0">{{dashOne.total_location_mois_rej}}</h5>
 
                                         </div>
                                     </div>
@@ -48,7 +57,41 @@
                             </div>
                         </div>
 
-                        <div class="col-lg-4 d-none d-lg-block">
+                        <div class="col-lg-7 offset-md-1 align-self-center">
+                            <h6 >Prévisions</h6><br>
+                            <div class="text-lg-center mt-4 mt-lg-0">
+                                <div class="row">
+                                    <div class="col-3">
+                                        <div>
+                                            <p class="text-muted text-truncate mb-2">Nombre de livraison du jour</p>
+                                            <h5 class="mb-0">{{dashOne.nbreLivraisonJour}}</h5>
+                                        </div>
+                                    </div>
+                                    <div class="col-3">
+                                        <div>
+                                            <p class="text-muted text-truncate mb-2">Nombre de retour du jour</p>
+                                            <h5 class="mb-0">{{dashOne.nbreRetourJour}}</h5>
+                                        </div>
+                                    </div>
+                                    <div class="col-3">
+                                        <div>
+                                            <p class="text-muted text-truncate mb-2">Nombre de livraison demain</p>
+                                            <h5 class="mb-0">{{dashOne.nbreLivraisonDemain}}</h5>
+
+                                        </div>
+                                    </div>
+                                    <div class="col-3">
+                                        <div>
+                                            <p class="text-muted text-truncate mb-2">Nombre de retour demain</p>
+                                            <h5 class="mb-0">{{dashOne.nbreRetourDemain}}</h5>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- <div class="col-lg-4 d-none d-lg-block">
                             <div class="clearfix  mt-4 mt-lg-0">
                                 <div class="dropdown float-end" ngbDropdown>
                                     <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown"
@@ -62,7 +105,7 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </div> -->
                     </div>
                     <!-- end row -->
                 </div>
@@ -71,7 +114,7 @@
     </div>
 
     <div class="row">
-        <div class="col-xl-4">
+        <!-- <div class="col-xl-4">
             <div class="card bg-primary bg-soft">
                 <div>
                     <div class="row">
@@ -92,8 +135,8 @@
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="col-xl-8">
+        </div> -->
+        <div class="col-xl-12">
             <div class="row">
                 <div class="col-sm-4">
                     <div class="card">
@@ -102,17 +145,41 @@
                                 <div class="avatar-xs me-3">
                                     <span
                                         class="avatar-title rounded-circle bg-primary bg-soft text-primary font-size-18">
-                                        <i class="bx bx-copy-alt"></i>
+                                        <i class="bx bx-archive-in"></i>
                                     </span>
                                 </div>
-                                <h5 class="font-size-14 mb-0">Orders</h5>
+                                <h5 class="font-size-14 mb-0">Revenue mensuel</h5>
                             </div>
                             <div class="text-muted mt-4">
-                                <h4>1,452 <i class="mdi mdi-chevron-up ms-1 text-success"></i></h4>
-                                <div class="d-flex">
+                                <h4>{{dashOne.r_mnt_total_mois | mask: 'separator':' '}} <i class="mdi mdi-chevron-up ms-1 text-success"></i></h4>
+                                <!-- <div class="d-flex">
                                     <span class="badge badge-soft-success font-size-12"> + 0.2% </span> <span
                                         class="ms-2 text-truncate">From previous period</span>
+                                </div> -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+
+                <div class="col-sm-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="avatar-xs me-3">
+                                    <span
+                                        class="avatar-title rounded-circle bg-primary bg-soft text-primary font-size-18">
+                                        <i class="bx bx-archive-in"></i>
+                                    </span>
                                 </div>
+                                <h5 class="font-size-14 mb-0">Revenue du jour</h5>
+                            </div>
+                            <div class="text-muted mt-4">
+                                <h4>{{dashOne.total_location_jours | mask: 'separator':' '}} <i class="mdi mdi-chevron-up ms-1 text-success"></i></h4>
+                                <!-- <div class="d-flex">
+                                    <span class="badge badge-soft-success font-size-12"> + 0.2% </span> <span
+                                        class="ms-2 text-truncate">From previous period</span>
+                                </div> -->
                             </div>
                         </div>
                     </div>
@@ -128,38 +195,15 @@
                                         <i class="bx bx-archive-in"></i>
                                     </span>
                                 </div>
-                                <h5 class="font-size-14 mb-0">Revenue</h5>
+                                <h5 class="font-size-14 mb-0">Total achat du mois</h5>
                             </div>
                             <div class="text-muted mt-4">
-                                <h4>$ 28,452 <i class="mdi mdi-chevron-up ms-1 text-success"></i></h4>
-                                <div class="d-flex">
-                                    <span class="badge badge-soft-success font-size-12"> + 0.2% </span> <span
-                                        class="ms-2 text-truncate">From previous period</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                                <h4>{{dashOne.total_achat_mois | mask: 'separator':' '}} <i class="mdi mdi-chevron-up ms-1 text-success"></i></h4>
 
-                <div class="col-sm-4">
-                    <div class="card">
-                        <div class="card-body">
-                            <div class="d-flex align-items-center mb-3">
-                                <div class="avatar-xs me-3">
-                                    <span
-                                        class="avatar-title rounded-circle bg-primary bg-soft text-primary font-size-18">
-                                        <i class="bx bx-purchase-tag-alt"></i>
-                                    </span>
-                                </div>
-                                <h5 class="font-size-14 mb-0">Average Price</h5>
-                            </div>
-                            <div class="text-muted mt-4">
-                                <h4>$ 16.2 <i class="mdi mdi-chevron-up ms-1 text-success"></i></h4>
-
-                                <div class="d-flex">
+                                <!-- <div class="d-flex">
                                     <span class="badge badge-soft-warning font-size-12"> 0% </span> <span
                                         class="ms-2 text-truncate">From previous period</span>
-                                </div>
+                                </div> -->
                             </div>
                         </div>
                     </div>
@@ -182,10 +226,10 @@
                                     <option value="november">Nov</option>
                                     <option value="october">Oct</option>
                                 </select>
-                                <label class="input-group-text">Month</label>
+                                <label class="input-group-text">Mensuel</label>
                             </div>
                         </div>
-                        <h4 class="card-title mb-4">Earning</h4>
+                        <h4 class="card-title mb-4">Statistique</h4>
                     </div>
 
                     <div class="row" *ngFor="let item of sassEarning">
@@ -225,7 +269,7 @@
         <div class="col-xl-4">
             <div class="card">
                 <div class="card-body">
-                    <h4 class="card-title mb-4">Sales Analytics</h4>
+                    <h4 class="card-title mb-4">Top 5 produits</h4>
 
                     <div>
                         <apx-chart class="apex-charts" dir="ltr" [series]="salesAnalyticsDonutChart.series"
@@ -266,7 +310,7 @@
     </div>
     <!-- end row -->
 
-    <div class="row">
+    <div class="row" hidden>
         <div class="col-xl-4">
             <div class="card">
                 <div class="card-body">

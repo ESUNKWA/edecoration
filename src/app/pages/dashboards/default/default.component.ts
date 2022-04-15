@@ -6,6 +6,7 @@ import { EventService } from '../../../core/services/event.service';
 
 import { ConfigService } from '../../../core/services/config.service';
 import { UserService } from 'src/app/core/services/usersinfos/user.service';
+import { DashService } from 'src/app/core/services/dash/dash.service';
 
 @Component({
   selector: 'app-default',
@@ -25,10 +26,13 @@ export class DefaultComponent implements OnInit {
 
   @ViewChild('content') content;
   constructor(private modalService: NgbModal, private configService: ConfigService, private eventService: EventService,
-              private user: UserService) {
+              private dashServices: DashService, ) {
   }
 
   ngOnInit() {
+
+    
+    
 
     /**
      * horizontal-vertical layput set

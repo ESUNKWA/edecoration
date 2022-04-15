@@ -15,6 +15,7 @@ import { DefaultComponent } from './default/default.component';
 import { SaasComponent } from './saas/saas.component';
 import { CryptoComponent } from './crypto/crypto.component';
 import { BlogComponent } from './blog/blog.component';
+import { NgxMaskModule } from 'ngx-mask';
 
 @NgModule({
   declarations: [DefaultComponent, SaasComponent, CryptoComponent, BlogComponent],
@@ -30,7 +31,8 @@ import { BlogComponent } from './blog/blog.component';
     WidgetModule,
     NgApexchartsModule,
     SharedModule,
-    SimplebarAngularModule
+    SimplebarAngularModule,
+    NgxMaskModule.forRoot(),
   ]
 })
 export class DashboardsModule { }
