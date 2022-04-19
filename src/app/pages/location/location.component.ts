@@ -514,7 +514,7 @@ viewTable: boolean = false;
   }
   _affiche_location(){
     this.interface = 'liste';
-    this._search_location(this.searchData.value);
+    //this._search_location(this.searchData.value);
     
   }
 

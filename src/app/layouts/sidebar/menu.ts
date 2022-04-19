@@ -68,7 +68,7 @@ export const MENU: MenuItem[] = [
             {
                 id: 40,
                 label: 'Personnels',
-                link: '/edeco/projects/grid',
+                link: '/edeco/personnel',
                 parentId: 38
             }
         ]
@@ -91,12 +91,6 @@ export const MENU: MenuItem[] = [
         label: 'Gestion des utilisateurs',
         icon: 'bxs-user-detail',
         subItems: [
-            {
-                id: 49,
-                label: 'Profils',
-                link: '/edeco/contacts/grid',
-                parentId: 48
-            },
             {
               id: 49,
               label: 'Utilisateurs',

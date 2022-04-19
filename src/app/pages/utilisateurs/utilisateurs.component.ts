@@ -1,6 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { NotifService } from 'src/app/core/services/notif.service';
+import { ProfilService } from 'src/app/core/services/profil/profil.service';
+import { UserService } from 'src/app/core/services/usersinfos/user.service';
 import { UtilisateursService } from 'src/app/core/services/utilisateurs/utilisateurs.service';
 import { userGridData } from '../contacts/usergrid/data';
 import { Usergrid } from '../contacts/usergrid/usergrid.model';
@@ -15,37 +18,38 @@ export class UtilisateursComponent implements OnInit {
  breadCrumbItems: Array<{}>;
 
  userGridData: Usergrid[];
-  selected;
-  userForm: FormGroup;
+  selected: any;
+  userData: FormGroup;
   submitted = false;
   items: FormArray;
   // Select2 Dropdown
-  selectValue: string[];
+
   usersList: any[] = [];
+  personnelList: any = [];
+  contact: any;
+  idemploye: any;
+  profilList: any[] = [];
+  selectedprofil: any;
+  viewTable: boolean = false;
+  utilisateur: any;
 
   constructor(private modalService: NgbModal, private formBuilder: FormBuilder,
-    private utilisateurService: UtilisateursService) { }
+    private utilisateurService: UtilisateursService, private notifications: NotifService, 
+    private profilServices: ProfilService, private userServices: UserService,) { }
 
   ngOnInit(): void {
     this.breadCrumbItems = [{ label: 'Eden décoration' }, { label: 'Liste des utilisateurs', active: true }];
-
-    this.selectValue = ['Photoshop', 'illustrator', 'Html', 'Css', 'Php', 'Java', 'Python'];
-    this.userForm = this.formBuilder.group({
-      name: ['', [Validators.required]],
-      email: ['', [Validators.required]],
-      designation: ['', [Validators.required]]
+    this.utilisateur = this.userServices._donnesUtilisateur()[0];
+    this.userData = this.formBuilder.group({
+      p_personnel: ['', [Validators.required]],
+      p_profil: ['', [Validators.required]],
+      password: ['', [Validators.required]],
+      password_confirmation: ['', [Validators.required]],
     });
 
-    this.utilisateurService._list().subscribe(
-      (data: any = {}) => {
-
-        this.usersList = [...data._result];
-
-        console.log(this.usersList);
-
-      },
-      (err) => {console.log(err.stack)})
-
+    this._listPersonnelNotUser();
+    this._listutilisateur();
+    this._listprofils();
     /**
      * fetches data
      */
@@ -53,7 +57,7 @@ export class UtilisateursComponent implements OnInit {
   }
 
   get form() {
-    return this.userForm.controls;
+    return this.userData.controls;
   }
 
   openModal(content: any) {
@@ -64,21 +68,73 @@ export class UtilisateursComponent implements OnInit {
     this.userGridData = userGridData;
   }
 
+  _getContact(employer){
+    
+    this.contact = employer.contact;
+    this.idemploye = employer.value;
+    
+  }
+
 
   saveUser() {
-    if (this.userForm.valid) {
-      const name = this.userForm.get('name').value;
-      const email = this.userForm.get('email').value;
-      const designation = this.userForm.get('designation').value;
-       this.userGridData.push({
-         id: this.userGridData.length + 1,
-         name,
-         email,
-         designation,
-         projects: this.selected
-       })
-       this.modalService.dismissAll()
-    }
+    
     this.submitted = true
+    if (this.userData.invalid) {
+      return;
+    }
+    this.userData.value.r_login = this.contact;
+    this.userData.value.p_personnel = this.idemploye;
+    this.userData.value.p_profil = this.selectedprofil;
+    this.userData.value.p_utilisateur = this.utilisateur.r_i;
+
+    this.utilisateurService._create(this.userData.value).subscribe(
+      (data: any= {})=> {
+        if(data._status == 1){
+          this.userData.reset();
+          this.notifications.sendMessage(data._result,'success');
+          this._listPersonnelNotUser();
+        }else{
+          this.notifications.sendMessage(Object.values(data)[0][0],'error');
+        }
+      },
+      (err: any)=> {console.log(err.stack);
+      }
+    )
+    
+  }
+
+  _listprofils(){
+    this.profilServices._list().subscribe(
+      (data: any = {}) => {
+        this.profilList = [...data._result];
+        
+      },
+      (err) => {console.log(err.stack)})
+  }
+
+  _listutilisateur(){
+    this.utilisateurService._list().subscribe(
+      (data: any = {}) => {
+        this.usersList = [...data._result];
+        setTimeout(() => {
+          this.viewTable = true;
+        }, 200);
+      },
+      (err) => {console.log(err.stack)})
+  }
+
+  _listPersonnelNotUser(){
+    this.utilisateurService._listPersonnelNotUser().subscribe(
+      (data: any = {}) => {
+        data._result.forEach((item: any) => {
+          let obj: any = {};
+          obj.value = item.r_i;
+          obj.label = item.r_nom + ' ' + item.r_prenoms;
+          obj.contact = parseInt(item.r_contact,10);
+          this.personnelList.push(obj);
+        });
+        
+      }
+    );
   }
 }

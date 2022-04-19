@@ -1,0 +1,151 @@
+<div class="container-fluid">
+  <app-page-title title="Personnel       entreprise" [breadcrumbItems]="breadCrumbItems"></app-page-title>
+
+  <div class="row mb-2">
+    <div class="col-md-12 ">
+      <button type="button" class="btn btn-primary nouveau" title="Saisir un nouvelle catégorie de produits" (click)="fctSaisieCat(largeDataModal)">Nouveau</button>
+    </div>
+  </div>
+
+  <ng-template [ngIf]="viewTable == false" >
+    <app-spinner></app-spinner>
+  </ng-template>
+
+  <ng-template [ngIf]="viewTable == true" >
+    <div class="row">
+      <div *ngFor="let personnel of personnelList" class="col-xl-4 col-sm-6">
+        <div class="card">
+          <div class="card-body">
+            <div class="media">
+              <div class="avatar-md me-4">
+                <span class="avatar-title rounded-circle bg-light text-danger font-size-16">
+                  <img src="{{personnel?.image}}" alt height="30" />
+                </span>
+              </div>
+  
+              <div class="media-body overflow-hidden">
+                <h5 class="text-truncate font-size-15">
+                  <a href="javascript: void(0);" class="text-dark">{{personnel.r_nom}} {{personnel.r_prenoms}}</a>
+                </h5>
+                <p class="text-muted mb-4">{{personnel.fonction}}</p>
+                <div class="avatar-group">
+                  <div class="avatar-group-item">
+                    <a href="javascript: void(0);" class="d-inline-block">
+                      <img src="{{personnel?.users}}" class="rounded-circle avatar-xs" alt />
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="px-4 py-3 border-top">
+            <ul class="list-inline mb-0">
+              <li class="list-inline-item me-3">
+                <span class="badge" [ngClass]="{ 'bg-success': personnel.status === 'Completed',
+                      'bg-warning': personnel.status === 'Pending',
+                      'bg-danger': personnel.status === 'Delay' }">{{personnel?.status}}</span>
+              </li>
+              <li class="list-inline-item me-3" title="Due Date" ngbTooltip="Due Date">
+                <i class="bx bx-calendar me-1"></i>
+                {{personnel.created_at | date: 'dd/MM/yyyy'}}
+              </li>
+              <li class="list-inline-item me-3" title="Comments" ngbTooltip="Comments">
+                <i class="bx bx-comment-dots me-1"></i>
+                {{personnel.domicile}}
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+
+  <!-- end row -->
+</div>
+
+
+<!-- Large Modal -->
+<ng-template #largeDataModal let-modal>
+  <div class="modal-header">
+    <h5 class="modal-title mt-0">{{modalTitle}}</h5>
+    <button type="button" class="btn-close" (click)="modal.dismiss('Cross click')" aria-hidden="true"></button>
+  </div>
+  <div class="modal-body">
+    <form class="needs-validation" [formGroup]="personnelData">
+      <div class="row">
+        <div class="col-md-6">
+            <label for="validationCustom01">Nom</label>
+            <input type="text" class="form-control" name="" formControlName="p_nom"  >
+            <div *ngIf="f.p_nom.touched && f.p_nom.invalid" class="text-danger">
+                <span *ngIf="f.p_nom.errors.required">
+                  Le nom de l'employé est obligatoire
+                </span>
+            </div>
+        </div>
+        <div class="col-md-6">
+          <label for="validationCustom01">Prenoms</label>
+          <input type="text" class="form-control"  formControlName="p_prenoms"  >
+          <div *ngIf="f.p_prenoms.touched && f.p_prenoms.invalid" class="text-danger">
+            <span *ngIf="f.p_prenoms.errors.required">
+              Le prenoms de l'employé est obligatoire
+            </span>
+          </div>
+        </div>
+      </div>
+      <div class="row mt-2">
+        <div class="col-md-6">
+            <label for="validationCustom01">Contact</label>
+            <input type="text" class="form-control" mask="00 00 00 00 00" formControlName="p_contact" >
+            <div *ngIf="f.p_contact.touched && f.p_contact.invalid" class="text-danger">
+              <span *ngIf="f.p_contact.errors.required">
+                Le numéro de téléphone est obligatoire
+              </span>
+              
+            </div>
+        </div>
+        <div class="col-md-6">
+          <label for="validationCustom01">Email</label>
+          <input type="text" class="form-control"  formControlName="p_email"  >
+        </div>
+      </div>
+      <div class="row mt-2">
+        <div class="col-md-4">
+          <label class="col-form-label">Date d'embauche</label>
+          <input class="form-control" type="datetime-local" formControlName="p_date_entree" value="2019-08-19T13:45:00"
+          id="example-datetime-local-input" (change)="_getdatedebut()">
+        </div>
+        <div class="col-md-4">
+          <label for="validationCustom01">Fonction</label>
+          <ng-select [items]="fonctionsTab" formControlName="p_fonction"
+          bindLabel = "label"
+          bindValue = "value"
+           [(ngModel)]="fonctionid" ></ng-select>
+           <div *ngIf="f.p_fonction.touched && f.p_fonction.invalid" class="text-danger">
+            <span *ngIf="f.p_fonction.errors.required">
+              Veuillez selectionnez le poste de l'employé
+            </span>
+           </div>
+           
+        </div>
+        <div class="col-md-4">
+          <label for="validationCustom01">Domicile</label>
+          <ng-select [items]="CommunesTab" formControlName="p_quatier"
+          bindLabel = "label"
+          bindValue = "value"
+           [(ngModel)]="quatierid" ></ng-select>
+        </div>
+      </div>
+      <div class="row mt-2">
+        <div class="col-md-12">
+          <label for="validationCustom05">Description</label>
+            <textarea class="form-control" rows="3" formControlName="p_description"  placeholder=""></textarea>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button type="button" title="fermer" class="btn btn-secondary" (click)="modal.close('Close click'); ">Fermer</button>
+    <button type="button" [disabled]="personnelData.invalid" title="Enregistrer" class="btn btn-primary" (click)="_register()">Enregistrer</button>
+  </div>
+</ng-template>
+

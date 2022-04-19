@@ -31,14 +31,14 @@
                   <div class="col-md-9">
                     <form [formGroup]="searchData">
                       <div class="row">
-                        <div class="col-md-3">
+                        <div class="col">
                           <label class="col-form-label">Type de demande de location</label>
                           <ng-select [items]="demandeStat" [(ngModel)]="cboDefaultValue" bindLabel = "label" bindValue = "value" formControlName="p_status" ></ng-select>
                           <div *ngIf="submit == true && searchValidate.p_status?.invalid" class="text-danger">
                             <div *ngIf="searchValidate.p_status.errors.required">Veuillez selectionnez le status de la location.</div>
                           </div>
                         </div>
-                        <div class="col-md-3">
+                        <div class="col">
                           <label class="col-form-label">{{libDatedete}}</label>
                           <input class="form-control" type="datetime-local" formControlName="p_date" value="2019-08-19"
                                       id="example-datetime-local-input">
@@ -46,7 +46,7 @@
                                   <div *ngIf="searchValidate.p_date.errors.required">Veuillez selectionnez le date de livraison.</div>
                             </div>
                         </div>
-                        <div class="col-md-3" *ngIf="modeDate == 3">
+                        <div class="col" *ngIf="modeDate == 3">
                           <label class="col-form-label">Date de retour</label>
                           <input class="form-control" type="datetime-local" formControlName="p_date_retour" value="2019-08-19"
                                       id="example-datetime-local-input">
@@ -55,7 +55,7 @@
                             </div>
                         </div>
                         
-                        <div class="col-md-3 ">
+                        <div class="col">
                           <br><br>
                           <button type="submit" class="btn btn-primary" title="Saisir un nouvelle catégorie de produits" (click)="_exe_search_location()"><i class="fas fa-search"></i></button>
                         </div>

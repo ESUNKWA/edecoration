@@ -7,32 +7,23 @@ import { environment } from "../../../../../src/environments/environment";
 @Injectable({
   providedIn: 'root'
 })
-export class UtilisateursService {
-
+export class ProfilService {
   env = environment;
   headers = new HttpHeaders().set('Content-Type', 'application/json');
-
   constructor(private http: HttpClient) { }
 
   _create(data: any): Observable<any> {
-    return this.http.post(`${this.env.backendServer}/utilisateurs`,data).pipe(catchError(this.error));
+    return this.http.post(`${this.env.backendServer}/profils`,data).pipe(catchError(this.error));
   }
 
   _list(){
-    return this.http.get(`${this.env.backendServer}/utilisateurs`);
+    return this.http.get(`${this.env.backendServer}/profils`);
   }
 
-
-  _createPersonnel(data: any): Observable<any> {
-    return this.http.post(`${this.env.backendServer}/personnel`,data).pipe(catchError(this.error));
+  _update(data: any, id: number): Observable<any>{
+    return this.http.put(`${this.env.backendServer}/profils/${id}`, data).pipe(catchError(this.error));
   }
 
-  _listPersonnel(){
-    return this.http.get(`${this.env.backendServer}/personnel`);
-  }
-  _listPersonnelNotUser(){
-    return this.http.get(`${this.env.backendServer}/personneltNotUser`);
-  }
 
   // Handle Errors
   error(error: HttpErrorResponse) {
@@ -42,9 +33,9 @@ export class UtilisateursService {
     } else {
       errorMessage = `Error Code: ${error.status}\nMessage: ${error.message}`;
     }
+    console.log(errorMessage);
     return throwError(() => {
       return errorMessage;
     });
   }
-
 }

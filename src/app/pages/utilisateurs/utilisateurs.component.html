@@ -10,98 +10,103 @@
     </div>
     <ng-template #content role="document" let-modal>
       <div class="modal-header">
-        <h5 class="modal-title mt-0">Add Customer</h5>
+        <h5 class="modal-title mt-0">Nouveau utilisateur</h5>
         <button type="button" class="btn-close" aria-hidden="true" (click)="modal.dismiss('Cross click')"></button>
       </div>
       <div class="modal-body">
-        <form (ngSubmit)="saveUser()" [formGroup]="userForm">
+        <form (ngSubmit)="saveUser()" [formGroup]="userData">
           <div class="row">
-            <div class="col-12">
-              <div class="mb-3">
-                <label class="control-label">Nom</label>
-                <input class="form-control" placeholder="Enter Username" type="text" name="name"
-                  formControlName="name" [ngClass]="{'is-invalid': submitted && form.name.errors}" />
-                <div *ngIf="submitted && form.name.errors" class="invalid-feedback">
-                  <span *ngIf="form.name.errors.required">Username is required.</span>
+            <div class="col-12 mb-3" >
+              <label class="control-label">Selectionner un employé</label>
+              <ng-select [items]="personnelList" [multiple]="false" 
+              formControlName="p_personnel"
+              (change)="_getContact(selected)"
+              name="select" [(ngModel)]="selected"></ng-select>
+              <div *ngIf="form.p_personnel.touched && form.p_personnel.invalid" class="text-danger">
+                <span *ngIf="form.p_personnel.errors.required">
+                  Veuillez selectionnez un employé
+                </span>
+              </div>
+            </div>
+            <div class=" col-12 mb-3">
+              <label class="control-label">Proifil utilisateur</label>
+              <ng-select [items]="profilList" [multiple]="false" 
+              formControlName="p_profil"
+              bindValue="value"
+              bindLabel="label"
+              name="select" [(ngModel)]="selectedprofil"></ng-select>
+              <div *ngIf="form.p_profil.touched && form.p_profil.invalid" class="text-danger">
+                <span *ngIf="form.p_profil.errors.required">
+                  Veuillez selectionnez un employé
+                </span>
+              </div>
+            </div>
+            <div class="col-12 mb-3 ">
+                <label class="control-label">Mot de passe</label>
+                <input class="form-control" placeholder="" type="password" name="password" autocomplete="off"
+                  formControlName="password" />
+                <div *ngIf="form.password.touched && form.password.invalid" class="text-danger">
+                  <span *ngIf="form.password.errors.required">Mot de passe obligatoire.</span>
                 </div>
               </div>
 
-              <div class="mb-3">
-                <label class="control-label">Prenoms</label>
-                <input class="form-control" placeholder="Enter designation" type="text" name="designation"
-                  formControlName="designation" [ngClass]="{'is-invalid': submitted && form.designation.errors}" />
-                <div *ngIf="submitted && form.designation.errors" class="invalid-feedback">
-                  <span *ngIf="form.designation.errors.required">Username is required.</span>
+              <div class="col-12 mb-3">
+                <label class="control-label">Confirmation du mot de passe</label>
+                <input class="form-control" placeholder="" type="password" name="password_confirmation" autocomplete="off"
+                  formControlName="password_confirmation" />
+                <div *ngIf="form.password_confirmation.touched && form.password_confirmation.invalid" class="text-danger">
+                  <span *ngIf="form.password_confirmation.errors.required">Veuillez confirmer le mot de passe.</span>
                 </div>
               </div>
-              <div class="mb-3">
-                <label class="control-label">Numéro de téléphone</label>
-                <input class="form-control" placeholder="Enter email" type="text" name="email" formControlName="email"
-                  [ngClass]="{'is-invalid': submitted && form.email.errors}" />
-                <div *ngIf="submitted && form.email.errors" class="invalid-feedback">
-                  <span *ngIf="form.email.errors.required">Email is required.</span>
-                  <span *ngIf="form.email.errors.pattern">This value should be a valid email.</span>
-                </div>
-              </div>
-              <div class="mb-3">
-                <label class="control-label">Select</label>
-                <ng-select [items]="selectValue" [multiple]="true" name="select" [ngModelOptions]="{standalone: true}" [(ngModel)]="selected"></ng-select>
-              </div>
-            </div>
           </div>
-          <button type="submit" class="btn btn-success" id="btn-save-event">
-            Save
+
+          <button type="button" [disabled]="userData.invalid" (click)="saveUser()" class="btn btn-success" id="btn-save-event">
+            Enregistrer
           </button>
         </form>
       </div>
     </ng-template>
 
+    <ng-template [ngIf]="viewTable == false" >
+      <app-spinner></app-spinner>
+    </ng-template>
 
-
-    <div class="col-xl-3 col-sm-6" *ngFor="let data of usersList">
-      <div class="card text-center">
-        <div class="card-body">
-          <div class="avatar-sm mx-auto mb-4" *ngIf="!data.image">
-            <span class="avatar-title rounded-circle bg-soft bg-primary text-primary font-size-16">
-              {{data.r_nom.charAt(0)}}
-            </span>
-          </div>
-          <div *ngIf="data.image" class="mb-4">
-            <img class="rounded-circle avatar-sm" src="" alt="Photo" />
-          </div>
-          <h5 class="font-size-15 mb-1"><a href="javascript: void(0);" class="text-dark">{{data.r_nom}} {{data.r_prenoms}}</a></h5>
-          <p class="text-muted">{{data.profil}}</p>
-          <!-- <div>
-            <a href="javascript: void(0);" class="badge bg-primary font-size-11 m-1">{{data.projects[0]}}</a>
-            <a href="javascript: void(0);" class="badge bg-primary font-size-11 m-1">{{data.projects[1]}}</a>
-            <a href="javascript: void(0);" class="badge bg-primary font-size-11 m-1">{{data.projects[2]}}</a>
-          </div> -->
-        </div>
-        <div class="card-footer bg-transparent border-top">
-          <div class="contact-links d-flex font-size-20">
-            <div class="flex-fill">
-              <a href="javascript: void(0);" ngbTooltip="Message"><i class="bx bx-message-square-dots"></i></a>
+    <ng-template [ngIf]="viewTable == true" >
+      <div class="col-xl-3 col-sm-6" *ngFor="let data of usersList">
+        <div class="card text-center">
+          <div class="card-body">
+            <div class="avatar-sm mx-auto mb-4" *ngIf="!data.image">
+              <span class="avatar-title rounded-circle bg-soft bg-primary text-primary font-size-16">
+                {{data.r_nom?.charAt(0)}}
+              </span>
             </div>
-            <div class="flex-fill">
-              <a href="javascript: void(0);" ngbTooltip="Projects"><i class="bx bx-pie-chart-alt"></i></a>
+            <div *ngIf="data.image" class="mb-4">
+              <img class="rounded-circle avatar-sm" src="" alt="Photo" />
             </div>
-            <div class="flex-fill">
-              <a href="javascript: void(0);" ngbTooltip="Profile"><i class="bx bx-user-circle"></i></a>
+            <h5 class="font-size-15 mb-1"><a href="javascript: void(0);" class="text-dark">{{data.r_nom}} {{data.r_prenoms}}</a></h5>
+            <p class="text-muted">{{data.profil}}</p>
+            <!-- <div>
+              <a href="javascript: void(0);" class="badge bg-primary font-size-11 m-1">{{data.projects[0]}}</a>
+              <a href="javascript: void(0);" class="badge bg-primary font-size-11 m-1">{{data.projects[1]}}</a>
+              <a href="javascript: void(0);" class="badge bg-primary font-size-11 m-1">{{data.projects[2]}}</a>
+            </div> -->
+          </div>
+          <div class="card-footer bg-transparent border-top">
+            <div class="contact-links d-flex font-size-20">
+              <div class="flex-fill">
+                <a href="javascript: void(0);" ngbTooltip="Message"><i class="bx bx-message-square-dots"></i></a>
+              </div>
+              <div class="flex-fill">
+                <a href="javascript: void(0);" ngbTooltip="Projects"><i class="bx bx-pie-chart-alt"></i></a>
+              </div>
+              <div class="flex-fill">
+                <a href="javascript: void(0);" ngbTooltip="Profile"><i class="bx bx-user-circle"></i></a>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </ng-template>
   </div>
-  <!-- end row -->
-
-  <div class="row">
-    <div class="col-12">
-      <div class="text-center my-3">
-        <a href="javascript:void(0);" class="text-success"><i class="bx bx-hourglass bx-spin mr-2"></i> Load more </a>
-      </div>
-    </div> <!-- end col-->
-  </div>
-  <!-- end row -->
 
 </div> <!-- container-fluid -->

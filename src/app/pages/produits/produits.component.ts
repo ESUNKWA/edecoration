@@ -182,7 +182,7 @@ export class ProduitsComponent implements OnInit {
             this.datastock.p_quantite =  parseInt(qte, 10);
             this.datastock.p_stock_actuel = this.ligneProduit.r_stock;
             this.datastock.p_description = '';
-            this.datastock.p_utilisateur = 1;
+            this.datastock.p_utilisateur = this.userData.r_i;
           
           this.produitServices._addTrarification(this.datastock).subscribe(
             (response) =>{
