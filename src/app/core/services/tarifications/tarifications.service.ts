@@ -32,6 +32,10 @@ export class TarificationsService {
     return this.http.put(`${this.env.backendServer}/tarifications/${id}`, data).pipe(catchError(this.error));
   }
 
+  _tarifAppliquer(data: any): Observable<any> {
+    return this.http.post(`${this.env.backendServer}/tarifapply`,data).pipe(catchError(this.error));
+  }
+
 
   // Handle Errors
   error(error: HttpErrorResponse) {

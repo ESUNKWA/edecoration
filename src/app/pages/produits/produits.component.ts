@@ -1,6 +1,7 @@
 import { Component, OnInit, QueryList, ViewChildren } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { Observable } from 'rxjs';
 import { CategoriesService } from 'src/app/core/services/categories/categories.service';
 import { NotifService } from 'src/app/core/services/notif.service';
 import { ProduitService } from 'src/app/core/services/produits/produit.service';
@@ -28,17 +29,37 @@ export class ProduitsComponent implements OnInit {
   idservice: any;
   idCategory: any;
   ligneTarification: any = {};
-  qteRetour: any;
+  modeAppeltarif: any;
   datastock: any = {};
   searChIn: any;
   viewTable: boolean = false;
   userData: any;
-
+  term: any;
   pattern: any;
+  tarificationTab: any[] = [];
+  dkem: any = false;
+  params: any = {};
+
+  //Paginations
+  premiumData: any[] = [];
+  paginateData: any[] = [];
+  source$: Observable<any>;
+  page = 1;
+  pageSize = 5; //Nbre de ligne à afficher
+  collectionSize = 0;
+
+  getPremiumData() {
+    this.paginateData = this.produitsTab.slice(
+      (this.page - 1) * this.pageSize,
+      (this.page - 1) * this.pageSize + this.pageSize
+    );
+    
+  }
   
   constructor( private fb: FormBuilder, private produitServices: ProduitService, private notifications: NotifService,
                 private modalService: NgbModal, private categorieServices: CategoriesService, 
-                private taficationService: TarificationsService, private user: UserService ) { }
+                private taficationService: TarificationsService, private user: UserService, ) { 
+                 }
 
   ngOnInit(): void {
     this.userData = this.user._donnesUtilisateur()[0];
@@ -48,9 +69,11 @@ export class ProduitsComponent implements OnInit {
 
     this.tarificationData = this.fb.group({
       p_produit: ['', [Validators.required, Validators.pattern('[a-zA-Z0-9]+')]],
-      p_quantite: ['', [Validators.required, Validators.pattern('[a-zA-Z0-9]+')]],
-      p_prix_location: ['', [Validators.required, Validators.pattern('[a-zA-Z0-9]+')]],
-      p_duree: ['', [Validators.required, Validators.pattern('[a-zA-Z0-9]+')]],
+      p_quantite: ['', [Validators.required, Validators.pattern('[0-9]+')]],
+      p_prix_location: ['', [Validators.required, Validators.pattern('[0-9]+')]],
+      p_duree: ['', [Validators.required, Validators.pattern('[0-9]+')]],
+      p_date_debut: ['', [Validators.required]],
+      p_date_fin: ['', []],
       p_description: ['', [Validators.required, Validators.pattern('[a-zA-Z0-9]+')]]
     });
     this.produitsData = this.fb.group({
@@ -63,9 +86,38 @@ export class ProduitsComponent implements OnInit {
 
     this._listProduits();
     this._listCategories();
+    
   }
 
   get f(){ return this.produitsData.controls;}
+
+  onChangeCheck(val,index){
+    
+    this.tarificationTab[index].p_es_utiliser = val;
+    
+    //Paramètre d'envoie pour l'application de la tarification
+    this.params.p_idtarification = this.tarificationTab[index].r_i;
+    this.params.p_es_utiliser = this.tarificationTab[index].p_es_utiliser;
+    this.params.p_idproduit = this.tarificationTab[index].r_produit;
+
+    this.tarificationTab.forEach((item, i)=>{
+      if( i !== index ){
+        this.tarificationTab[i].p_es_utiliser = false;
+      }
+    });
+    
+  }
+
+  _tarifAppliquer(){
+    this.taficationService._tarifAppliquer(this.params).subscribe(
+      (res: any= {})=>{
+        console.log(res);
+        this.notifications.sendMessage(res._result,'success');
+        this._list_tarification(this.ligneProduit.r_i);
+      },
+      (err) => {console.log(err.stack)}
+    )
+  }
 
   _listCategories(): void {
     this.categorieServices._getCategories().subscribe(
@@ -82,6 +134,8 @@ export class ProduitsComponent implements OnInit {
     this.produitServices._getproduits().subscribe(
       (data: any) => {
         this.produitsTab = [...data._result];
+        this.collectionSize = this.produitsTab.length;
+        this.getPremiumData();
         setTimeout(() => {
           this.viewTable = true;
         }, 500);
@@ -93,19 +147,30 @@ export class ProduitsComponent implements OnInit {
 
   _saisieProduits(largeDataModal: any){
     this.modeAppel = 'creation';
-    this.modalTitle = 'Saisie d\'une nouelle catégorie de produit';
+    this.modalTitle = 'Saisie un nouveau produit';
     console.log(this.modeAppel);
     this.produitsData.reset();
     this.largeModal(largeDataModal);
   }
 
-  _majQteRetour(){
-    this.qteRetour = true;
+  _saisie_tarification(){
+    this.modeAppeltarif = 'saisie';
   }
 
+  _list_tarification(idproduit){
+    //this.taficationService._getTarificationById(parseInt(this.ligneProduit.r_i,10)).subscribe(
+    this.taficationService._getTarificationById(parseInt(idproduit,10)).subscribe(
+      (response:any = {})=>{
+       this.tarificationTab = response._result;
+      },
+      (err)=>{console.log(err.stack);}
+    );
+  }
+ 
   _actionProduits(modal: any, categorie,action){
     this.ligneProduit = {...categorie};
     this.idCategory = this.ligneProduit.r_categorie;
+    
     
     switch (action) {
 
@@ -121,26 +186,12 @@ export class ProduitsComponent implements OnInit {
       case 'tarification':
         this.modeAppel = 'tarif';
         this.modalTitle = `Tarification du produit [ ${this.ligneProduit.r_libelle} ]`;
-
+        this.modeAppeltarif = '';
         //Récupération de la tarification
-        this.taficationService._getTarificationById(parseInt(this.ligneProduit.r_i,10)).subscribe(
-          (response:any = {})=>{
-            this.qteRetour = response._result.length;
-            if( this.qteRetour >= 1 ){
-              
-              this.ligneTarification = {...response._result[0]};
-             
-              
-            }else{
-              this.tarificationData.reset();
-            }
-           
-          }
-        );
+        this._list_tarification(this.ligneProduit.r_i);
         setTimeout(() => {
           this.largeModal(modal);
         }, 1000);
-       
         break;
     
       default:
@@ -270,7 +321,7 @@ export class ProduitsComponent implements OnInit {
   }
 
   _registerTarification(){
-    this.tarificationData.value.p_utilisateur = 1;
+    this.tarificationData.value.p_utilisateur = this.userData.r_i;
     this.tarificationData.value.p_produit = this.ligneProduit.r_i;
 
     this.taficationService._create(this.tarificationData.value).subscribe(
@@ -291,11 +342,10 @@ export class ProduitsComponent implements OnInit {
           case 1:
             this.notifications.sendMessage(`${dataServer._result}`,'success');
             this.tarificationData.reset();
+            this._list_tarification(this.ligneProduit.r_i);
             break;
         }
         
-
-        //this._listProduits();
       },
       (err: any) => {
         console.log(err);

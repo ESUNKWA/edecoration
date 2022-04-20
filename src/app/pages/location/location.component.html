@@ -66,8 +66,9 @@
                     <button style="float: right;" type="button" class="btn btn-primary nouveau" title="Saisir un nouvelle catégorie de produits" (click)="_saisie_location()">Nouveau</button>
                   </div>
               </div>
-
-
+              <div class="clearfix" >&nbsp;</div>
+<hr>
+              <div class="clearfix" >&nbsp;</div>
 
               <ng-template [ngIf]="viewTable == false" >
                 <app-spinner></app-spinner>
@@ -91,7 +92,15 @@
                   </div>
                 </div>
 
-                <div class="table-responsive" *ngIf="locationtab.length >= 1" >
+                <div class="table-responsive " *ngIf="locationtab.length >= 1" >
+
+                  <div class="search-box me-2 mb-2 d-inline-block">
+                    <div class="position-relative">
+                      <input type="text" class="form-control" placeholder="Recherche..." [(ngModel)]="term" />
+                      <i class="bx bx-search-alt search-icon"></i>
+                    </div>
+                  </div>
+
                   <table class="table mb-0 table-striped" >
                     <thead class="bg-dark text-white">
                       <tr>
@@ -110,7 +119,7 @@
                       </tr>
                     </thead>
                     <tbody>
-                      <tr *ngFor="let location of locationtab ; let i = index">
+                      <tr *ngFor="let location of paginateData | filter:term; let i = index">
                         <td style="width:8%" >{{location.r_num}}</td>
                         <td style="width:15%" >{{location.r_nom + ' ' + location.r_prenoms}}</td>
                         <!-- <td style="width:12%" >{{location.r_telephone | mask: "(000) 00-00-00-00-00"}}</td> -->
@@ -122,7 +131,7 @@
                         <td style="width:10%" >{{location.r_date_retour | date: 'dd-MM-YYYY à hh:mm:ss'}}</td>
                         <td style="width:10%" >{{location.r_libelle}}</td>
                         <td style="width:5%" *ngIf="location.r_status==0" ><span class="badge badge-pill badge-soft-warning font-size-12">En attente de validation</span></td>
-                        <td style="width:5%" *ngIf="location.r_status==1" ><span class="badge badge-pill badge-soft-success font-size-12">En cours</span></td>
+                        <td style="width:5%" *ngIf="location.r_status==1" ><span class="badge badge-pill badge-soft-success font-size-12">En cours d'utilisation</span></td>
                         <td style="width:5%" *ngIf="location.r_status==2"><span class="badge badge-pill badge-soft-primary font-size-12">terminée</span></td>
                         <td style="width:5%" *ngIf="location.r_status==3"><span class="badge badge-pill badge-soft-danger font-size-12">Annulée</span></td>
                         <td style="width:10%">
@@ -135,6 +144,29 @@
                       </tr>
                     </tbody>
                   </table>
+                  <!-- Paginations -->
+                  <div class="d-flex justify-content-between p-2">
+                    <ngb-pagination
+                      [collectionSize]="collectionSize"
+                      [(page)]="page"
+                      [pageSize]="pageSize"
+                      (pageChange)="getPremiumData()"
+                    >
+                    </ngb-pagination>
+                  
+                    <select
+                      class="form-control"
+                      style="width: auto"
+                      [(ngModel)]="pageSize"
+                      (ngModelChange)="getPremiumData()"
+                    >
+                      <option [ngValue]="5">5 lignes</option>
+                      <option [ngValue]="10">10 lignes</option>
+                      <option [ngValue]="25">25 lignes</option>
+                      <option [ngValue]="50">50 lignes</option>
+                    </select>
+                  </div>
+                  <!-- Paginations -->
                 </div>
               </ng-template>
 
@@ -476,16 +508,38 @@
                       <div class="row mb-3">
                         <label for="remisemnt" class="col-md-5 col-form-label">Montant fixe </label>
                         <div class="col-md-7">
-                          <input #mtnreduce class="form-control" name="remisemnt" type="text" [(ngModel)]="remisemnt" [disabled]="totalLocation.mntTotal == 0" (keyup)="_calculateRemise(mtnreduce.value, 'mntfixe')" placeholder="">
+                          <input #mtnreduce class="form-control" name="remisemnt" type="text" [(ngModel)]="remisemnt" mask="0000000000" [disabled]="totalLocation.mntTotal == 0" (keyup)="_calculateRemise(mtnreduce.value, 'mntfixe')" placeholder="">
                         </div>
                       </div>
                       <div class="row mb-3">
                         <label for="remisenewmnt" class="col-md-5 col-form-label">Nouveau montant</label>
                         <div class="col-md-7">
-                          <input #newMntTotal class="form-control" name="remisenewmnt" type="text" [(ngModel)]="remisenewmnt" [disabled]="totalLocation.mntTotal == 0" (keyup)="_calculateRemise(newMntTotal.value, 'newmnt')" placeholder="">
+                          <input #newMntTotal class="form-control" name="remisenewmnt" type="text" [(ngModel)]="remisenewmnt" mask="0000000000" [disabled]="totalLocation.mntTotal == 0" (keyup)="_calculateRemise(newMntTotal.value, 'newmnt')" placeholder="">
                         </div>
                       </div>
                     </fieldset>
+
+                    <div class="form-check form-check-inline">
+                      <input class="form-check-input" #avance type="radio" name="inlineRadioOptions" id="inline1" value="1" (change)="_moderglmnt(avance.value)">
+                      <label class="form-check-label" for="inline1">Donner une avance</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                      <input class="form-check-input" #total type="radio" name="inlineRadioOptions" id="inline2" value="2" (change)="_moderglmnt(total.value)">
+                      <label class="form-check-label" for="inline2">Règler la totalité de la facture</label>
+                    </div>
+
+
+                    <div class="row mb-3" *ngIf="reglmtPartiel==1">
+                      
+                      <div class="col-md-6">
+                        <label for="mntAvance" class="col-form-label">Montant avance</label>
+                        <input #mntAvance class="form-control" name="mntAvance" type="text" mask="0000000000" (keyup)="_calculReliquat(mntAvance.value)" placeholder="">
+                      </div>
+                      <div class="col-md-6 text-danger">
+                        <label for="mntAvance" class="col-form-label">Réliquat</label>
+                        <input #mntresta class="form-control text-danger text-bold" name="mntresta" type="text" [(ngModel)]="reliquat" mask="0000000000" readonly placeholder="">
+                      </div>
+                    </div>
 
                   </div>
                 </div>
@@ -504,63 +558,128 @@
 
 <!-- Large Modal -->
 <ng-template #largeDataModal let-modal>
-    <div class="modal-header">
-      <h5 class="modal-title mt-0">{{modalTitle}}</h5>
-      <button type="button" class="btn-close" (click)="modal.dismiss('Cross click')" aria-hidden="true"></button>
-    </div>
-    <div class="modal-body">
 
-      <div class="row">
-        <div class="col-lg-12">
-          <div class="card">
-            <div class="card-body">
-              <ul ngbNav #customNav="ngbNav" [activeId]="1" class="nav-tabs nav-tabs-custom nav-justified">
-                <li [ngbNavItem]="1">
-                  <a ngbNavLink>
-                    <span class="d-block d-sm-none"><i class="fas fa-home"></i></span>
-                    <span class="d-none d-sm-block">Infos client</span>
-                  </a>
-                  <ng-template ngbNavContent>
-                    <ng-template [ngTemplateOutlet]="TabContent"></ng-template>
-                  </ng-template>
-                </li>
-                <li [ngbNavItem]="2">
-                  <a ngbNavLink>
-                    <span class="d-block d-sm-none"><i class="far fa-user"></i></span>
-                    <span class="d-none d-sm-block">Location</span>
-                  </a>
-                  <ng-template ngbNavContent>
-                    <ng-template [ngTemplateOutlet]="TabContent1"></ng-template>
-                  </ng-template>
-                </li>
+        <div class="modal-header">
+          <h5 class="modal-title mt-0">{{modalTitle}}</h5>
+          <button type="button" class="btn-close" (click)="modal.dismiss('Cross click')" aria-hidden="true"></button>
+        </div>
+        <div class="modal-body">
+    
+          <div class="row">
+            <div class="col-lg-12">
+              <div class="card">
+                <div class="card-body">
+    
+    <!-- -------------------------------------------------------------------------------------------------------------------------------------------------------- -->
+                  <div [ngSwitch]="addproduct" >
+                    <!-- Détails ou consultation des locations -->
+                    <div *ngSwitchCase="false" >
+                      <ul ngbNav #customNav="ngbNav" [activeId]="1" class="nav-tabs nav-tabs-custom nav-justified">
+                        <li [ngbNavItem]="1">
+                          <a ngbNavLink>
+                            <span class="d-block d-sm-none"><i class="fas fa-home"></i></span>
+                            <span class="d-none d-sm-block">Infos client</span>
+                          </a>
+                          <ng-template ngbNavContent>
+                            <ng-template [ngTemplateOutlet]="TabContent"></ng-template>
+                          </ng-template>
+                        </li>
+                        <li [ngbNavItem]="2">
+                          <a ngbNavLink>
+                            <span class="d-block d-sm-none"><i class="far fa-user"></i></span>
+                            <span class="d-none d-sm-block">Location</span>
+                          </a>
+                          <ng-template ngbNavContent>
+                            <ng-template [ngTemplateOutlet]="TabContent1"></ng-template>
+                          </ng-template>
+                        </li>
+        
+                      </ul>
+                      <div [ngbNavOutlet]="customNav"></div>
+                      <div class="row mb-3" *ngIf="btnValidation == 'validation'" >
+                        <div class="col" *ngIf="ligneLocation.r_status == 0" >
+                          <button type="button" class="btn btn-success btn-label waves-light btn-block" (click)="_majStatuslocation(1)" ><i
+                            class="bx bx-check-double label-icon"></i> Valider la commande</button>
+                        </div>
+                        <div class="col" *ngIf="ligneLocation.r_status == 1">
+                          <button type="button" class="btn btn-warning btn-label waves-light" (click)="_majStatuslocation(2)"><i
+                            class="bx bx-block label-icon "></i>Terminer la location</button>
+                        </div>
+                        <div class="col" *ngIf="ligneLocation.r_status == 0" >
+                          <button type="button" style="float: right" class="btn btn-danger btn-label waves-light" (click)="_majStatuslocation(3)"><i
+                            class="bx bx-block label-icon "></i>Annuler la demande de la location</button>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- Ajouter de noveau produits au panier -->
+                    <div *ngSwitchDefault >
 
-              </ul>
-              <div [ngbNavOutlet]="customNav"></div>
-              <div class="row mb-3" *ngIf="btnValidation == 'validation'" >
-                <div class="col" *ngIf="ligneLocation.r_status == 0" >
-                  <button type="button" class="btn btn-success btn-label waves-light btn-block" (click)="_majStatuslocation(1)" ><i
-                    class="bx bx-check-double label-icon"></i> Valider la commande</button>
-                </div>
-                <div class="col" *ngIf="ligneLocation.r_status == 1">
-                  <button type="button" class="btn btn-warning btn-label waves-light" (click)="_majStatuslocation(2)"><i
-                    class="bx bx-block label-icon "></i>Terminer la location</button>
-                </div>
-                <div class="col" *ngIf="ligneLocation.r_status == 0" >
-                  <button type="button" style="float: right" class="btn btn-danger btn-label waves-light" (click)="_majStatuslocation(3)"><i
-                    class="bx bx-block label-icon "></i>Annuler la demande de la location</button>
+                      <div class="row" >
+                        <div class="col-12">  
+                          <button style="float: right;"
+                          type="button" 
+                          class="btn btn-primary" 
+                          title="Voir les détails de la location"
+                          (click)="_addProdut(false)"> <i class="fas fa-list-ul"></i></button>
+                        </div>
+                      </div>
+
+                      <table class="table mt-1 table-striped" >
+                        <thead class="bg-dark text-white">
+                          <tr>
+                            <th style="width:5%" >Choix</th>
+                            <th style="width:20%" >Produits</th>
+                            <th style="width:10%" >Stock actuel</th>
+                            <th style="width:10%" >Prix location</th>
+                            <th style="width:10%;">Durée</th>
+                            <th style="width:10%;">Quantité</th>
+                            <th style="width:15%;">Montant total</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr *ngFor="let produit of tarificationTab ; let i = index">
+                            <td style="width:5%;">
+                              <input #inpchecks class="form-check-input" type="checkbox" (change)="_changeValcheck(inpchecks.checked,i)" >
+                            </td>
+                            <td style="width:20%" >{{produit?.r_libelle}}</td>
+                            <td style="width:10%" >{{produit?.r_stock}}</td>
+                            <td style="width:10%" >{{produit?.r_prix_location | mask: 'separator':' '}}</td>
+                            <td style="width:10%" >{{produit?.r_duree}} jour</td>
+                            <td style="width: 10%;">
+                              <input #inpqte class="form-control" min="0" value="{{produit?.qte}}" type="number" [(disabled)]="!produit.check" (change)="_valueQte(inpqte.value,i)" placeholder="">
+                            </td>
+                            <td style="width: 15%;">
+                              <input disabled class="form-control" type="text" value="{{produit?.total}}" mask="separator.2" placeholder="">
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+
+                    </div>
+
+
+                  </div>
+    <!-- -------------------------------------------------------------------------------------------------------------------------------------------------------- -->
+    
+    
                 </div>
               </div>
             </div>
+    
           </div>
+    
+        </div>
+        <div class="modal-footer">
+          <button type="button" title="fermer" class="btn btn-secondary" (click)="modal.close('Close click')">Fermer</button>
+          <button type="button" title="Enregistrer" class="btn btn-primary">Enregistrer</button>
         </div>
 
-      </div>
+      
 
-    </div>
-    <div class="modal-footer">
-      <button type="button" title="fermer" class="btn btn-secondary" (click)="modal.close('Close click')">Fermer</button>
-      <button type="button" title="Enregistrer" class="btn btn-primary">Enregistrer</button>
-    </div>
+      
+ 
+
+    
   </ng-template>
 
 
@@ -619,9 +738,19 @@
 
   <!-- Tab Content -->
   <ng-template #TabContent1>
+    <div class="row" >
+      <div class="col-12">  
+        <button style="float: right;"
+        type="button" 
+        class="btn btn-primary mt-1" 
+        title="Ajouter de nouveau produits"
+        (click)="_addProdut(true)" ><i class="fas fa-shopping-basket"></i></button>
+      </div>
+    </div>
     <!-- Table -->
     <!-- End search -->
     <table class="table mb-0 table-striped" disable >
+
       <caption>Liste des produits</caption>
 
       <thead class="bg-dark text-white">
@@ -641,13 +770,15 @@
             bindValue = "value"
             [(ngModel)]="produit.r_produit" [disabled]="desactiver" >
           </ng-select></td>
-          <td style="width:15%"><input class="form-control" [disabled]="desactiver" type="number" [(ngModel)]="produit.r_quantite" placeholder=""></td>
+          <td style="width:15%"><input #inp class="form-control" [disabled]="desactiver" type="number" [(ngModel)]="produit.r_quantite" (change)="_valueQte(inp.value,i)" placeholder=""></td>
           <td style="width:10%" >{{produit.r_prix_location | mask: 'separator':' '}}</td>
           <td style="width:10%" >{{produit.r_sous_total | mask: 'separator':' '}}</td>
           <td style="width:20%">
             <button type="button" class="btn btn-primary" title="Modification" ><i class="fas fa-edit"></i></button>
+            <button type="button" class="btn btn-primary" title="Supprimer" (click)="SuprimeChamps(i)" ><i class="fas fa-trash-alt"></i></button>
           </td>
         </tr>
+        <!-- <tr colspan="4" >{{totalLocationModif.mntTotal}}</tr> -->
       </tbody>
     </table>
 

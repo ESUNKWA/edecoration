@@ -14,6 +14,7 @@ import * as moment from 'moment';
 import pdfmake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
 import { DataprintformatService } from 'src/app/core/services/dataprintformat/dataprintformat.service';
+import { Observable } from 'rxjs';
 pdfmake.vfs = pdfFonts.pdfMake.vfs;
 
 const fc = async (idlocation: any)=> {
@@ -32,12 +33,13 @@ breadCrumbItems: Array<{}>;
 @ViewChildren(AdvancedSortableDirective) headers: QueryList<AdvancedSortableDirective>;
 userData: any;
 modalTitle: any = '';
-modeAppel: any = 'création';
+modeAppel: any = 'creation';
 tarificationTab: any = [];
 produitsTab: any = [];
 viewTable: boolean = false;
   recapTab: any;
   totalLocation: any={};
+  totalLocationModif: any = {};
   selectValue: any[];
   logistik: boolean;
   selectedCityarrive: any;
@@ -96,6 +98,28 @@ viewTable: boolean = false;
   modeDate: number;
   btnValidation: any;
   desactiver: boolean = false;
+  addproduct: boolean = false;
+  term: any;
+
+  reliquat: any;
+
+  //Paginations
+  premiumData: any[] = [];
+  paginateData: any[] = [];
+  source$: Observable<any>;
+  page = 1;
+  pageSize = 5; //Nbre de ligne à afficher
+  collectionSize = 0;
+  reglmtPartiel: any;
+  mntAvance: any;
+
+  getPremiumData() {
+    this.paginateData = this.locationtab.slice(
+      (this.page - 1) * this.pageSize,
+      (this.page - 1) * this.pageSize + this.pageSize
+    );
+    
+  }
 
   constructor(private notifications: NotifService, private user: UserService, private modalService: NgbModal, private tarifService: TarificationsService,
               private fb: FormBuilder, private communeService: CommunesService, private logistkService: LogistikService, private location: LocationService,
@@ -187,6 +211,12 @@ viewTable: boolean = false;
     
   }
 
+  _moderglmnt(val){
+
+    this.reglmtPartiel=parseInt(val,10);
+    this.mntAvance = (this.reglmtPartiel == 2)? null : this.mntAvance;
+  }
+
   //Calcul de la remise de la remise
   _calculateRemise(val, typeremise){
       switch (typeremise) {
@@ -216,43 +246,97 @@ viewTable: boolean = false;
 
   }
 
+  //Calcule réliquat
+  _calculReliquat(val) {
+    this.mntAvance = parseInt(val,10)
+    this.reliquat = (this.totalLocation.mewTotal || this.totalLocation.mntTotal) - this.mntAvance;
+  }
+
   _gestionLogistik(val: boolean): void {
     this.logistik = val;
   }
 
   //sélection quantité par produit
   _valueQte(val,i){
+
+
     this.totalLocation = {};
-    //Modification de la ligne en cours
-    this.tarificationTab[i].qte = parseInt(val, 10);
-    this.tarificationTab[i].total =  this.tarificationTab[i].qte*this.tarificationTab[i].r_prix_location;
     
-    if( this.tarificationTab[i].qte > this.tarificationTab[i].r_stock){
-      this.notifications.sendMessage('Stock insuffisant','warning');
-      this.tarificationTab[i].qte = 0;
-      return false;
-    }
 
-    this.recapTab = this.tarificationTab.filter( el => el.qte >= 1);
+    switch (this.modeAppel) {
+      
+      case 'creation':
 
-    //Calcul de la somme total et du nombre total de produits de la location
-    switch (this.recapTab.length) {
-      case 1:
-        this.totalLocation.mntTotal = this.tarificationTab[i].total;
-        this.totalLocation.qteproduits = this.tarificationTab[i].qte;
-
+      //Modification de la ligne en cours
+        this.tarificationTab[i].qte = parseInt(val, 10);
+        this.tarificationTab[i].total =  this.tarificationTab[i].qte*this.tarificationTab[i].r_prix_location;
+        
+        if( this.tarificationTab[i].qte > this.tarificationTab[i].r_stock){
+          this.notifications.sendMessage('Stock insuffisant','warning');
+          this.tarificationTab[i].qte = 0;
+          return false;
+        }
+    
+        this.recapTab = this.tarificationTab.filter( el => el.qte >= 1);
+          //Calcul de la somme total et du nombre total de produits de la location
+          switch (this.recapTab.length) {
+            case 1:
+              this.totalLocation.mntTotal = this.tarificationTab[i].total;
+              this.totalLocation.qteproduits = this.tarificationTab[i].qte;
+      
+              break;
+      
+            default:
+      
+              //const a = this.recapTab.reduce((a, b) => ({total: a.total + b.total}));
+              const a = this.recapTab.reduce(function (acc, obj) { return acc + obj.total; }, 0);
+              const b = this.recapTab.reduce(function (acc, obj) { return acc + obj.qte; }, 0);
+      
+              this.totalLocation.mntTotal = a;
+              this.totalLocation.qteproduits = b;
+              break;
+          }
         break;
-
+    
       default:
 
-        //const a = this.recapTab.reduce((a, b) => ({total: a.total + b.total}));
-        const a = this.recapTab.reduce(function (acc, obj) { return acc + obj.total; }, 0);
-        const b = this.recapTab.reduce(function (acc, obj) { return acc + obj.qte; }, 0);
-
-        this.totalLocation.mntTotal = a;
-        this.totalLocation.qteproduits = b;
+      //Modification de la ligne en cours
+      this.detailsLocationTab[i].r_quantite = parseInt(val, 10);
+      this.detailsLocationTab[i].r_sous_total =  this.detailsLocationTab[i].r_quantite*this.detailsLocationTab[i].r_prix_location;
+      
+      if( this.detailsLocationTab[i].r_quantite > this.detailsLocationTab[i].r_stock){
+        this.notifications.sendMessage('Stock insuffisant','warning');
+        this.detailsLocationTab[i].r_quantite = 0;
+        return false;
+      }
+  
+      this.recapTab = this.detailsLocationTab.filter( el => el.r_quantite >= 1);
+        //Calcul de la somme total et du nombre total de produits de la location
+        switch (this.recapTab.length) {
+          case 1:
+            this.totalLocationModif.mntTotal = this.detailsLocationTab[i].total;
+            this.totalLocationModif.qteproduits = this.detailsLocationTab[i].qte;
+    
+            break;
+    
+          default:
+    
+            //const a = this.recapTab.reduce((a, b) => ({total: a.total + b.total}));
+            const a = this.recapTab.reduce(function (acc, obj) { return acc + obj.r_sous_total; }, 0);
+            const b = this.recapTab.reduce(function (acc, obj) { return acc + obj.r_quantite; }, 0);
+    
+            this.totalLocationModif.mntTotal = a;
+            this.totalLocationModif.qteproduits = b;
+            
+            break;
+        }
         break;
     }
+
+
+    
+
+    // tslintthis.detailsLocationTab = [...this.tarificationTab]
 
   }
 
@@ -280,6 +364,7 @@ viewTable: boolean = false;
 
   //Cocher la ligne produit à sélectionner
   _changeValcheck(val,i){
+
     this.tarificationTab[i].check = val;
     if(val == false){
       this.tarificationTab[i].qte = 0;
@@ -287,7 +372,7 @@ viewTable: boolean = false;
     }
 
     this.recapTab = this.tarificationTab.filter( el => el.qte >= 1);
-
+    
   }
 
 
@@ -303,9 +388,12 @@ viewTable: boolean = false;
     this.locationData.value.p_duree = this.nbreJrLocation;
     this.locationData.value.p_utilisateur = this.userData.r_i;
     this.locationData.value.p_signe = "-";
+    this.locationData.value.p_avance = this.mntAvance;
+    this.locationData.value.p_facture_regler = (this.reglmtPartiel == 1)? false : true;
 
     this.locationData.value.p_date_envoie = this.locationData.value.p_date_envoie.replace('T', ' ');
     this.locationData.value.p_date_retour = this.locationData.value.p_date_retour.replace('T', ' ');
+console.log(this.locationData.value);
 
     this.location._create(this.locationData.value,1).subscribe(
       (data: any = {})=>{
@@ -339,10 +427,11 @@ viewTable: boolean = false;
     this.selectedVehicule = this.ligneLocation.r_logistik;
 
     this.logistik = (this.ligneLocation.r_frais_transport == 0)? false: true;
-
+    
   
     switch(mode){
       case 'modif':
+        
         this._listDetailLocationByidLocation(this.ligneLocation.r_i);
         this.modalTitle = `Modification de la location N° [ ${this.ligneLocation.r_num} ]`;
         this.desactiver = false;
@@ -425,7 +514,8 @@ viewTable: boolean = false;
     this.location._getLocationByCrteres(dataRequest).subscribe(
       (res: any)=>{
         this.locationtab = [...res._result];
-        
+        this.collectionSize = this.locationtab.length;
+        this.getPremiumData();
         //this.modeDate = null;
         setTimeout(() => {
           this.viewTable = true;
@@ -507,6 +597,7 @@ viewTable: boolean = false;
   }
 
   _saisie_location(){
+    this.modeAppel = 'creation';
     this.interface = 'saisie';
     this.selectedCityDapart = '';
     this.selectedCityarrive = '';
@@ -587,6 +678,38 @@ viewTable: boolean = false;
   largeModal(exlargeModal: any) {
     this.modalService.open(exlargeModal, { size: 'xl', centered: true });
 
+  }
+  //Supprimer produits dans le panier
+  SuprimeChamps(index){
+    this.detailsLocationTab.splice(index,  1);
+  }
+  //Afficher ou caher le contenu pour l'ajout des produits
+  _addProdut(val: boolean) {
+      this.addproduct = val;
+      //this.detailsLocationTab = [];
+      //this.modeAppel = (val == false) ? 'modif': 'creation';
+
+      if( this.addproduct == true ) {
+        this.modeAppel = 'creation';
+        this.detailsLocationTab.splice(1,this.detailsLocationTab.length)
+      }else{
+        this.modeAppel = 'modif';
+      }
+
+      if( this.recapTab?.length >= 1){
+        this.recapTab?.map(product=>{
+
+          if( this.recapTab.includes(product.idproduit) == false ){
+            return this.detailsLocationTab.push({
+              r_produit: product.idproduit, 
+              r_quantite: product.qte, 
+              r_prix_location: product.r_prix_location,
+              r_sous_total: product.total,
+            })
+          }
+        });
+      }
+      this.recapTab = [];
   }
 
 

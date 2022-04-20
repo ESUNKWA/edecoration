@@ -41,7 +41,7 @@ export class CustomersComponent implements OnInit {
       balance: ['', [Validators.required]]
     });
 
-    this.currentpage = 1;
+    this.currentpage = 2;
 
     /**
      * Fetches the data

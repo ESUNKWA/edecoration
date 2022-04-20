@@ -36,6 +36,14 @@
                     </div>
 
                     <div class="table-responsive" *ngIf="produitsTab.length >= 1" >
+
+                      <div class="search-box me-2 mb-2 d-inline-block">
+                        <div class="position-relative">
+                          <input type="text" class="form-control" placeholder="Recherche..." [(ngModel)]="term" />
+                          <i class="bx bx-search-alt search-icon"></i>
+                        </div>
+                      </div>
+
                       <div class="table-responsive">
                         <table class="table mb-0 table-striped" >
                           <thead class="bg-dark text-white">
@@ -47,18 +55,41 @@
                             </tr>
                           </thead>
                           <tbody>
-                            <tr *ngFor="let produit of produitsTab ; let i = index">
+                            <tr *ngFor="let produit of paginateData | filter:term ;let i = index;">
                               <td style="width:35%" >{{produit.r_libelle}}</td>
                               <td style="width:15%" >{{produit.r_stock}}</td>
                               <td style="width:30%" >{{produit.r_description}}</td>
                               <td style="width:20%">
                                 <button type="button" class="btn btn-primary" title="Modification" (click)="_actionProduits(largeDataModal, produit,'modif')" ><i class="fas fa-edit"></i></button>&nbsp;
-                                <button type="button" class="btn btn-warning" title="Tarification" (click)="_actionProduits(tarificationModal, produit,'tarification')" ><i class="fas fa-bars"></i></button>&nbsp;
+                                <button type="button" class="btn btn-warning" title="Tarification" (click)="_actionProduits(tarificationModal, produit,'tarification')" ><i class="fas fa-money-check-alt"></i></button>&nbsp;
                                 <button type="button" class="btn btn-secondary" title="Nouveau stock" (click)="_actionProduits('', produit,'stock')" ><i class="fas fa-folder-plus"></i></button>
                               </td>
                             </tr>
                           </tbody>
                         </table>
+                        <!-- Paginations -->
+                        <div class="d-flex justify-content-between p-2">
+                          <ngb-pagination
+                            [collectionSize]="collectionSize"
+                            [(page)]="page"
+                            [pageSize]="pageSize"
+                            (pageChange)="getPremiumData()"
+                          >
+                          </ngb-pagination>
+                        
+                          <select
+                            class="form-control"
+                            style="width: auto"
+                            [(ngModel)]="pageSize"
+                            (ngModelChange)="getPremiumData()"
+                          >
+                            <option [ngValue]="5">5 lignes</option>
+                            <option [ngValue]="10">10 lignes</option>
+                            <option [ngValue]="25">25 lignes</option>
+                            <option [ngValue]="50">50 lignes</option>
+                          </select>
+                        </div>
+                        <!-- Paginations -->
                       </div>
                     </div>
 
@@ -154,7 +185,7 @@
       </div>
       <div class="modal-body">
 
-        <ng-template [ngIf]="qteRetour == 1" >
+        <ng-template [ngIf]="modeAppeltarif == 'saisie'" >
           <form class="needs-validation" [formGroup]="tarificationData">
             <div class="row mb-3">
                 <div class="col-md-6">
@@ -183,6 +214,24 @@
                   <input type="number" class="form-control" min="1" formControlName="p_duree" [(ngModel)]="ligneTarification.r_duree" >
               </div>
             </div>
+            <div class="row mb-3">
+              <div class="col-6">
+                <label class="col-md-4 col-form-label">Période du</label>
+                    <input class="form-control" type="date" name="p_date_debut" formControlName="p_date_debut" value="2019-08-19T13:45:00"
+                              id="example-datetime-local-input">
+                    <!-- <div *ngIf="formvalidate.p_date_envoie.touched && formvalidate.p_date_envoie.invalid" class="text-danger">
+                          <div *ngIf="formvalidate.p_date_envoie.errors.required">Veuillez selectionnez le date de livraison.</div>
+                    </div> -->
+              </div>
+              <div class="col-6">
+                <label class="col-md-4 col-form-label">Au</label>
+                    <input class="form-control" type="date" name="p_date_fin" formControlName="p_date_fin" value="2019-08-19T13:45:00"
+                              id="example-datetime-local-input" >
+                    <!-- <div *ngIf="formvalidate.p_date_retour.touched && formvalidate.p_date_retour.invalid" class="text-danger">
+                        <div *ngIf="formvalidate.p_date_retour.errors.required">Veuillez selectionnez le date de retour des produits.</div>
+                    </div> -->
+              </div>
+            </div>
             <div class="row">
               <div class="col-md-12">
                 <label for="validationCustom05">Description de la catégorie</label>
@@ -190,16 +239,49 @@
               </div>
             </div>
           </form>
+          <button type="button" title="Enregistrer" class="btn btn-primary m-2" style="float: right" (click)="_registerTarification()">Enregistrer</button>
         </ng-template>
 
-        <ng-template [ngIf]="qteRetour == 0">
-          <p>Pas de tarification</p>
-          <button class="btn btn-warning" type="button" (click)="_majQteRetour()" >Nouvelle tarification</button>
-        </ng-template>
+        <button class="btn btn-info m-2" type="button" style="float: left" (click)="_tarifAppliquer()" >Tarification à appliquer</button>
+        <button *ngIf="modeAppeltarif !== 'saisie'" class="btn btn-warning m-2" type="button" style="float: right" (click)="_saisie_tarification()" >Nouvelle tarification</button>
 
+        <table class="table mb-0 table-striped" >
+          <thead class="bg-dark text-white">
+            <tr>
+              <th style="width:5%" >Choix</th>
+              <!-- <th style="width:30%" >Produits</th> -->
+              <th style="width:20%" >Prix location</th>
+              <th style="width: 15%;">Durée</th>
+              <th style="width: 20%;">Date de début</th>
+              <th style="width: 20%;">Date de fin</th>
+              <th style="width: 20%;">Appliquer</th>
+              <th style="width:15%" >Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let produit of tarificationTab ; let i = index">
+              <td style="width:5%" >
+                <input type="radio" #inpValTarif class="form-check-input" [value]="i" [(ngModel)]="dkem" (change)="onChangeCheck(inpValTarif.checked,i)">
+              </td>
+              <!-- <td style="width:30%" >{{produit.r_libelle}}</td> -->
+              <td style="width:20%" >{{produit.r_prix_location}}</td>
+              <td style="width:15%" >{{produit.r_duree}} jour</td>
+              <td style="width:20%" >{{produit.r_date_debut | date: 'dd/MM/yyyy à hh:mm:ss'}}</td>
+              <td style="width:20%" >{{produit.r_date_fin | date: 'dd/MM/yyyy à hh:mm:ss'}}</td>
+              <td style="width:20%" *ngIf="produit.r_es_utiliser == 1" ><span class="badge badge-pill badge-soft-success font-size-12">Tarif appliqué</span></td>
+              <td style="width:20%" *ngIf="produit.r_es_utiliser == 0" >--</td>
+              
+              <td style="width:15%">
+                <button type="button" class="btn btn-primary" title="Modification" ><i class="fas fa-edit"></i></button>&nbsp;
+              </td>
+            </tr>
+          </tbody>
+      </table>
+
+      
       </div>
       <div class="modal-footer">
         <button type="button" title="fermer" class="btn btn-secondary" (click)="modal.close('Close click');">Fermer</button>
-        <button type="button" title="Enregistrer" class="btn btn-primary" (click)="_registerTarification()">Enregistrer</button>
+        <!-- <button type="button" title="Enregistrer" class="btn btn-primary" (click)="_registerTarification()">Enregistrer</button> -->
       </div>
     </ng-template>
