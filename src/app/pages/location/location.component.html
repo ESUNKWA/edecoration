@@ -1,6 +1,6 @@
 <div class="container-fluid">
     <app-page-title title="Liste des locations" [breadcrumbItems]="breadCrumbItems"></app-page-title>
-
+  
     <ng-template [ngIf]="interface == 'liste'" >
 
       <div class="row">
@@ -113,7 +113,7 @@
                         <th style="width:10%" >total remise</th>
                         <th style="width:10%" >Date de livraison</th>
                         <th style="width:10%" >Date de retour</th>
-                        <th style="width:10%" >Destination</th>
+                        <th style="width:10%" >Solder</th>
                         <th style="width:5%" >Status</th>
                         <th style="width:10%" >Action</th>
                       </tr>
@@ -129,7 +129,8 @@
                         <td style="width:10%" >{{location.r_mnt_total_remise | mask: 'separator':' '}}</td>
                         <td style="width:10%" >{{location.r_date_envoie | date: 'dd-MM-YYYY à hh:mm:ss'}}</td>
                         <td style="width:10%" >{{location.r_date_retour | date: 'dd-MM-YYYY à hh:mm:ss'}}</td>
-                        <td style="width:10%" >{{location.r_libelle}}</td>
+                        <td style="width:10%" *ngIf="location.r_solder==1" ><span class="badge badge-pill badge-soft-success font-size-12">Oui</span></td>
+                        <td style="width:10%" *ngIf="location.r_solder==0" ><span class="badge badge-pill badge-soft-danger font-size-12">Oui</span></td>
                         <td style="width:5%" *ngIf="location.r_status==0" ><span class="badge badge-pill badge-soft-warning font-size-12">En attente de validation</span></td>
                         <td style="width:5%" *ngIf="location.r_status==1" ><span class="badge badge-pill badge-soft-success font-size-12">En cours d'utilisation</span></td>
                         <td style="width:5%" *ngIf="location.r_status==2"><span class="badge badge-pill badge-soft-primary font-size-12">terminée</span></td>
@@ -176,7 +177,6 @@
       </div>
 
     </ng-template>
-
 
     <!--Formulaire de saisie des locations-->
     <ng-template [ngIf]="interface == 'saisie'" >
@@ -271,7 +271,7 @@
                         
 
                         <ul class="list-inline wizard mt-2">
-                          <li class="next list-inline-item float-end"><button class="btn btn-primary" [disabled]="totalLocation.mntTotal == 0" awNextStep>Suivant</button>
+                          <li class="next list-inline-item float-end"><button class="btn btn-primary" [disabled]="totalLocation?.mntTotal == 0" awNextStep>Suivant</button>
                           </li>
                         </ul>
                       </aw-wizard-step>
@@ -368,7 +368,11 @@
                             <div class="row mb-3">
                               <label class="col-md-4 col-form-label">Commune depart</label>
                               <div class="col-md-8">
-                                <ng-select [items]="CommunesTab" formControlName="p_commune_depart" [(ngModel)]="selectedCityDapart" ></ng-select>
+                                <ng-select [items]="CommunesTab" formControlName="p_commune_depart"
+                                 [(ngModel)]="selectedCityDapart"
+                                 bindValue="value"
+                                 bindLabel="label"
+                                 ></ng-select>
                                 <div *ngIf="formvalidate.p_commune_depart.touched && formvalidate.p_commune_depart.invalid" class="text-danger">
                                   <div *ngIf="formvalidate.p_commune_depart.errors.required">Veuillez selectionnez votre localité.</div>
                                 </div>
@@ -457,7 +461,8 @@
                         <ul class="list-inline wizard mb-0">
                           <li class="previous list-inline-item">
                             <button class="btn btn-primary" awPreviousStep>Précédent</button>
-                            <button class="btn btn-primary" type="button" style="float: right" (click)="_registerLocations()">Enregistrer</button>
+                            <button class="btn btn-primary" type="button" style="float: right" (click)="_registerLocations()" awResetWizard="resetWizard">Enregistrer</button>
+                           
                           </li>
                         </ul>
                       </aw-wizard-step>

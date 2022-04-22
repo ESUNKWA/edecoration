@@ -17,9 +17,7 @@ import { DataprintformatService } from 'src/app/core/services/dataprintformat/da
 import { Observable } from 'rxjs';
 pdfmake.vfs = pdfFonts.pdfMake.vfs;
 
-const fc = async (idlocation: any)=> {
-  
-}
+import * as $ from 'jquery';
 
 @Component({
   selector: 'app-location',
@@ -113,6 +111,9 @@ viewTable: boolean = false;
   reglmtPartiel: any;
   mntAvance: any;
 
+  resetWizard: boolean = false;
+  paramsPaiement: any = {};
+
   getPremiumData() {
     this.paginateData = this.locationtab.slice(
       (this.page - 1) * this.pageSize,
@@ -126,9 +127,10 @@ viewTable: boolean = false;
               private exportpdf: DataprintformatService) { }
 
   ngOnInit(): void {
+    //this._saisie_location();
     //this.cboDefaultValue,this.searchData.value.p_date.split('T')[0]
     this.cboDefaultValue = "null";
-
+    
     this.locationData = this.fb.group({
       p_details: ['', [Validators.required]],
       p_nom: ['', [Validators.required]],
@@ -141,6 +143,7 @@ viewTable: boolean = false;
       p_commune_depart: ['',[Validators.required]],
       p_commune_arrive: ['',[Validators.required]],
       p_vehicule: [''],
+      p_paiement:[[]],
       p_frais: [0],
     });
     this.showLocationData = this.fb.group({
@@ -212,7 +215,6 @@ viewTable: boolean = false;
   }
 
   _moderglmnt(val){
-
     this.reglmtPartiel=parseInt(val,10);
     this.mntAvance = (this.reglmtPartiel == 2)? null : this.mntAvance;
   }
@@ -345,6 +347,7 @@ viewTable: boolean = false;
     this.communeService._getCommunes().subscribe(
       (data: any) => {
         this.CommunesTab = [...data._result];
+        this.selectedCityDapart = this.CommunesTab[2].value;
       },
       (err) => {console.log(err.stack);
       }
@@ -383,17 +386,36 @@ viewTable: boolean = false;
     this.locationData.value.p_mnt_total_remise = this.totalLocation.mewTotal;
     this.locationData.value.p_vehicule = this.locationData.value.p_vehicule?.value;
 
-    this.locationData.value.p_commune_depart = this.selectedCityDapart?.value;
+    this.locationData.value.p_commune_depart = this.selectedCityDapart;
     this.locationData.value.p_commune_arrive = this.selectedCityarrive?.value;
     this.locationData.value.p_duree = this.nbreJrLocation;
     this.locationData.value.p_utilisateur = this.userData.r_i;
     this.locationData.value.p_signe = "-";
-    this.locationData.value.p_avance = this.mntAvance;
-    this.locationData.value.p_facture_regler = (this.reglmtPartiel == 1)? false : true;
+    //this.locationData.value.p_avance = this.mntAvance;
+    //this.locationData.value.p_reglmnt_total = (this.reglmtPartiel == 1)? false : true;
+    //this.locationData.value.p_solder = (this.reglmtPartiel == 1)? false : true;
 
     this.locationData.value.p_date_envoie = this.locationData.value.p_date_envoie.replace('T', ' ');
     this.locationData.value.p_date_retour = this.locationData.value.p_date_retour.replace('T', ' ');
-console.log(this.locationData.value);
+debugger;
+   
+    if( this.reglmtPartiel == 1 ){
+      this.locationData.value.p_solder = false;
+      this.paramsPaiement.p_mnt = this.mntAvance;
+      this.paramsPaiement.p_utilisateur = this.userData.r_i;
+      this.paramsPaiement.p_description = "";
+      this.paramsPaiement.p_date_creation = "";
+      this.paramsPaiement.p_date_modif = "";
+      this.locationData.value.p_paiement = [...this.paramsPaiement];
+    }else{
+      this.locationData.value.p_solder = true;
+      
+    }
+    
+
+    console.log(this.paramsPaiement);
+    
+    
 
     this.location._create(this.locationData.value,1).subscribe(
       (data: any = {})=>{
@@ -401,13 +423,17 @@ console.log(this.locationData.value);
         if( data._status == 1){
           this.notifications.sendMessage(data._result,'success');
           this.locationData.reset();
+          this.reliquat = null;
           this._listProduits();
+          //this.recapTab = {};
+          this.nbreJrLocation = 0;
+          this.remisemnt = 0;
+          this.remisepercent = 0;
+          this.remisenewmnt = 0;
+          this.totalLocation = {};
+          this.resetWizard = true;
         }
-        this.nbreJrLocation = 0;
-        this.remisemnt = 0;
-        this.remisepercent = 0;
-        this.remisenewmnt = 0;
-        this.totalLocation = {};
+        
         //this.nbreJrLocation = 0;
       },
       (err)=>{console.log(err);
@@ -423,10 +449,11 @@ console.log(this.locationData.value);
     this.dateEnvoie = this.ligneLocation.r_date_envoie.replace(' ', 'T');
     this.dateretour = this.ligneLocation.r_date_retour.replace(' ', 'T');
     this.selectedCityarrive = this.ligneLocation.r_destination;
-    this.selectedCityDapart = 12;
+    
     this.selectedVehicule = this.ligneLocation.r_logistik;
 
     this.logistik = (this.ligneLocation.r_frais_transport == 0)? false: true;
+
     
   
     switch(mode){
@@ -599,7 +626,7 @@ console.log(this.locationData.value);
   _saisie_location(){
     this.modeAppel = 'creation';
     this.interface = 'saisie';
-    this.selectedCityDapart = '';
+    //this.selectedCityDapart = '';
     this.selectedCityarrive = '';
 
   }
@@ -685,13 +712,14 @@ console.log(this.locationData.value);
   }
   //Afficher ou caher le contenu pour l'ajout des produits
   _addProdut(val: boolean) {
+    //debugger
       this.addproduct = val;
       //this.detailsLocationTab = [];
       //this.modeAppel = (val == false) ? 'modif': 'creation';
 
       if( this.addproduct == true ) {
         this.modeAppel = 'creation';
-        this.detailsLocationTab.splice(1,this.detailsLocationTab.length)
+        //this.detailsLocationTab.splice(1,this.detailsLocationTab.length)
       }else{
         this.modeAppel = 'modif';
       }

@@ -109,6 +109,13 @@ export class ProduitsComponent implements OnInit {
   }
 
   _tarifAppliquer(){
+
+    if(Object.keys(this.params).length <= 0){
+      this.notifications.sendMessage('Veuillez sélectionner le montant à appliquer','warning');
+      return;
+    }
+
+    
     this.taficationService._tarifAppliquer(this.params).subscribe(
       (res: any= {})=>{
         console.log(res);
