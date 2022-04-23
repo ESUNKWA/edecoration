@@ -57,10 +57,8 @@ export class LoginComponent implements OnInit {
       (res: any = {})=>{
         if( res._status == 1 ){
           sessionStorage.setItem('userData', JSON.stringify(res._result));
-          setTimeout(() => {
-            this.btnspinner = false;
+          this.btnspinner = false;
             this.router.navigate(['/edeco/dashboard']);
-          }, 500);
         }
       }
     )

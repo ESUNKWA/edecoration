@@ -9,7 +9,7 @@ import { TarificationsService } from 'src/app/core/services/tarifications/tarifi
 import { UserService } from 'src/app/core/services/usersinfos/user.service';
 import { AdvancedSortableDirective } from '../tables/advancedtable/advanced-sortable.directive';
 
-import * as moment from 'moment'; 
+import * as moment from 'moment';
 
 import pdfmake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
@@ -25,7 +25,7 @@ import * as $ from 'jquery';
   styleUrls: ['./location.component.scss']
 })
 export class LocationComponent implements OnInit {
-  
+
 // bread crum data
 breadCrumbItems: Array<{}>;
 @ViewChildren(AdvancedSortableDirective) headers: QueryList<AdvancedSortableDirective>;
@@ -113,13 +113,14 @@ viewTable: boolean = false;
 
   resetWizard: boolean = false;
   paramsPaiement: any = {};
+  paymntTab: any;
 
   getPremiumData() {
     this.paginateData = this.locationtab.slice(
       (this.page - 1) * this.pageSize,
       (this.page - 1) * this.pageSize + this.pageSize
     );
-    
+
   }
 
   constructor(private notifications: NotifService, private user: UserService, private modalService: NgbModal, private tarifService: TarificationsService,
@@ -127,10 +128,10 @@ viewTable: boolean = false;
               private exportpdf: DataprintformatService) { }
 
   ngOnInit(): void {
-    //this._saisie_location();
-    //this.cboDefaultValue,this.searchData.value.p_date.split('T')[0]
+    this.userData = this.user._donnesUtilisateur()[0];
+
     this.cboDefaultValue = "null";
-    
+
     this.locationData = this.fb.group({
       p_details: ['', [Validators.required]],
       p_nom: ['', [Validators.required]],
@@ -143,7 +144,7 @@ viewTable: boolean = false;
       p_commune_depart: ['',[Validators.required]],
       p_commune_arrive: ['',[Validators.required]],
       p_vehicule: [''],
-      p_paiement:[[]],
+      p_paiement:[''],
       p_frais: [0],
     });
     this.showLocationData = this.fb.group({
@@ -170,7 +171,6 @@ viewTable: boolean = false;
       p_status: ['',[Validators.required]]
     });
 
-    this.userData = this.user._donnesUtilisateur()[0];
     this.breadCrumbItems = [{ label: 'Eden décoration' }, { label: 'Liste des locations', active: true }];
 
     this.totalLocation.qteproduits = 0;
@@ -181,7 +181,7 @@ viewTable: boolean = false;
     this._listProduits();
     this._listCommunes();
     this._listLogistik();
-  
+
     //this.selectedCityDapart = this.CommunesTab[8];
   }
 
@@ -206,12 +206,12 @@ viewTable: boolean = false;
             this.libDatedete = 'Date de livraison';
             this.modeDate = 3;
           break;
-    
+
       default:
         break;
     }
-    
-    
+
+
   }
 
   _moderglmnt(val){
@@ -263,80 +263,80 @@ viewTable: boolean = false;
 
 
     this.totalLocation = {};
-    
+
 
     switch (this.modeAppel) {
-      
+
       case 'creation':
 
       //Modification de la ligne en cours
         this.tarificationTab[i].qte = parseInt(val, 10);
         this.tarificationTab[i].total =  this.tarificationTab[i].qte*this.tarificationTab[i].r_prix_location;
-        
+
         if( this.tarificationTab[i].qte > this.tarificationTab[i].r_stock){
           this.notifications.sendMessage('Stock insuffisant','warning');
           this.tarificationTab[i].qte = 0;
           return false;
         }
-    
+
         this.recapTab = this.tarificationTab.filter( el => el.qte >= 1);
           //Calcul de la somme total et du nombre total de produits de la location
           switch (this.recapTab.length) {
             case 1:
               this.totalLocation.mntTotal = this.tarificationTab[i].total;
               this.totalLocation.qteproduits = this.tarificationTab[i].qte;
-      
+
               break;
-      
+
             default:
-      
+
               //const a = this.recapTab.reduce((a, b) => ({total: a.total + b.total}));
               const a = this.recapTab.reduce(function (acc, obj) { return acc + obj.total; }, 0);
               const b = this.recapTab.reduce(function (acc, obj) { return acc + obj.qte; }, 0);
-      
+
               this.totalLocation.mntTotal = a;
               this.totalLocation.qteproduits = b;
               break;
           }
         break;
-    
+
       default:
 
       //Modification de la ligne en cours
       this.detailsLocationTab[i].r_quantite = parseInt(val, 10);
       this.detailsLocationTab[i].r_sous_total =  this.detailsLocationTab[i].r_quantite*this.detailsLocationTab[i].r_prix_location;
-      
+
       if( this.detailsLocationTab[i].r_quantite > this.detailsLocationTab[i].r_stock){
         this.notifications.sendMessage('Stock insuffisant','warning');
         this.detailsLocationTab[i].r_quantite = 0;
         return false;
       }
-  
+
       this.recapTab = this.detailsLocationTab.filter( el => el.r_quantite >= 1);
         //Calcul de la somme total et du nombre total de produits de la location
         switch (this.recapTab.length) {
           case 1:
             this.totalLocationModif.mntTotal = this.detailsLocationTab[i].total;
             this.totalLocationModif.qteproduits = this.detailsLocationTab[i].qte;
-    
+
             break;
-    
+
           default:
-    
+
             //const a = this.recapTab.reduce((a, b) => ({total: a.total + b.total}));
             const a = this.recapTab.reduce(function (acc, obj) { return acc + obj.r_sous_total; }, 0);
             const b = this.recapTab.reduce(function (acc, obj) { return acc + obj.r_quantite; }, 0);
-    
+
             this.totalLocationModif.mntTotal = a;
             this.totalLocationModif.qteproduits = b;
-            
+
             break;
         }
         break;
     }
 
 
-    
+
 
     // tslintthis.detailsLocationTab = [...this.tarificationTab]
 
@@ -375,11 +375,17 @@ viewTable: boolean = false;
     }
 
     this.recapTab = this.tarificationTab.filter( el => el.qte >= 1);
-    
+
   }
 
 
   _registerLocations(){
+
+    if( (this.reglmtPartiel == 1 && this.mntAvance == undefined) && (this.reglmtPartiel == 1 && this.mntAvance == null) ){ 
+      this.notifications.sendMessage('Veuillez saisir le montant de l\`avance','warning');
+      return;
+    }
+
     this.locationData.value.p_details = this.recapTab;
     this.locationData.value.p_mnt_total = this.totalLocation.mntTotal * this.nbreJrLocation;
     this.locationData.value.p_remise = parseInt(this.valremise, 10);
@@ -397,25 +403,19 @@ viewTable: boolean = false;
 
     this.locationData.value.p_date_envoie = this.locationData.value.p_date_envoie.replace('T', ' ');
     this.locationData.value.p_date_retour = this.locationData.value.p_date_retour.replace('T', ' ');
-debugger;
-   
+
     if( this.reglmtPartiel == 1 ){
       this.locationData.value.p_solder = false;
       this.paramsPaiement.p_mnt = this.mntAvance;
-      this.paramsPaiement.p_utilisateur = this.userData.r_i;
+      this.paramsPaiement.p_utilisateur = this.userData.r_nom + " " + this.userData.r_prenoms;
       this.paramsPaiement.p_description = "";
-      this.paramsPaiement.p_date_creation = "";
+      this.paramsPaiement.p_date_creation = new Date().getDate;
       this.paramsPaiement.p_date_modif = "";
-      this.locationData.value.p_paiement = [...this.paramsPaiement];
+      this.locationData.value.p_paiement = [this.paramsPaiement];
     }else{
       this.locationData.value.p_solder = true;
-      
+      this.locationData.value.p_paiement = "";
     }
-    
-
-    console.log(this.paramsPaiement);
-    
-    
 
     this.location._create(this.locationData.value,1).subscribe(
       (data: any = {})=>{
@@ -433,7 +433,7 @@ debugger;
           this.totalLocation = {};
           this.resetWizard = true;
         }
-        
+
         //this.nbreJrLocation = 0;
       },
       (err)=>{console.log(err);
@@ -445,20 +445,20 @@ debugger;
   _actionLocation(largeDataModal,ligneLocation, mode){
 
     this.ligneLocation = {...ligneLocation};
-    
+
     this.dateEnvoie = this.ligneLocation.r_date_envoie.replace(' ', 'T');
     this.dateretour = this.ligneLocation.r_date_retour.replace(' ', 'T');
     this.selectedCityarrive = this.ligneLocation.r_destination;
-    
+
     this.selectedVehicule = this.ligneLocation.r_logistik;
 
     this.logistik = (this.ligneLocation.r_frais_transport == 0)? false: true;
 
-    
-  
+    this.paymntTab = (this.ligneLocation.r_paiement_echell !== "null")? [...JSON.parse(this.ligneLocation.r_paiement_echell)] : "null";
+
     switch(mode){
       case 'modif':
-        
+
         this._listDetailLocationByidLocation(this.ligneLocation.r_i);
         this.modalTitle = `Modification de la location N° [ ${this.ligneLocation.r_num} ]`;
         this.desactiver = false;
@@ -483,15 +483,15 @@ debugger;
 
         this.detailsLocationTab = [];
         let totalMnt = []
-        let dataPrint: any = []; 
+        let dataPrint: any = [];
         let dataPrintTitle: any = ['Produits','Quantités','Prix unitaire','Sous total'];
-   
+
         dataPrint.push(dataPrintTitle);
 
         this.location._getDetailLocationByid(this.ligneLocation.r_i).subscribe(
           (data: any) => {
             this.detailsLocationTab = [...data._result];
-           
+
             //Produts à imprimer
             this.detailsLocationTab.forEach((el)=>{
               let obj: any = {}
@@ -499,7 +499,7 @@ debugger;
               obj.quantite = el.r_quantite,
               obj.prix_location = el.r_prix_location,
               obj.sous_total = el.r_sous_total
-              
+
               dataPrint.push(obj);
             });
             dataPrint.push([{text: 'Total', colSpan:3},'','', {text:this.ligneLocation.r_mnt_total/this.ligneLocation.r_duree, color: "green"}]);
@@ -508,13 +508,13 @@ debugger;
             dataPrint.push([{text: 'Total TTC', colSpan:3},'','', {text:this.ligneLocation.r_mnt_total, color: "blue"}]);
            //Formatage des données pour la génération du pdf
             let dd = this.exportpdf.printData(dataPrint);
-            
+
             this.export(dd, this.ligneLocation);
             dd = [];
             dataPrintTitle = [];
             dataPrint = [];
-            
-            
+
+
           },
           (err) => {console.log(err.stack);
           }
@@ -526,8 +526,8 @@ debugger;
 
 
   _search_location(dataRequest: any): void{
-    
-     
+
+
     this.submit = true;
     this.viewTable = false;
 
@@ -536,7 +536,7 @@ debugger;
       return;
     }
 
-    
+
     //this.location._getLocations(this.cboDefaultValue,this.searchData.value.p_date.split('T')[0]).subscribe(
     this.location._getLocationByCrteres(dataRequest).subscribe(
       (res: any)=>{
@@ -552,12 +552,12 @@ debugger;
   }
 
   _exe_search_location(){
-    
+
     this.searchData.value.p_date = this.searchData.value.p_date.split('T')[0];
     this.searchData.value.p_date_retour = this.searchData.value.p_date_retour?.split('T')[0];
     this.searchData.value.p_mode = this.modeDate;
     //this.searchData.value.p_status = this.p_status;
-    
+
     //this._search_location(this.cboDefaultValue,this.searchData.value.p_date.split('T')[0],this.modeDate);
     this._search_location(this.searchData.value);
   }
@@ -571,7 +571,7 @@ debugger;
 
         setTimeout(() => {
           this.viewTable = true;
-         
+
         }, 200);
       },
       (err) => {console.log(err.stack);
@@ -596,7 +596,7 @@ debugger;
     this.location._getDetailLocationByid(idlocation).subscribe(
       (data: any) => {
         this.detailsLocationTab = [...data._result];
-        
+
         setTimeout(() => {
           this.viewTable = true;
         }, 500);
@@ -612,7 +612,7 @@ debugger;
     this.location._getDetailLocationByid(idlocation).subscribe(
       (data: any) => {
         this.detailsLocationTab = [...data._result];
-        
+
         setTimeout(() => {
           this.viewTable = true;
         }, 500);
@@ -633,7 +633,7 @@ debugger;
   _affiche_location(){
     this.interface = 'liste';
     //this._search_location(this.searchData.value);
-    
+
   }
 
   _majStatuslocation(data){
@@ -649,18 +649,18 @@ debugger;
     });
     this.majStatusData.p_details = tab;
     this.majStatusData.p_signe = "+";
-   
+
     this.location._majStatusLocation(this.majStatusData).subscribe(
       (response: any) => {
-        
+
         if( response._status == 1 ){
 
           switch(this.majStatusData.p_status) {
-          
+
             case 0:
               this.notifications.sendMessage('La demande de location à été rejetté','warning');
               break;
-              
+
             case 1:
               this.notifications.sendMessage('La demande de location à bien été validée','success');
               break;
@@ -672,12 +672,12 @@ debugger;
             case 3:
                 this.notifications.sendMessage('Location annulée','success');
                 break;
-  
+
           }
           this._search_location(this.searchData.value);
-          
+
         }
-        
+
       },
       (err) => {console.log(err.stack)}
     )
@@ -685,12 +685,12 @@ debugger;
 
   _getdatedebut(){
     const a = this.locationData.value.p_date_envoie.split('T')[0];
-    this.dateData.debut = [...a.split('-')]; 
+    this.dateData.debut = [...a.split('-')];
   }
 
   _getdatefin(){
     const a = this.locationData.value?.p_date_retour.split('T')[0];
-    this.dateData.fin = [...a.split('-')]; 
+    this.dateData.fin = [...a.split('-')];
 
     let c = moment(this.dateData.fin);
     let d = moment(this.dateData.debut);
@@ -729,8 +729,8 @@ debugger;
 
           if( this.recapTab.includes(product.idproduit) == false ){
             return this.detailsLocationTab.push({
-              r_produit: product.idproduit, 
-              r_quantite: product.qte, 
+              r_produit: product.idproduit,
+              r_quantite: product.qte,
               r_prix_location: product.r_prix_location,
               r_sous_total: product.total,
             })
@@ -755,16 +755,16 @@ debugger;
           { text: 'Right part', alignment: 'right' }
         ]
       },
-      
-    
+
+
       content: [
-       
-        { 
+
+        {
           columns: [
             [
               {
                 text: 'Facture N° : ' + dataClient.r_num,
-                
+
               },
               {
                 text: dataClient.created_at

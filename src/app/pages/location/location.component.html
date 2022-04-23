@@ -1,6 +1,6 @@
 <div class="container-fluid">
     <app-page-title title="Liste des locations" [breadcrumbItems]="breadCrumbItems"></app-page-title>
-  
+
     <ng-template [ngIf]="interface == 'liste'" >
 
       <div class="row">
@@ -54,7 +54,7 @@
                                   <div *ngIf="searchValidate.p_date_retour.errors.required">Veuillez selectionnez le date de livraison.</div>
                             </div>
                         </div>
-                        
+
                         <div class="col">
                           <br><br>
                           <button type="submit" class="btn btn-primary" title="Saisir un nouvelle catégorie de produits" (click)="_exe_search_location()"><i class="fas fa-search"></i></button>
@@ -73,7 +73,7 @@
               <ng-template [ngIf]="viewTable == false" >
                 <app-spinner></app-spinner>
               </ng-template>
-                
+
               <ng-template [ngIf]="viewTable == true" >
 
                 <div class="row" *ngIf="locationtab.length == 0">
@@ -107,7 +107,7 @@
                         <th style="width:8%;">N° Location</th>
                         <th style="width:15%" >Client</th>
                         <!-- <th style="width:12%" >Téléphone</th> -->
-          
+
                         <th style="width:10%" >total</th>
                         <th style="width:5%" >Remise</th>
                         <th style="width:10%" >total remise</th>
@@ -123,7 +123,7 @@
                         <td style="width:8%" >{{location.r_num}}</td>
                         <td style="width:15%" >{{location.r_nom + ' ' + location.r_prenoms}}</td>
                         <!-- <td style="width:12%" >{{location.r_telephone | mask: "(000) 00-00-00-00-00"}}</td> -->
-                        
+
                         <td style="width:10%" >{{location.r_mnt_total | mask: 'separator':' '}}</td>
                         <td style="width:5%" >{{location.r_remise | mask: 'separator':' '}}</td>
                         <td style="width:10%" >{{location.r_mnt_total_remise | mask: 'separator':' '}}</td>
@@ -154,7 +154,7 @@
                       (pageChange)="getPremiumData()"
                     >
                     </ngb-pagination>
-                  
+
                     <select
                       class="form-control"
                       style="width: auto"
@@ -217,10 +217,10 @@
                           </div>
                         </div>
 
-                       
+
 
                         <div *ngIf="tarificationTab.length >= 1" >
-                          
+
                           <!-- Table -->
                           <div class="table-responsive">
 
@@ -230,7 +230,7 @@
 
                               <ng-template [ngIf]="viewTable == true" >
 
-                                
+
 
                                 <table class="table mb-0 table-striped" >
                                   <thead class="bg-dark text-white">
@@ -263,12 +263,12 @@
                                   </tbody>
                                 </table>
                               </ng-template>
-                            
+
 
                           </div>
                         </div>
 
-                        
+
 
                         <ul class="list-inline wizard mt-2">
                           <li class="next list-inline-item float-end"><button class="btn btn-primary" [disabled]="totalLocation?.mntTotal == 0" awNextStep>Suivant</button>
@@ -461,8 +461,11 @@
                         <ul class="list-inline wizard mb-0">
                           <li class="previous list-inline-item">
                             <button class="btn btn-primary" awPreviousStep>Précédent</button>
-                            <button class="btn btn-primary" type="button" style="float: right" (click)="_registerLocations()" awResetWizard="resetWizard">Enregistrer</button>
-                           
+                            <button class="btn btn-primary" type="button" style="float: right"
+                            (click)="_registerLocations()"
+                             awResetWizard="resetWizard"
+                             [disabled]="reglmtPartiel == null || reglmtPartiel == undefined">Enregistrer</button>
+
                           </li>
                         </ul>
                       </aw-wizard-step>
@@ -471,15 +474,6 @@
                 </div>
               </div>
             </div>
-            <!-- <div class="row">
-              <div class="col-md-12">
-                  <label for="validationCustom01">LIbellé de la catégorie</label>
-                  <input type="text" class="form-control">
-
-
-
-              </div>
-            </div> -->
           </form>
         </div>
 
@@ -501,7 +495,7 @@
                     <h5 class="card-title mb-4">Frais de transport : <span class="text-info" ><strong>{{locationData.value.p_frais | mask: 'separator':' '}} </strong></span></h5>
                     <h5 class="card-title mb-4">Nouveau Total : <span class="text-danger" ><strong>{{totalLocation.mewTotal | mask: 'separator':' '}}</strong></span></h5>
 
-
+                  <div [hidden]="formvalidate.p_date_envoie.invalid || formvalidate.p_date_retour.invalid || formvalidate.p_commune_arrive.invalid" >
                     <fieldset class="form-group border p-3 scheduler-border">
                       <legend class="w-auto px-2 scheduler-border">Rémises</legend>
                       <div class="row mb-3">
@@ -535,7 +529,7 @@
 
 
                     <div class="row mb-3" *ngIf="reglmtPartiel==1">
-                      
+
                       <div class="col-md-6">
                         <label for="mntAvance" class="col-form-label">Montant avance</label>
                         <input #mntAvance class="form-control" name="mntAvance" type="text" mask="0000000000" (keyup)="_calculReliquat(mntAvance.value)" placeholder="">
@@ -545,6 +539,7 @@
                         <input #mntresta class="form-control text-danger text-bold" name="mntresta" type="text" [(ngModel)]="reliquat" mask="0000000000" readonly placeholder="">
                       </div>
                     </div>
+                  </div>
 
                   </div>
                 </div>
@@ -565,16 +560,16 @@
 <ng-template #largeDataModal let-modal>
 
         <div class="modal-header">
-          <h5 class="modal-title mt-0">{{modalTitle}}</h5>
+          <h5 class="modal-title mt-0">{{modalTitle}} &nbsp;&nbsp;&nbsp;Total facture: {{ligneLocation?.r_mnt_total | mask: 'separator':' '}}&nbsp;&nbsp;&nbsp;Rémise: {{ligneLocation?.r_remise | mask: 'separator':' '}}&nbsp;&nbsp;&nbsp;Total après rémise: {{ligneLocation?.r_mnt_total_remise | mask: 'separator':' '}}</h5>
           <button type="button" class="btn-close" (click)="modal.dismiss('Cross click')" aria-hidden="true"></button>
         </div>
         <div class="modal-body">
-    
+
           <div class="row">
             <div class="col-lg-12">
               <div class="card">
                 <div class="card-body">
-    
+
     <!-- -------------------------------------------------------------------------------------------------------------------------------------------------------- -->
                   <div [ngSwitch]="addproduct" >
                     <!-- Détails ou consultation des locations -->
@@ -598,7 +593,15 @@
                             <ng-template [ngTemplateOutlet]="TabContent1"></ng-template>
                           </ng-template>
                         </li>
-        
+                        <li [hidden]="paymntTab == 'null'" [ngbNavItem]="3">
+                          <a ngbNavLink>
+                            <span class="d-block d-sm-none"><i class="fas fa-home"></i></span>
+                            <span class="d-none d-sm-block">Paiement</span>
+                          </a>
+                          <ng-template ngbNavContent>
+                            <ng-template [ngTemplateOutlet]="payment"></ng-template>
+                          </ng-template>
+                        </li>
                       </ul>
                       <div [ngbNavOutlet]="customNav"></div>
                       <div class="row mb-3" *ngIf="btnValidation == 'validation'" >
@@ -620,10 +623,10 @@
                     <div *ngSwitchDefault >
 
                       <div class="row" >
-                        <div class="col-12">  
+                        <div class="col-12">
                           <button style="float: right;"
-                          type="button" 
-                          class="btn btn-primary" 
+                          type="button"
+                          class="btn btn-primary"
                           title="Voir les détails de la location"
                           (click)="_addProdut(false)"> <i class="fas fa-list-ul"></i></button>
                         </div>
@@ -665,26 +668,20 @@
 
                   </div>
     <!-- -------------------------------------------------------------------------------------------------------------------------------------------------------- -->
-    
-    
+
+
                 </div>
               </div>
             </div>
-    
+
           </div>
-    
+
         </div>
         <div class="modal-footer">
           <button type="button" title="fermer" class="btn btn-secondary" (click)="modal.close('Close click')">Fermer</button>
-          <button type="button" title="Enregistrer" class="btn btn-primary">Enregistrer</button>
+          <button type="button" title="Enregistrer"
+           class="btn btn-primary">Enregistrer</button>
         </div>
-
-      
-
-      
- 
-
-    
   </ng-template>
 
 
@@ -744,10 +741,10 @@
   <!-- Tab Content -->
   <ng-template #TabContent1>
     <div class="row" >
-      <div class="col-12">  
+      <div class="col-12">
         <button style="float: right;"
-        type="button" 
-        class="btn btn-primary mt-1" 
+        type="button"
+        class="btn btn-primary mt-1"
         title="Ajouter de nouveau produits"
         (click)="_addProdut(true)" ><i class="fas fa-shopping-basket"></i></button>
       </div>
@@ -818,15 +815,15 @@
             </div>
           </div>
         </div>
-  
+
         <div class="row mb-3">
           <div class="col-md-6">
             <div class="row mb-3">
               <label class="col-md-4 col-form-label">Commune depart</label>
               <div class="col-md-8">
-                <ng-select  [items]="CommunesTab" 
-                            formControlName="p_commune_depart" 
-                            [(ngModel)]="selectedCityDapart" 
+                <ng-select  [items]="CommunesTab"
+                            formControlName="p_commune_depart"
+                            [(ngModel)]="selectedCityDapart"
                             bindLabel = "label"
                             bindValue = "value"></ng-select>
                 <div *ngIf="formvalidate.p_commune_depart.touched && formvalidate.p_commune_depart.invalid" class="text-danger">
@@ -839,8 +836,8 @@
             <div class="row mb-3">
               <label class="col-md-4 col-form-label">Destination</label>
               <div class="col-md-8">
-                <ng-select [items]="CommunesTab" 
-                            formControlName="p_commune_arrive" 
+                <ng-select [items]="CommunesTab"
+                            formControlName="p_commune_arrive"
                             [(ngModel)]="selectedCityarrive"
                             bindLabel = "label"
                             bindValue = "value" ></ng-select>
@@ -851,22 +848,22 @@
             </div>
           </div>
         </div>
-  
+
         <div class="row mb-3">
           <label class="col-md-2 col-form-label">Description</label>
           <div class="col-md-10">
             <textarea class="form-control" formControlName="p_description" ></textarea>
           </div>
         </div>
-  
+
         <div class="mb-2">
           <label class="">Gérer la logistique</label>&nbsp;
           <input #inplogistik class="form-check-input" [disabled]="desactiver" type="checkbox" [(ngModel)]="logistik" [ngModelOptions]="{standalone: true}">
         </div>
-  
-  
+
+
           <div class="row mb-3" *ngIf="logistik == true" >
-  
+
             <div class="col-md-6">
               <div class="row mb-3">
                 <label class="col-md-4 col-form-label">Véhicule</label>
@@ -879,7 +876,7 @@
                 </div>
               </div>
             </div>
-  
+
             <div class="col-md-6">
               <div class="row mb-3">
                 <label class="col-md-4 col-form-label">Frais de transport</label>
@@ -888,11 +885,32 @@
                 </div>
               </div>
             </div>
-  
+
           </div>
-  
+
 
       </form>
     </fieldset>
 
   </ng-template>
+
+  <ng-template #payment>
+    <h3>Liste des paiements</h3>
+    <table class="table mt-1 table-striped" >
+      <thead class="bg-dark text-white">
+        <tr>
+          <th style="width:20%" >Montant</th>
+          <th style="width:10%" >Saisie le</th>
+          <th style="width:10%;">Utilisateur</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let payment of paymntTab ; let i = index">
+          <td style="width:20%" >{{payment?.p_mnt | mask: 'separator':' '}}</td>
+          <td style="width:10%" >{{payment?.p_date_creation}}</td>
+          <td style="width:10%" >{{payment?.p_utilisateur}} </td>
+        </tr>
+      </tbody>
+    </table>
+  </ng-template>
+
