@@ -551,8 +551,6 @@
       </div>
 
     </ng-template>
-
-
 </div>
 
 
@@ -912,5 +910,32 @@
         </tr>
       </tbody>
     </table>
+
+    <div class="row">
+      <div class="col-12">
+        <div class="row mb-3">
+          <label class="col-md-3 col-form-label">Réliquat</label>
+          <div class="col-md-9">
+            <input class="form-control" [(ngModel)]="totalPaiement" name="reliquat" placeholder="">
+
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <label class="col-md-3 col-form-label">Montant</label>
+          <div class="col-md-9">
+            <input class="form-control" name="prenoms" [(ngModel)]="mntPaiement" name="mntPaiement" type="text" placeholder="">
+
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <label class="col-md-3 col-form-label">Description</label>
+          <div class="col-md-9">
+            <textarea class="form-control"></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
   </ng-template>
 

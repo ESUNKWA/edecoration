@@ -114,6 +114,8 @@ viewTable: boolean = false;
   resetWizard: boolean = false;
   paramsPaiement: any = {};
   paymntTab: any;
+  totalPaiement: any;
+  mntPaiement: any;
 
   getPremiumData() {
     this.paginateData = this.locationtab.slice(
@@ -455,8 +457,11 @@ viewTable: boolean = false;
     this.logistik = (this.ligneLocation.r_frais_transport == 0)? false: true;
 
     this.paymntTab = (this.ligneLocation.r_paiement_echell !== "null")? [...JSON.parse(this.ligneLocation.r_paiement_echell)] : "null";
-
-    switch(mode){
+    //Sommes total des paiements
+    this.totalPaiement = this.paymntTab?.reduce(function (acc, obj) { return acc + obj.p_mnt; }, 0);
+this.mntPaiement = this.ligneLocation.r_mnt_total_remise - this.totalPaiement
+    console.log(this.paymntTab)
+    console.log(this.totalPaiement)    switch(mode){
       case 'modif':
 
         this._listDetailLocationByidLocation(this.ligneLocation.r_i);
@@ -526,8 +531,6 @@ viewTable: boolean = false;
 
 
   _search_location(dataRequest: any): void{
-
-
     this.submit = true;
     this.viewTable = false;
 
