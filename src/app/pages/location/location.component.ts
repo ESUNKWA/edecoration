@@ -8,6 +8,7 @@ import { NotifService } from 'src/app/core/services/notif.service';
 import { TarificationsService } from 'src/app/core/services/tarifications/tarifications.service';
 import { UserService } from 'src/app/core/services/usersinfos/user.service';
 import { AdvancedSortableDirective } from '../tables/advancedtable/advanced-sortable.directive';
+import { NotificationService } from '@progress/kendo-angular-notification';
 
 import * as moment from 'moment';
 
@@ -15,9 +16,8 @@ import pdfmake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
 import { DataprintformatService } from 'src/app/core/services/dataprintformat/dataprintformat.service';
 import { Observable } from 'rxjs';
+import Swal from 'sweetalert2';
 pdfmake.vfs = pdfFonts.pdfMake.vfs;
-
-import * as $ from 'jquery';
 
 @Component({
   selector: 'app-location',
@@ -49,6 +49,8 @@ viewTable: boolean = false;
   locationData: FormGroup;
   clientsData: FormGroup;
   showLocationData: FormGroup;
+  reglmntData: FormGroup;
+  searchData: FormGroup;
   valremise: any = 0;
 
   CommunesTab: any = [];
@@ -85,7 +87,7 @@ viewTable: boolean = false;
       label: 'Locations annulée'
     }
   ];
-  searchData: FormGroup;
+
   submit: boolean = false;
 
   cboDefaultValue: any;
@@ -116,6 +118,9 @@ viewTable: boolean = false;
   paymntTab: any;
   totalPaiement: any;
   mntPaiement: any;
+  desc: any;
+  typetext: any;
+  dkem: string;
 
   getPremiumData() {
     this.paginateData = this.locationtab.slice(
@@ -127,7 +132,17 @@ viewTable: boolean = false;
 
   constructor(private notifications: NotifService, private user: UserService, private modalService: NgbModal, private tarifService: TarificationsService,
               private fb: FormBuilder, private communeService: CommunesService, private logistkService: LogistikService, private location: LocationService,
-              private exportpdf: DataprintformatService) { }
+              private exportpdf: DataprintformatService, private notificationService: NotificationService) { }
+
+              public showSuccess(): void {
+                this.notificationService.show({
+                  content: 'Success notification',
+                  hideAfter: 600,
+                  position: { horizontal: 'center', vertical: 'top' },
+                  animation: { type: 'fade', duration: 1000 },
+                  type: { style: 'success', icon: true },
+                });
+              }          
 
   ngOnInit(): void {
     this.userData = this.user._donnesUtilisateur()[0];
@@ -171,6 +186,11 @@ viewTable: boolean = false;
       p_date: ['', [Validators.required]],
       p_date_retour: ['', ],
       p_status: ['',[Validators.required]]
+    });
+    this.reglmntData = this.fb.group({
+      p_avancePayer: [],
+      p_mntverse: [],
+      p_description: []
     });
 
     this.breadCrumbItems = [{ label: 'Eden décoration' }, { label: 'Liste des locations', active: true }];
@@ -262,12 +282,17 @@ viewTable: boolean = false;
 
   //sélection quantité par produit
   _valueQte(val,i){
-
-
+    
     this.totalLocation = {};
 
 
     switch (this.modeAppel) {
+
+      case 'manquant':
+          //Modification de la ligne en cours
+        this.detailsLocationTab[i].p_qte_manqant = parseInt(val, 10);
+        
+        break;
 
       case 'creation':
 
@@ -383,8 +408,8 @@ viewTable: boolean = false;
 
   _registerLocations(){
 
-    if( (this.reglmtPartiel == 1 && this.mntAvance == undefined) && (this.reglmtPartiel == 1 && this.mntAvance == null) ){ 
-      this.notifications.sendMessage('Veuillez saisir le montant de l\`avance','warning');
+    if( (this.reglmtPartiel == 1 && this.mntAvance == undefined) || (this.reglmtPartiel == 1 && this.mntAvance == null) ){ 
+      this.notifications.sendMessage('Veuillez saisir le montant de l\'`avance','warning');
       return;
     }
 
@@ -408,11 +433,10 @@ viewTable: boolean = false;
 
     if( this.reglmtPartiel == 1 ){
       this.locationData.value.p_solder = false;
-      this.paramsPaiement.p_mnt = this.mntAvance;
+      this.paramsPaiement.p_mntverse = this.mntAvance;
       this.paramsPaiement.p_utilisateur = this.userData.r_nom + " " + this.userData.r_prenoms;
       this.paramsPaiement.p_description = "";
-      this.paramsPaiement.p_date_creation = new Date().getDate;
-      this.paramsPaiement.p_date_modif = "";
+      this.paramsPaiement.p_date_creation = "";
       this.locationData.value.p_paiement = [this.paramsPaiement];
     }else{
       this.locationData.value.p_solder = true;
@@ -427,7 +451,8 @@ viewTable: boolean = false;
           this.locationData.reset();
           this.reliquat = null;
           this._listProduits();
-          //this.recapTab = {};
+          this.recapTab = {};
+          
           this.nbreJrLocation = 0;
           this.remisemnt = 0;
           this.remisepercent = 0;
@@ -458,10 +483,26 @@ viewTable: boolean = false;
 
     this.paymntTab = (this.ligneLocation.r_paiement_echell !== "null")? [...JSON.parse(this.ligneLocation.r_paiement_echell)] : "null";
     //Sommes total des paiements
-    this.totalPaiement = this.paymntTab?.reduce(function (acc, obj) { return acc + obj.p_mnt; }, 0);
-this.mntPaiement = this.ligneLocation.r_mnt_total_remise - this.totalPaiement
-    console.log(this.paymntTab)
-    console.log(this.totalPaiement)    switch(mode){
+    if( this.paymntTab !== "null" ){
+      this.totalPaiement = this.paymntTab?.reduce(function (acc, obj) { return acc + obj.p_mntverse; }, 0);
+      this.mntPaiement = this.ligneLocation.r_mnt_total_remise - this.totalPaiement;
+      
+    }
+    
+    if( this.ligneLocation.r_solder){
+      this.typetext = 'success';
+      this.dkem = "facture réglée";
+    }else{
+      this.typetext = 'danger';
+      this.dkem = "facture non réglée";
+    } 
+    
+    // Pour permettre la saisir et la récupération en parameters des produits manquant après retour
+    if( this.ligneLocation.r_status !== 0 ){
+      this.modeAppel = 'manquant';
+    }
+    
+    switch(mode){
       case 'modif':
 
         this._listDetailLocationByidLocation(this.ligneLocation.r_i);
@@ -631,6 +672,7 @@ this.mntPaiement = this.ligneLocation.r_mnt_total_remise - this.totalPaiement
     this.interface = 'saisie';
     //this.selectedCityDapart = '';
     this.selectedCityarrive = '';
+    this._listProduits();
 
   }
   _affiche_location(){
@@ -638,7 +680,7 @@ this.mntPaiement = this.ligneLocation.r_mnt_total_remise - this.totalPaiement
     //this._search_location(this.searchData.value);
 
   }
-
+  
   _majStatuslocation(data){
     let obj: any = {},tab: any =[];
     this.majStatusData.p_idlocation = parseInt(this.ligneLocation.r_i, 10);
@@ -646,44 +688,96 @@ this.mntPaiement = this.ligneLocation.r_mnt_total_remise - this.totalPaiement
 
     this.detailsLocationTab.forEach((el)=>{
       obj = {};
-        obj.idproduit = el.r_produit,
-        obj.qte = el.r_quantite
+        obj.idproduit = el.r_produit;
+        obj.qte = el.r_quantite;
+        obj.qteManquant = (el.p_qte_manqant == undefined)? 0 :el.p_qte_manqant;
+        obj.p_iddLocation = el.r_i;
         tab.push(obj);
     });
     this.majStatusData.p_details = tab;
     this.majStatusData.p_signe = "+";
 
-    this.location._majStatusLocation(this.majStatusData).subscribe(
-      (response: any) => {
+    Swal.fire({
+      title: 'Terminer la location',
+      text: "Avez vous Vérifier la quantité des produits retournés?",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Oui, J\'ai vérifié!',
+      cancelButtonText: 'Non',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.location._majStatusLocation(this.majStatusData).subscribe(
+          (response: any) => {
+    
+            if( response._status == 1 ){
+    
+              switch(this.majStatusData.p_status) {
+    
+                case 0:
+                  this.notifications.sendMessage('La demande de location à été rejetté','warning');
+                  break;
+    
+                case 1:
+                  this.notifications.sendMessage('La demande de location à bien été validée','success');
+                  break;
+    
+                case 2:
+                    this.notifications.sendMessage('Location terminée','success');
+                    break;
+    
+                case 3:
+                    this.notifications.sendMessage('Location annulée','success');
+                    break;
+    
+              }
+              this._search_location(this.searchData.value);
+    
+            }
+            this.modalService.dismissAll('close');
+          },
+          (err) => {console.log(err.stack)}
+        )
+      }
+    })
 
-        if( response._status == 1 ){
+  }
 
-          switch(this.majStatusData.p_status) {
 
-            case 0:
-              this.notifications.sendMessage('La demande de location à été rejetté','warning');
-              break;
+  _reglmntArriere(){
+    const d = new Date();
+    let mois = d.getMonth();
+    let b: any = {};
+    
+    //this.reglmntData.value.p_idlocation = this.ligneLocation.r_i;
+    this.reglmntData.value.p_date_creation = d.getDate() + '-' + ((mois < 10 )? '0'+mois : mois) + '-' + d.getFullYear();
+    this.reglmntData.value.p_utilisateur = this.userData.r_nom + ' ' + this.userData.r_prenoms;
+    this.reglmntData.value.p_mntverse = parseInt(this.reglmntData.value.p_mntverse,10);
+    
+    //-----------------------//-----------------------//--------------------------//
+    this.totalPaiement = this.paymntTab?.reduce(function (acc, obj) { return acc + obj.p_mntverse; }, 0);
+    
+    this.paymntTab.push(this.reglmntData.value);
 
-            case 1:
-              this.notifications.sendMessage('La demande de location à bien été validée','success');
-              break;
+    b.p_idlocation = this.ligneLocation.r_i;
+    b.p_paiement = this.paymntTab;
+    b.p_mnt_total_paie = parseInt(this.totalPaiement,10) + parseInt(this.mntPaiement,10);
+  
 
-            case 2:
-                this.notifications.sendMessage('Location terminée','success');
-                break;
-
-            case 3:
-                this.notifications.sendMessage('Location annulée','success');
-                break;
-
-          }
+    this.location._add_reglmnt_paiemnt(b).subscribe(
+      (data: number) => {
+        
+        if(data){
+          this.notifications.sendMessage('Enregistrement effectué avec success','success');
+          this.modalService.dismissAll('close');
           this._search_location(this.searchData.value);
-
         }
-
       },
-      (err) => {console.log(err.stack)}
+      (err: any = {}) => {console.log(err.stack);
+      }
     )
+    
   }
 
   _getdatedebut(){
@@ -707,7 +801,6 @@ this.mntPaiement = this.ligneLocation.r_mnt_total_remise - this.totalPaiement
   //Appel de la modal
   largeModal(exlargeModal: any) {
     this.modalService.open(exlargeModal, { size: 'xl', centered: true });
-
   }
   //Supprimer produits dans le panier
   SuprimeChamps(index){
