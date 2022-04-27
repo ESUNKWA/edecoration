@@ -458,7 +458,7 @@ viewTable: boolean = false;
           this.remisepercent = 0;
           this.remisenewmnt = 0;
           this.totalLocation = {};
-          this.resetWizard = true;
+          //this.resetWizard = true;
         }
 
         //this.nbreJrLocation = 0;
@@ -472,6 +472,7 @@ viewTable: boolean = false;
   _actionLocation(largeDataModal,ligneLocation, mode){
 
     this.ligneLocation = {...ligneLocation};
+console.log(this.ligneLocation);
 
     this.dateEnvoie = this.ligneLocation.r_date_envoie.replace(' ', 'T');
     this.dateretour = this.ligneLocation.r_date_retour.replace(' ', 'T');
@@ -528,7 +529,7 @@ viewTable: boolean = false;
       default:
 
         this.detailsLocationTab = [];
-        let totalMnt = []
+        let tranportData = []
         let dataPrint: any = [];
         let dataPrintTitle: any = ['Produits','Quantités','Prix unitaire','Sous total'];
 
@@ -548,12 +549,18 @@ viewTable: boolean = false;
 
               dataPrint.push(obj);
             });
-            dataPrint.push([{text: 'Total', colSpan:3},'','', {text:this.ligneLocation.r_mnt_total/this.ligneLocation.r_duree, color: "green"}]);
-            dataPrint.push([{text: 'Durée', colSpan:3},'','', {text:this.ligneLocation.r_duree, color: "red"}]);
-            dataPrint.push([{text: 'Rémise', colSpan:3},'','', this.ligneLocation.r_remise]);
-            dataPrint.push([{text: 'Total TTC', colSpan:3},'','', {text:this.ligneLocation.r_mnt_total, color: "blue"}]);
+            dataPrint.push([{text: 'Total', colSpan:3},'','', {text:this.ligneLocation?.r_mnt_total/this.ligneLocation?.r_duree, color: "green"}]);
+            dataPrint.push([{text: 'Durée', colSpan:3},'','', {text:this.ligneLocation?.r_duree, color: "red"}]);
+            dataPrint.push([{text: 'Rémise', colSpan:3},'','', this.ligneLocation?.r_remise]);
+            dataPrint.push([{text: 'Total TTC', colSpan:3},'','', {text:this.ligneLocation?.r_mnt_total, color: "blue"}]);
+            console.log(dataPrint);
+            // Données transport produits
+            // tranportData.push([{text: 'Frais'},{text:this.ligneLocation?.r_frais_transport}]);
+            // tranportData.push([{text: 'Véhicule'},{text:this.ligneLocation?.r_vehicule + ' | ' +this.ligneLocation?.r_matricule}]);
+            // tranportData.push([{text: 'Destination'},{text:this.ligneLocation?.destination}]);
            //Formatage des données pour la génération du pdf
             let dd = this.exportpdf.printData(dataPrint);
+
 
             this.export(dd, this.ligneLocation);
             dd = [];
@@ -928,7 +935,19 @@ viewTable: boolean = false;
             body: data
           }
         },
-
+        {text: 'Transport', style: 'subheader'},
+    		{
+    			style: 'transport',
+          alignment: 'right',
+    			table: {
+            widths: [ 100, 100],
+    				body: [
+    					['Frais', dataClient?.r_frais_transport],
+    					['Véhicule', this.ligneLocation?.r_vehicule + ' | ' +this.ligneLocation?.r_matricule],
+    					['Destination', this.ligneLocation?.destination]
+    				]
+    			}
+    		},
         {
           columns: [
             [{
@@ -954,9 +973,13 @@ viewTable: boolean = false;
           bold: true,
           margin: [0, 0, 0, 10]
         },
+        transport:{
+          alignment: 'right'
+        },
         subheader: {
-          fontSize: 16,
+          fontSize: 12,
           bold: true,
+          color: 'blue',
           margin: [0, 10, 0, 5]
         },
         tableExample: {
