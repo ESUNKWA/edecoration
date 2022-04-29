@@ -85,13 +85,12 @@ modeAppel: any = 'création';
   }
 
   _resetForm() {
-this.categoriesData.reset()
+    this.categoriesData.reset()
   }
 
   _register(): void {
 
     if (this.categoriesData.invalid) {
-      console.table(this.categoriesData.value);
       return;
     }
 
@@ -147,18 +146,6 @@ this.categoriesData.reset()
   largeModal(exlargeModal: any) {
     this.modalService.open(exlargeModal, { size: 'lg', centered: true });
 
-  }
-
-  //Filtre datatable
-  onSort({ column, direction }: SortEvent) {
-    // resetting other headers
-    this.headers.forEach(header => {
-      if (header.sortable !== column) {
-        header.direction = '';
-      }
-    });
-    this.service.sortColumn = column;
-    this.service.sortDirection = direction;
   }
 
 }

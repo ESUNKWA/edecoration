@@ -5,7 +5,7 @@ import Swal from 'sweetalert2';
   providedIn: 'root'
 })
 export class NotifService {
-
+dkem: any;
   constructor() { }
 
   sendMessage(message: any, type: any){

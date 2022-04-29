@@ -10,7 +10,6 @@ import { LocationRoutingModule } from "./location-routing.module";
 import { LocationComponent } from "./location.component";
 import { NgxDocViewerModule } from 'ngx-doc-viewer';
 import { Ng2SearchPipeModule } from "ng2-search-filter";
-import { NotificationModule } from "@progress/kendo-angular-notification";
 
 
 
@@ -30,8 +29,7 @@ import { NotificationModule } from "@progress/kendo-angular-notification";
         NgbNavModule,
         NgxDocViewerModule,
         NgbModule,
-        Ng2SearchPipeModule,
-        NotificationModule
+        Ng2SearchPipeModule
     ]
 })
 

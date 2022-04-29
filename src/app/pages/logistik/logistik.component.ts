@@ -22,25 +22,30 @@ export class LogistikComponent implements OnInit {
   ligneLogistik: any = {};
 
   constructor(private user: UserService, private logistkService: LogistikService, private modalService: NgbModal,
-              private fb: FormBuilder, private notifications: NotifService) { 
-                this.logistikData = this.fb.group({
-                  r_matricule: [],
-                  p_description: [],
-                  p_vehicule: []
-                });
-              }
+              private fb: FormBuilder, private notifications: NotifService) {}
 
   ngOnInit(): void {
     this.userData = this.user._donnesUtilisateur()[0];
     this.breadCrumbItems = [{ label: 'Eden décoration' }, { label: 'Catégories de produits', active: true }];
+
+    this.logistikData = this.fb.group({
+      r_matricule: [],
+      p_description: [],
+      p_vehicule: []
+    });
+    
     this._listLogistik();
   }
 
   _saisieLogistik(largeDataModal: any){
     this.modeAppel = 'creation';
     this.modalTitle = 'Saisie un nouveau véhicule';
-    this.logistikData.reset()
+    this.logistikData.reset();
     this.largeModal(largeDataModal);
+  }
+
+  _resetForm() {
+    this.logistikData.reset()
   }
 
   _action(logistik, largeDataModal){
@@ -48,7 +53,6 @@ export class LogistikComponent implements OnInit {
 
     this.modeAppel = 'modif';
     this.modalTitle = `Modification du véhicule immatriculé [ ${this.ligneLogistik.r_matricule} ]`;
-
 
     this.largeModal(largeDataModal);
   }

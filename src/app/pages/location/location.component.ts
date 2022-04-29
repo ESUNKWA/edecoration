@@ -8,7 +8,6 @@ import { NotifService } from 'src/app/core/services/notif.service';
 import { TarificationsService } from 'src/app/core/services/tarifications/tarifications.service';
 import { UserService } from 'src/app/core/services/usersinfos/user.service';
 import { AdvancedSortableDirective } from '../tables/advancedtable/advanced-sortable.directive';
-import { NotificationService } from '@progress/kendo-angular-notification';
 
 import * as moment from 'moment';
 
@@ -132,17 +131,7 @@ viewTable: boolean = false;
 
   constructor(private notifications: NotifService, private user: UserService, private modalService: NgbModal, private tarifService: TarificationsService,
               private fb: FormBuilder, private communeService: CommunesService, private logistkService: LogistikService, private location: LocationService,
-              private exportpdf: DataprintformatService, private notificationService: NotificationService) { }
-
-              public showSuccess(): void {
-                this.notificationService.show({
-                  content: 'Success notification',
-                  hideAfter: 600,
-                  position: { horizontal: 'center', vertical: 'top' },
-                  animation: { type: 'fade', duration: 1000 },
-                  type: { style: 'success', icon: true },
-                });
-              }          
+              private exportpdf: DataprintformatService) { }          
 
   ngOnInit(): void {
     this.userData = this.user._donnesUtilisateur()[0];
@@ -453,11 +442,11 @@ viewTable: boolean = false;
           this._listProduits();
           this.recapTab = {};
           
-          this.nbreJrLocation = 0;
+          //this.nbreJrLocation = 0;
           this.remisemnt = 0;
           this.remisepercent = 0;
           this.remisenewmnt = 0;
-          this.totalLocation = {};
+          //this.totalLocation = {};
           //this.resetWizard = true;
         }
 
@@ -469,10 +458,15 @@ viewTable: boolean = false;
 
   }
 
+  //Total paiement echellonné et total réliquat
+  _sommes(){
+    this.totalPaiement = this.paymntTab?.reduce(function (acc, obj) { return acc + obj.p_mntverse; }, 0);
+    this.mntPaiement = this.ligneLocation.r_mnt_total_remise - this.totalPaiement;
+  }
+
   _actionLocation(largeDataModal,ligneLocation, mode){
 
     this.ligneLocation = {...ligneLocation};
-console.log(this.ligneLocation);
 
     this.dateEnvoie = this.ligneLocation.r_date_envoie.replace(' ', 'T');
     this.dateretour = this.ligneLocation.r_date_retour.replace(' ', 'T');
@@ -485,9 +479,7 @@ console.log(this.ligneLocation);
     this.paymntTab = (this.ligneLocation.r_paiement_echell !== "null")? [...JSON.parse(this.ligneLocation.r_paiement_echell)] : "null";
     //Sommes total des paiements
     if( this.paymntTab !== "null" ){
-      this.totalPaiement = this.paymntTab?.reduce(function (acc, obj) { return acc + obj.p_mntverse; }, 0);
-      this.mntPaiement = this.ligneLocation.r_mnt_total_remise - this.totalPaiement;
-      
+      this._sommes();
     }
     
     if( this.ligneLocation.r_solder){
@@ -550,15 +542,22 @@ console.log(this.ligneLocation);
               dataPrint.push(obj);
             });
             dataPrint.push([{text: 'Total', colSpan:3},'','', {text:this.ligneLocation?.r_mnt_total/this.ligneLocation?.r_duree, color: "green"}]);
-            dataPrint.push([{text: 'Durée', colSpan:3},'','', {text:this.ligneLocation?.r_duree, color: "red"}]);
-            dataPrint.push([{text: 'Rémise', colSpan:3},'','', this.ligneLocation?.r_remise]);
-            dataPrint.push([{text: 'Total TTC', colSpan:3},'','', {text:this.ligneLocation?.r_mnt_total, color: "blue"}]);
-            console.log(dataPrint);
+            dataPrint.push([{text: 'Durée (Jours)', colSpan:3},'','', {text:this.ligneLocation?.r_duree, color: "red"}]);
+            dataPrint.push([{text: 'Total sur la durée', colSpan:3},'','', {text:this.ligneLocation?.r_mnt_total, color: "black"}]);
+            dataPrint.push([{text: 'Rémise', colSpan:3},'','', (this.ligneLocation?.r_remise >= 100)? this.ligneLocation?.r_remise : this.ligneLocation?.r_remise + '%']);
+            dataPrint.push([{text: 'Total à payer', colSpan:3},'','', {text: this.ligneLocation?.r_mnt_total_remise, color: "blue"}]);
+
+            if( this.paymntTab !== "null" ){
+              dataPrint.push([{text: 'Avance', colSpan:3},'','', {text: (this.ligneLocation.r_solder !== 0)? 0 : this.totalPaiement, color: "black"}]);
+              dataPrint.push([{text: 'Réliquat', colSpan:3},'','', {text:  this.ligneLocation?.r_mnt_total_remise - this.totalPaiement, color: "black"}]);
+            }
+
             // Données transport produits
             // tranportData.push([{text: 'Frais'},{text:this.ligneLocation?.r_frais_transport}]);
             // tranportData.push([{text: 'Véhicule'},{text:this.ligneLocation?.r_vehicule + ' | ' +this.ligneLocation?.r_matricule}]);
             // tranportData.push([{text: 'Destination'},{text:this.ligneLocation?.destination}]);
-           //Formatage des données pour la génération du pdf
+            //Formatage des données pour la génération du pdf
+
             let dd = this.exportpdf.printData(dataPrint);
 
 
@@ -688,8 +687,8 @@ console.log(this.ligneLocation);
 
   }
   
-  _majStatuslocation(data){
-    let obj: any = {},tab: any =[];
+  _majStatuslocation(data,title,msg){
+    let obj: any = {},tab: any =[], notif;
     this.majStatusData.p_idlocation = parseInt(this.ligneLocation.r_i, 10);
     this.majStatusData.p_status = data;
 
@@ -705,13 +704,13 @@ console.log(this.ligneLocation);
     this.majStatusData.p_signe = "+";
 
     Swal.fire({
-      title: 'Terminer la location',
-      text: "Avez vous Vérifier la quantité des produits retournés?",
+      title: title,
+      text: msg,
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
       cancelButtonColor: '#d33',
-      confirmButtonText: 'Oui, J\'ai vérifié!',
+      confirmButtonText: 'Oui',
       cancelButtonText: 'Non',
     }).then((result) => {
       if (result.isConfirmed) {
@@ -799,10 +798,11 @@ console.log(this.ligneLocation);
     let c = moment(this.dateData.fin);
     let d = moment(this.dateData.debut);
     this.nbreJrLocation = c.diff(d, 'days');
-    this.totalLocation.mewTotal = this.totalLocation.mntTotal * this.nbreJrLocation;
+    this.totalLocation.mewTotal = this.totalLocation?.mntTotal * this.nbreJrLocation;
     this.remisepercent = 0;
     this.remisemnt = 0;
     this.remisenewmnt = 0;
+    
   }
 
   //Appel de la modal
@@ -883,9 +883,10 @@ console.log(this.ligneLocation);
               text: 'Boutique/Commerce :',
               decoration: 'underline'
             },
-            // {
-            //   text: "this.infosPatenaire[0].r_nom"
-            // },
+             {
+               text: "Eden Décoration",
+              
+           },
             // {
             //   text: "this.infosPatenaire[0].r_quartier"
             // },
@@ -897,7 +898,7 @@ console.log(this.ligneLocation);
             // }
             ],
           ],
-
+          style: 'eden'
         },
         {
           columns: [
@@ -957,10 +958,11 @@ console.log(this.ligneLocation);
               text: 'Cordialement'
             },
             {
-              text: 'Devise de l’opération est le Franc cfa (Fcfa).'
+              text: 'Devise de l’opération est le Franc cfa (Fcfa).',
+              style:"cfa"
             }]
           ],
-          style: 'note'
+          style: 'devise'
         }
 
       ],
@@ -969,7 +971,7 @@ console.log(this.ligneLocation);
 
       styles: {
         header: {
-          fontSize: 18,
+          fontSize: 13,
           bold: true,
           margin: [0, 0, 0, 10]
         },
@@ -984,6 +986,15 @@ console.log(this.ligneLocation);
         },
         tableExample: {
           margin: [0, 5, 0, 15]
+        },
+        eden: {
+          margin: [0, 10, 0, 0]
+        },
+        devise: {
+          margin: [0, 10, 0, 0]
+        },
+        cfa:{
+          margin: [0, 10, 0, 10]
         }
       }
     };

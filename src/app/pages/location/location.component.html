@@ -130,7 +130,7 @@
                         <td style="width:10%" >{{location.r_date_envoie | date: 'dd-MM-YYYY à hh:mm:ss'}}</td>
                         <td style="width:10%" >{{location.r_date_retour | date: 'dd-MM-YYYY à hh:mm:ss'}}</td>
                         <td style="width:10%" *ngIf="location.r_solder==1" ><span class="badge badge-pill badge-soft-success font-size-12">Oui</span></td>
-                        <td style="width:10%" *ngIf="location.r_solder==0" ><span class="badge badge-pill badge-soft-danger font-size-12">Oui</span></td>
+                        <td style="width:10%" *ngIf="location.r_solder==0" ><span class="badge badge-pill badge-soft-danger font-size-12">Non</span></td>
                         <td style="width:5%" *ngIf="location.r_status==0" ><span class="badge badge-pill badge-soft-warning font-size-12">En attente de validation</span></td>
                         <td style="width:5%" *ngIf="location.r_status==1" ><span class="badge badge-pill badge-soft-success font-size-12">En cours d'utilisation</span></td>
                         <td style="width:5%" *ngIf="location.r_status==2"><span class="badge badge-pill badge-soft-primary font-size-12">terminée</span></td>
@@ -285,7 +285,7 @@
                             <div class="row mb-3">
                               <label class="col-md-3 col-form-label">Nom</label>
                               <div class="col-md-9">
-                                <input class="form-control" name="nom" type="text" formControlName="p_nom" placeholder="">
+                                <input class="form-control" autocomplete="off" type="text" formControlName="p_nom" placeholder="">
                                 <div *ngIf="formvalidate.p_nom.touched && formvalidate.p_nom.invalid" class="text-danger">
                                   <div *ngIf="formvalidate.p_nom.errors.required">Veuillez saisir le nom du client.</div>
                                 </div>
@@ -294,7 +294,7 @@
                             <div class="row mb-3">
                               <label class="col-md-3 col-form-label">Prenoms</label>
                               <div class="col-md-9">
-                                <input class="form-control" name="prenoms" type="text" formControlName="p_prenoms" placeholder="">
+                                <input class="form-control" autocomplete="off" type="text" formControlName="p_prenoms" placeholder="">
                                 <div *ngIf="formvalidate.p_prenoms.touched && formvalidate.p_prenoms.invalid" class="text-danger">
                                   <div *ngIf="formvalidate.p_prenoms.errors?.required">Veuillez saisir le prenoms du client.</div>
                                 </div>
@@ -303,7 +303,7 @@
                             <div class="row mb-3">
                               <label class="col-md-3 col-form-label">Numéro de téléphone</label>
                               <div class="col-md-9">
-                                <input class="form-control" name="tel" type="text" formControlName="p_telephone" mask="00-00-00-00-00" placeholder="">
+                                <input class="form-control" autocomplete="off" type="text" formControlName="p_telephone" mask="00-00-00-00-00" placeholder="">
                                 <div *ngIf="formvalidate.p_telephone.touched && formvalidate.p_telephone.invalid" class="text-danger">
                                   <div *ngIf="formvalidate.p_telephone.errors.required">Veuillez saisir le numéro de téléphone du client.</div>
                                   <div *ngIf="formvalidate.p_telephone.errors?.minLength">Numéro de téléphone invalide.</div>
@@ -313,13 +313,13 @@
                             <div class="row mb-3">
                               <label class="col-md-3 col-form-label">Adresse email</label>
                               <div class="col-md-9">
-                                <input class="form-control" name="email" type="email" formControlName="p_email" placeholder="">
+                                <input class="form-control" autocomplete="off" type="email" formControlName="p_email" placeholder="">
                               </div>
                             </div>
                             <div class="row mb-3">
                               <label class="col-md-3 col-form-label">Description</label>
                               <div class="col-md-9">
-                                <textarea class="form-control" formControlName="p_description"></textarea>
+                                <textarea class="form-control" autocomplete="off" formControlName="p_description"></textarea>
                               </div>
                             </div>
                           </div>
@@ -445,19 +445,71 @@
                         <ng-template awWizardStepSymbol>
                           <i class="fas fa-check-circle"></i>
                         </ng-template>
-                        <div class="row justify-content-center">
-                          <div class="col-lg-6">
-                            <div class="text-center">
-                              <div class="mb-4">
-                                <i class="mdi mdi-check-circle-outline text-success display-4"></i>
-                              </div>
-                              <div>
-                                <h5>Confirm Detail</h5>
-                                <p class="text-muted">If several languages coalesce, the grammar of the resulting</p>
-                              </div>
-                            </div>
+
+                        <div class="row justify-content-center mb-2">
+                          <div class="col-lg-12">
+                            <h5>Récapitulatif</h5>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <label class="col-form-label">Nom</label>
+                                        <input class="form-control" disabled type="text" [(ngModel)]="locationData.value.p_nom" [ngModelOptions]="{standalone: true}">
+                                    </div>
+                                    <div class="col-md-6">
+                                      <label class="col-form-label">Prenoms</label>
+                                      <input class="form-control" disabled type="text" [(ngModel)]="locationData.value.p_prenoms" [ngModelOptions]="{standalone: true}">
+                                  </div>
+                                </div>
+                                <div class="row">
+                                  <div class="col-md-6">
+                                      <label class="col-form-label">Numéro de téléphone</label>
+                                      <input class="form-control" disabled type="text" mask="00-00-00-00-00" [(ngModel)]="locationData.value.p_telephone" [ngModelOptions]="{standalone: true}">
+                                  </div>
+                                  <div class="col-md-6">
+                                    <label class="col-form-label">Adresse email</label>
+                                    <input class="form-control" disabled type="email" [(ngModel)]="locationData.value.p_email" [ngModelOptions]="{standalone: true}">
+                                  </div>
+                                </div>
+
+                                <div class="row">
+                                  <div class="col-md-12">
+                                      <label class="col-form-label">Description</label>
+                                      <textarea class="form-control" disabled [(ngModel)]="locationData.value.p_description" [ngModelOptions]="{standalone: true}"></textarea>
+                                  </div>
+                                </div>
+
+                                <hr>
+                            
+                                <div class="row">
+                                  <div class="col-md-6">
+                                      <label class="col-form-label">Date de livraison</label>
+                                      <input class="form-control" type="datetime-local" [(ngModel)]="locationData.value.p_date_envoie" [ngModelOptions]="{standalone: true}"
+                                      disabled>
+                                  </div>
+                                  <div class="col-md-6">
+                                    <label class="col-form-label">Date de retour</label>
+                                    <input class="form-control" type="datetime-local" [(ngModel)]="locationData.value.p_date_retour" [ngModelOptions]="{standalone: true}"
+                                    disabled>
+                                  </div>
+                                </div>
+
+                                <div class="row">
+                                  <div class="col-md-6">
+                                      <label class="col-form-label">Commune depart</label>
+                                      <ng-select [items]="CommunesTab" disabled [ngModelOptions]="{standalone: true}"
+                                      [(ngModel)]="selectedCityDapart"
+                                      bindValue="value"
+                                      bindLabel="label"
+                                      ></ng-select>
+                                    </div>
+                                  <div class="col-md-6">
+                                    <label class="col-form-label">Destination</label>
+                                    <ng-select [items]="CommunesTab" disabled [ngModelOptions]="{standalone: true}" [(ngModel)]="selectedCityarrive" ></ng-select>
+                                  </div>
+                                </div>
                           </div>
                         </div>
+
                         <ul class="list-inline wizard mb-0">
                           <li class="previous list-inline-item">
                             <button class="btn btn-primary" awPreviousStep>Précédent</button>
@@ -608,15 +660,15 @@
                       <div [ngbNavOutlet]="customNav"></div>
                       <div class="row mb-3" *ngIf="btnValidation == 'validation'" >
                         <div class="col" *ngIf="ligneLocation.r_status == 0" >
-                          <button type="button" class="btn btn-success btn-label waves-light btn-block" (click)="_majStatuslocation(1)" ><i
+                          <button type="button" class="btn btn-success btn-label waves-light btn-block" (click)="_majStatuslocation(1,'valider la location','Cette location sera validée ?')" ><i
                             class="bx bx-check-double label-icon"></i> Valider la commande</button>
                         </div>
                         <div class="col" *ngIf="ligneLocation.r_status == 1">
-                          <button type="button" class="btn btn-warning btn-label waves-light" (click)="_majStatuslocation(2)"><i
+                          <button type="button" class="btn btn-warning btn-label waves-light" (click)="_majStatuslocation(2,'Terminer la location','Avez vous Vérifier la quantité des produits retournés ?')"><i
                             class="bx bx-block label-icon "></i>Terminer la location</button>
                         </div>
                         <div class="col" *ngIf="ligneLocation.r_status == 0" >
-                          <button type="button" style="float: right" class="btn btn-danger btn-label waves-light" (click)="_majStatuslocation(3)"><i
+                          <button type="button" style="float: right" class="btn btn-danger btn-label waves-light" (click)="_majStatuslocation(3,'Annuler la location','Voullez vous vraiment annuler la location ?')"><i
                             class="bx bx-block label-icon "></i>Annuler la demande de la location</button>
                         </div>
                       </div>
