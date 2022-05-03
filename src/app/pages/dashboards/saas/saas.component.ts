@@ -52,9 +52,6 @@ export class SaasComponent implements OnInit, AfterViewInit {
         this.dashOne = {...data[0][0]};
         //this.dashTwo = [...data[1][0]];
         this.dashThree = [...data[2]];
-
-        
-        console.log(this.dashThree);
         
       },
       (err) => {console.log(err.stack)})

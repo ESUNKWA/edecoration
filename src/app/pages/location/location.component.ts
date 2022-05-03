@@ -816,10 +816,10 @@ viewTable: boolean = false;
   //Afficher ou caher le contenu pour l'ajout des produits
   _addProdut(val: boolean) {
     
+    console.log(this.detailsLocationTab);
+
     //debugger
       this.addproduct = val;
-      //this.detailsLocationTab = [];
-      //this.modeAppel = (val == false) ? 'modif': 'creation';
 
       if( this.addproduct == true ) {
         this.modeAppel = 'creation';
@@ -828,20 +828,20 @@ viewTable: boolean = false;
       }else{
         this.modeAppel = 'modif';
         //debugger;
-        if( this.recapTab?.length >= 1){
+        // if( this.recapTab?.length >= 1){
 
-          this.recapTab?.map(product=>{
+        //   this.recapTab?.map(product=>{
               
-            this.detailsLocationTab.push({
-              r_produit: product.idproduit,
-              r_quantite: product.qte,
-              r_prix_location: product.r_prix_location,
-              r_sous_total: product.total,
-            });
+        //     this.detailsLocationTab.push({
+        //       r_produit: product.idproduit,
+        //       r_quantite: product.qte,
+        //       r_prix_location: product.r_prix_location,
+        //       r_sous_total: product.total,
+        //     });
 
-          });
-          this.recapTab = [];
-        }
+        //   });
+        //   this.recapTab = [];
+        // }
       }
 
       console.log(this.detailsLocationTab);

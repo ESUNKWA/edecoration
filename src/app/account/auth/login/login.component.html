@@ -30,6 +30,7 @@
               <form class="form-horizontal" [formGroup]="loginForm" novalidate (ngSubmit)="onSubmit()">
 
                 <ngb-alert type="danger" *ngIf="error" [dismissible]="false">{{ error }}</ngb-alert>
+                <!-- <ngb-alert type="danger" *ngIf="error" [dismissible]="false">{{ error }}</ngb-alert> -->
 
                 <div class="mb-3">
                   <label for="p_login">Identifiant</label>

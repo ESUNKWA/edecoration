@@ -51,15 +51,27 @@ export class LoginComponent implements OnInit {
    * Form submit
    */
   onSubmit() {
-
+    this.error = '';
     this.btnspinner = true;
     this.authenticationService._login(this.loginForm.value).subscribe(
       (res: any = {})=>{
-        if( res._status == 1 ){
-          sessionStorage.setItem('userData', JSON.stringify(res._result));
-          this.btnspinner = false;
+
+        switch(res._status){
+          case 0:
+            this.error = res._result;
+            break;
+
+          case 1:
+            sessionStorage.setItem('userData', JSON.stringify(res._result));
             this.router.navigate(['/edeco/dashboard']);
+            break;
+
+          default:
+            this.error = res._result;
+            break;
         }
+
+        this.btnspinner = false;
       }
     )
   }
