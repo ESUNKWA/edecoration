@@ -120,6 +120,10 @@ viewTable: boolean = false;
   desc: any;
   typetext: any;
   dkem: string;
+  selectedProductIds: number[];
+  tarificationTabCiblees: any = [];
+  tabindex: any = 0;
+  nbreLigne: number;
 
   getPremiumData() {
     this.paginateData = this.locationtab.slice(
@@ -153,6 +157,7 @@ viewTable: boolean = false;
       p_paiement:[''],
       p_frais: [0],
     });
+
     this.showLocationData = this.fb.group({
       p_details: ['', [Validators.required]],
 
@@ -164,6 +169,7 @@ viewTable: boolean = false;
       p_vehicule: [''],
       p_frais: [0],
     });
+
     this.clientsData = this.fb.group({
       p_nom: ['', [Validators.required]],
       p_prenoms: ['', [Validators.required]],
@@ -171,11 +177,13 @@ viewTable: boolean = false;
       p_email: [''],
       p_description: ['']
     });
+
     this.searchData = this.fb.group({
       p_date: ['', [Validators.required]],
       p_date_retour: ['', ],
       p_status: ['',[Validators.required]]
     });
+
     this.reglmntData = this.fb.group({
       p_avancePayer: [],
       p_mntverse: [],
@@ -271,7 +279,7 @@ viewTable: boolean = false;
 
   //sélection quantité par produit
   _valueQte(val,i){
-    
+
     this.totalLocation = {};
 
 
@@ -321,7 +329,7 @@ viewTable: boolean = false;
       //Modification de la ligne en cours
       this.detailsLocationTab[i].r_quantite = parseInt(val, 10);
       this.detailsLocationTab[i].r_sous_total =  this.detailsLocationTab[i].r_quantite*this.detailsLocationTab[i].r_prix_location;
-
+  
       if( this.detailsLocationTab[i].r_quantite > this.detailsLocationTab[i].r_stock){
         this.notifications.sendMessage('Stock insuffisant','warning');
         this.detailsLocationTab[i].r_quantite = 0;
@@ -465,7 +473,8 @@ viewTable: boolean = false;
   }
 
   _actionLocation(largeDataModal,ligneLocation, mode){
-
+    this.nbreLigne = 0;
+    this.tarificationTabCiblees = [];
     this.ligneLocation = {...ligneLocation};
 
     this.dateEnvoie = this.ligneLocation.r_date_envoie.replace(' ', 'T');
@@ -497,14 +506,15 @@ viewTable: boolean = false;
     
     switch(mode){
       case 'modif':
-
+        //this.tarificationTab = [];
         this._listDetailLocationByidLocation(this.ligneLocation.r_i);
         this.modalTitle = `Modification de la location N° [ ${this.ligneLocation.r_num} ]`;
         this.desactiver = false;
         this.clientsData.enable();
         this.showLocationData.enable();
         this._produits();
-        this.largeModal(largeDataModal)
+        this.largeModal(largeDataModal);
+        
         break;
 
       case 'validation':
@@ -521,7 +531,7 @@ viewTable: boolean = false;
       default:
 
         this.detailsLocationTab = [];
-        let tranportData = []
+
         let dataPrint: any = [];
         let dataPrintTitle: any = ['Produits','Quantités','Prix unitaire','Sous total'];
 
@@ -530,7 +540,7 @@ viewTable: boolean = false;
         this.location._getDetailLocationByid(this.ligneLocation.r_i).subscribe(
           (data: any) => {
             this.detailsLocationTab = [...data._result];
-
+            
             //Produts à imprimer
             this.detailsLocationTab.forEach((el)=>{
               let obj: any = {}
@@ -646,7 +656,7 @@ viewTable: boolean = false;
     this.location._getDetailLocationByid(idlocation).subscribe(
       (data: any) => {
         this.detailsLocationTab = [...data._result];
-
+        this.nbreLigne = this.detailsLocationTab.length;
         setTimeout(() => {
           this.viewTable = true;
         }, 500);
@@ -813,39 +823,46 @@ viewTable: boolean = false;
   SuprimeChamps(index){
     this.detailsLocationTab.splice(index,  1);
   }
+
+  test(product){
+   this.modeAppel = 'modif';
+    let newProduct: any =[], tabs: any = [];
+    this.detailsLocationTab.splice(this.nbreLigne, this.detailsLocationTab.length-this.nbreLigne);
+
+    product.map(item =>{
+      return newProduct.push({
+        r_produit: item.id,
+        r_prix_location: item.r_prix_location,
+        r_quantite: 0,
+        r_sous_total: 0,
+      }); 
+   });
+
+   tabs = [...this.detailsLocationTab,...newProduct]
+   
+   this.detailsLocationTab = [...tabs];
+   
+  }
   //Afficher ou caher le contenu pour l'ajout des produits
-  _addProdut(val: boolean) {
+  _addProdut() {
+
+    let tabIds: number[] = [], obj: any = {};
+    this.tarificationTabCiblees = [];
     
-    console.log(this.detailsLocationTab);
+    this.modeAppel = 'creation';
+    //Récupération des id des produits faisant partis de la location
+    this.detailsLocationTab.forEach((el)=>{
+      tabIds.push(el.r_produit);
+    });
 
-    //debugger
-      this.addproduct = val;
-
-      if( this.addproduct == true ) {
-        this.modeAppel = 'creation';
-
-        //this.detailsLocationTab.splice(1,this.detailsLocationTab.length)
-      }else{
-        this.modeAppel = 'modif';
-        //debugger;
-        // if( this.recapTab?.length >= 1){
-
-        //   this.recapTab?.map(product=>{
-              
-        //     this.detailsLocationTab.push({
-        //       r_produit: product.idproduit,
-        //       r_quantite: product.qte,
-        //       r_prix_location: product.r_prix_location,
-        //       r_sous_total: product.total,
-        //     });
-
-        //   });
-        //   this.recapTab = [];
-        // }
-      }
-
-      console.log(this.detailsLocationTab);
-      console.log(this.recapTab);
+   obj.p_idproduits = tabIds;
+   //Récupération des trarification differents de la location
+    this.tarifService._getTarificationsCiblees(obj).subscribe(
+      (res: any = {})=>{
+        this.tarificationTabCiblees = res._result;
+      },
+      (err) => {console.log(err.stack)}
+    );
       
   }
 

@@ -673,14 +673,14 @@
                       </div>
                     </div>
                     <!-- Ajouter de noveau produits au panier -->
-                    <div *ngSwitchDefault >
+                    <!-- <div *ngSwitchDefault >
 
                       <div class="row" >
                         <div class="col-12">
                           <button style="float: right;"
                           type="button"
                           class="btn btn-primary"
-                          title="Voir les détails de la location"
+                          title=""
                           (click)="_addProdut(false)"> <i class="fas fa-list-ul"></i></button>
                         </div>
                       </div>
@@ -716,7 +716,7 @@
                         </tbody>
                       </table>
 
-                    </div>
+                    </div> -->
 
 
                   </div>
@@ -790,13 +790,22 @@
 
   <!-- Tab Content -->
   <ng-template #TabContent1>
+    <label>Liste des produits restants</label>
+        <ng-select [items]="tarificationTabCiblees"
+                   bindLabel="label"
+                   bindValue="id"
+                   [multiple]="true"
+                   placeholder="Sélectionner les produits à ajouter"
+                   [(ngModel)]="selectedProductIds"
+                  (change)="test($event)" >
+        </ng-select>
     <div class="row" >
       <div class="col-12">
         <button style="float: right;" [hidden]="desactiver"
         type="button"
         class="btn btn-primary mt-1"
         title="Ajouter de nouveau produits"
-        (click)="_addProdut(true)" ><i class="fas fa-shopping-basket"></i></button>
+        (click)="_addProdut()" ><i class="fas fa-shopping-basket"></i></button>
       </div>
     </div>
     <!-- Table -->
@@ -826,8 +835,8 @@
           <td style="width:15%">
             <input #inp class="form-control" [disabled]="desactiver" type="number" [(ngModel)]="produit.r_quantite" (change)="_valueQte(inp.value,i)" placeholder="">
           </td>
-          <td style="width:10%" >{{produit.r_prix_location | mask: 'separator':' '}}</td>
-          <td style="width:10%" >{{produit.r_sous_total | mask: 'separator':' '}}</td>
+          <td style="width:10%" >{{produit?.r_prix_location | mask: 'separator':' '}}</td>
+          <td style="width:10%" >{{produit?.r_sous_total | mask: 'separator':' '}}</td>
           <td style="width:15%" *ngIf="ligneLocation.r_status !== 0">
             <input #inpm class="form-control" type="number" value="0" [(ngModel)]="produit.r_produit_manquant" (change)="_valueQte(inpm.value,i)" placeholder="">
           </td>

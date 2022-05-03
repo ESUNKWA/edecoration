@@ -24,6 +24,10 @@ export class TarificationsService {
     return this.http.get(`${this.env.backendServer}/tarifications`);
   }
 
+  _getTarificationsCiblees(data: number[]): Observable<any> {
+    return this.http.post(`${this.env.backendServer}/tarification_cibles`,data).pipe(catchError(this.error));
+  }
+
   _getTarificationById(idproduits){
     return this.http.get(`${this.env.backendServer}/tarifications/${idproduits}`);
   }
