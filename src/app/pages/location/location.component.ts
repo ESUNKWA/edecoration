@@ -124,6 +124,7 @@ viewTable: boolean = false;
   tarificationTabCiblees: any = [];
   tabindex: any = 0;
   nbreLigne: number;
+  produitsTabLoues: any[] = [];
 
   getPremiumData() {
     this.paginateData = this.locationtab.slice(
@@ -282,7 +283,6 @@ viewTable: boolean = false;
 
     this.totalLocation = {};
 
-
     switch (this.modeAppel) {
 
       case 'manquant':
@@ -330,6 +330,7 @@ viewTable: boolean = false;
       this.detailsLocationTab[i].r_quantite = parseInt(val, 10);
       this.detailsLocationTab[i].r_sous_total =  this.detailsLocationTab[i].r_quantite*this.detailsLocationTab[i].r_prix_location;
   
+  
       if( this.detailsLocationTab[i].r_quantite > this.detailsLocationTab[i].r_stock){
         this.notifications.sendMessage('Stock insuffisant','warning');
         this.detailsLocationTab[i].r_quantite = 0;
@@ -353,7 +354,6 @@ viewTable: boolean = false;
 
             this.totalLocationModif.mntTotal = a;
             this.totalLocationModif.qteproduits = b;
-
             break;
         }
         break;
@@ -455,7 +455,7 @@ viewTable: boolean = false;
           this.remisepercent = 0;
           this.remisenewmnt = 0;
           this.totalLocation = {};
-          //this.resetWizard = true;
+          this.dateData = {};
         }
 
         //this.nbreJrLocation = 0;
@@ -473,6 +473,7 @@ viewTable: boolean = false;
   }
 
   _actionLocation(largeDataModal,ligneLocation, mode){
+    
     this.nbreLigne = 0;
     this.tarificationTabCiblees = [];
     this.ligneLocation = {...ligneLocation};
@@ -506,14 +507,16 @@ viewTable: boolean = false;
     
     switch(mode){
       case 'modif':
-        //this.tarificationTab = [];
+        this.modeAppel = 'modif';
         this._listDetailLocationByidLocation(this.ligneLocation.r_i);
         this.modalTitle = `Modification de la location N° [ ${this.ligneLocation.r_num} ]`;
         this.desactiver = false;
         this.clientsData.enable();
         this.showLocationData.enable();
+        
         this._produits();
         this.largeModal(largeDataModal);
+       
         
         break;
 
@@ -652,11 +655,25 @@ viewTable: boolean = false;
   }
 
   _listDetailLocationByidLocation(idlocation: number) {
-
+    let tb: any = []
     this.location._getDetailLocationByid(idlocation).subscribe(
       (data: any) => {
         this.detailsLocationTab = [...data._result];
         this.nbreLigne = this.detailsLocationTab.length;
+
+        //Récupération des premières quantités louées
+        this.detailsLocationTab.map(item =>{
+          return tb.push({
+             qte: item.r_quantite,
+            idproduit: item.r_produit,
+           }); 
+       });
+       this.produitsTabLoues = tb;
+      
+       // total montant de la location à modifier
+       const b = this.detailsLocationTab.reduce(function (acc, obj) { return acc + obj.r_sous_total; }, 0);
+        this.totalLocationModif.mntTotal = b;
+
         setTimeout(() => {
           this.viewTable = true;
         }, 500);
@@ -815,6 +832,27 @@ viewTable: boolean = false;
     
   }
 
+  _getdatedebutModif(){
+    const a = this.showLocationData.value.p_date_envoie.split('T')[0];
+    this.dateData.debut = [...a.split('-')];
+    
+    
+  }
+  _getdatefinModif(){
+    const a = this.showLocationData.value?.p_date_retour.split('T')[0];
+    this.dateData.fin = [...a.split('-')];
+   
+    let d = (this.dateData.debut == undefined)? moment(this.dateEnvoie.split('T')[0].split('-')) : moment(this.dateData.debut);
+    let c = moment(this.dateData.fin);
+
+    this.nbreJrLocation = c.diff(d, 'days');
+    this.totalLocationModif.mewTotal = this.totalLocationModif?.mntTotal * this.nbreJrLocation;
+    this.remisepercent = 0;
+    this.remisemnt = 0;
+    this.remisenewmnt = 0;
+    
+  }
+
   //Appel de la modal
   largeModal(exlargeModal: any) {
     this.modalService.open(exlargeModal, { size: 'xl', centered: true });
@@ -824,7 +862,7 @@ viewTable: boolean = false;
     this.detailsLocationTab.splice(index,  1);
   }
 
-  test(product){
+  addNewProduct(product){
    this.modeAppel = 'modif';
     let newProduct: any =[], tabs: any = [];
     this.detailsLocationTab.splice(this.nbreLigne, this.detailsLocationTab.length-this.nbreLigne);
@@ -837,12 +875,41 @@ viewTable: boolean = false;
         r_sous_total: 0,
       }); 
    });
-
    tabs = [...this.detailsLocationTab,...newProduct]
-   
    this.detailsLocationTab = [...tabs];
    
   }
+
+  updateLocation(){
+    let ta: any = [];
+    //this.showLocationData.value.p_date_envoie = this.showLocationData.value.p_date_envoie.replace('T', ' ');
+    //this.showLocationData.value.p_date_retour = this.showLocationData.value.p_date_retour.replace('T', ' ');
+    this.showLocationData.value.p_idlocation = this.ligneLocation.r_i;
+
+    
+  //Renommage des clés json des détails
+    this.detailsLocationTab.map(item =>{
+       return ta.push({
+        qte: item.r_quantite,
+         idproduit: item.r_produit,
+         total: item.r_sous_total,
+         location: item.r_location,
+         p_produit_manquant: 0,
+        }); 
+    });
+     
+    this.showLocationData.value.p_details = ta;
+    this.showLocationData.value.p_majQte = this.produitsTabLoues;
+
+    this.showLocationData.value.p_duree = this.nbreJrLocation;
+
+
+    this.showLocationData.value.p_mnt_total = this.totalLocationModif?.mntTotal * this.nbreJrLocation;
+    this.showLocationData.value.p_utilisateur = this.userData.r_i;
+    console.log(this.showLocationData.value);
+    
+  }
+
   //Afficher ou caher le contenu pour l'ajout des produits
   _addProdut() {
 

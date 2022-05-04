@@ -644,7 +644,11 @@
                           </a>
                           <ng-template ngbNavContent>
                             <ng-template [ngTemplateOutlet]="TabContent1"></ng-template>
+
+                            <button type="button" class="btn btn-primary nouveau" title="Modifier" (click)="updateLocation()" >Modifier</button>
+
                           </ng-template>
+
                         </li>
                         <li [hidden]="paymntTab == 'null'" [ngbNavItem]="3">
                           <a ngbNavLink>
@@ -797,7 +801,7 @@
                    [multiple]="true"
                    placeholder="Sélectionner les produits à ajouter"
                    [(ngModel)]="selectedProductIds"
-                  (change)="test($event)" >
+                  (change)="addNewProduct($event)" >
         </ng-select>
     <div class="row" >
       <div class="col-12">
@@ -860,7 +864,7 @@
               <label class="col-md-4 col-form-label">Date de livraison</label>
               <div class="col-md-8">
                 <input class="form-control" type="datetime-local" formControlName="p_date_envoie" value="2019-08-19T13:45:00"
-                          id="example-datetime-local-input" [(ngModel)]="dateEnvoie">
+                          id="example-datetime-local-input" [(ngModel)]="dateEnvoie" (change)="_getdatedebutModif()">
                 <div *ngIf="formvalidate.p_date_envoie.touched && formvalidate.p_date_envoie.invalid" class="text-danger">
                       <div *ngIf="formvalidate.p_date_envoie.errors.required">Veuillez selectionnez le date de livraison.</div>
                 </div>
@@ -872,7 +876,7 @@
               <label class="col-md-4 col-form-label">Date de retour</label>
               <div class="col-md-8">
                 <input class="form-control" type="datetime-local" formControlName="p_date_retour" value="2019-08-19T13:45:00"
-                          id="example-datetime-local-input" [(ngModel)]="dateretour">
+                          id="example-datetime-local-input" [(ngModel)]="dateretour" (change)="_getdatefinModif()">
                 <div *ngIf="formvalidate.p_date_retour.touched && formvalidate.p_date_retour.invalid" class="text-danger">
                     <div *ngIf="formvalidate.p_date_retour.errors.required">Veuillez selectionnez le date de retour des produits.</div>
                 </div>
@@ -953,9 +957,78 @@
 
           </div>
 
-
       </form>
     </fieldset>
+
+     <!--Block des récaputilatifs-->
+     <div class="col-md-12">
+      <form class="needs-validation">
+        <div class="row">
+          <div class="col-lg-6">
+            <div class="card">
+              <div class="card-body">
+                <h4 class="card-title mb-4">Total Produits: ({{totalLocation.qteproduits}})</h4>
+                <!-- <div class="mt-2" *ngFor="let prd of recapTab">
+                  <h5 class="font-size-15 text-uppercase">{{prd?.r_libelle}}</h5>
+                  <span class="text-muted mb-0">{{prd.qte}} x {{prd?.r_prix_location}} = {{prd?.total}}</span>
+                  <hr>
+                </div> -->
+                <h5 class="card-title mb-4">Nombre de jours : <span class="text-info" ><strong>{{nbreJrLocation | mask: 'separator':' '}}</strong></span></h5>
+                <h5 class="card-title mb-4">Total : <span class="text-info" ><strong>{{totalLocationModif?.mntTotal | mask: 'separator':' '}} x {{ nbreJrLocation }} = {{(totalLocationModif?.mntTotal * nbreJrLocation) | mask: 'separator':' '}}</strong></span></h5>
+                <h5 class="card-title mb-4">Frais de transport : <span class="text-info" ><strong>{{showLocationData?.value.p_frais | mask: 'separator':' '}} </strong></span></h5>
+                <h5 class="card-title mb-4">Nouveau Total : <span class="text-danger" ><strong>{{totalLocationModif?.mewTotal | mask: 'separator':' '}}</strong></span></h5>
+
+
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-6" hidden>
+            <fieldset class="form-group border p-3 scheduler-border">
+              <legend class="w-auto px-2 scheduler-border">Rémises</legend>
+              <div class="row mb-3">
+                <label for="percent" class="col-md-5 col-form-label">en %</label>
+                <div class="col-md-7">
+                  <input #percent class="form-control" name="percent" type="text" [(ngModel)]="remisepercent" mask="000" [disabled]="totalLocationModif.mntTotal == 0" (keyup)="_calculateRemise(percent.value, 'percent')" placeholder="">
+                </div>
+              </div>
+              <div class="row mb-3">
+                <label for="remisemnt" class="col-md-5 col-form-label">Montant fixe </label>
+                <div class="col-md-7">
+                  <input #mtnreduce class="form-control" name="remisemnt" type="text" [(ngModel)]="remisemnt" mask="0000000000" [disabled]="totalLocationModif.mntTotal == 0" (keyup)="_calculateRemise(mtnreduce.value, 'mntfixe')" placeholder="">
+                </div>
+              </div>
+              <div class="row mb-3">
+                <label for="remisenewmnt" class="col-md-5 col-form-label">Nouveau montant</label>
+                <div class="col-md-7">
+                  <input #newMntTotal class="form-control" name="remisenewmnt" type="text" [(ngModel)]="remisenewmnt" mask="0000000000" [disabled]="totalLocationModif.mntTotal == 0" (keyup)="_calculateRemise(newMntTotal.value, 'newmnt')" placeholder="">
+                </div>
+              </div>
+            </fieldset>
+
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" #avance type="radio" name="inlineRadioOptions" id="inline1" value="1" (change)="_moderglmnt(avance.value)">
+              <label class="form-check-label" for="inline1">Donner une avance</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" #total type="radio" name="inlineRadioOptions" id="inline2" value="2" (change)="_moderglmnt(total.value)">
+              <label class="form-check-label" for="inline2">Règler la totalité de la facture</label>
+            </div>
+
+            <div class="row mb-3" *ngIf="reglmtPartiel==1">
+
+              <div class="col-md-6">
+                <label for="mntAvance" class="col-form-label">Montant avance</label>
+                <input #mntAvance class="form-control" name="mntAvance" type="text" mask="0000000000" (keyup)="_calculReliquat(mntAvance.value)" placeholder="">
+              </div>
+              <div class="col-md-6 text-danger">
+                <label for="mntAvance" class="col-form-label">Réliquat</label>
+                <input #mntresta class="form-control text-danger text-bold" name="mntresta" type="text" [(ngModel)]="reliquat" mask="0000000000" readonly placeholder="">
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
 
   </ng-template>
 
