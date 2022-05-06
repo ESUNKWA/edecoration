@@ -80,7 +80,7 @@ export class HorizontaltopbarComponent implements OnInit, AfterViewInit {
    */
   logout() {
     if (environment.defaultauth === 'firebase') {
-      this.authService.logout();
+      //this.authService.logout();
     } else {
       this.authFackservice.logout();
     }

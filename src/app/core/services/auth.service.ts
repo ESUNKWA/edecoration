@@ -36,34 +36,12 @@ export class AuthenticationService {
     }
 
     /**
-     * Performs the register
-     * @param email email
-     * @param password password
-     */
-    register(email: string, password: string) {
-        return getFirebaseBackend().registerUser(email, password).then((response: any) => {
-            const user = response;
-            return user;
-        });
-    }
-
-    /**
-     * Reset password
-     * @param email email
-     */
-    resetPassword(email: string) {
-        return getFirebaseBackend().forgetPassword(email).then((response: any) => {
-            const message = response.data;
-            return message;
-        });
-    }
-
-    /**
      * Logout the user
      */
-    logout() {
+    logout(idUtilisateur: any): Observable<any> {
         // logout the user
-        getFirebaseBackend().logout();
+       // getFirebaseBackend().logout();
+       return this.http.post(`${this.env.backendServer}/deconnect`, idUtilisateur);
     }
 }
 

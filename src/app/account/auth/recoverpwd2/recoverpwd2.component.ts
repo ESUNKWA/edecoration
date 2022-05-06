@@ -44,12 +44,12 @@ export class Recoverpwd2Component implements OnInit {
     if (this.resetForm.invalid) {
       return;
     }
-    if (environment.defaultauth === 'firebase') {
-      this.authenticationService.resetPassword(this.f.email.value)
-        .catch(error => {
-          this.error = error ? error : '';
-        });
-    }
+    // if (environment.defaultauth === 'firebase') {
+    //   this.authenticationService.resetPassword(this.f.email.value)
+    //     .catch(error => {
+    //       this.error = error ? error : '';
+    //     });
+    // }
   }
 
   carouselOption: OwlOptions = {
