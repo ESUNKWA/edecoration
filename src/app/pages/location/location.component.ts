@@ -280,7 +280,7 @@ viewTable: boolean = false;
 
   //sélection quantité par produit
   _valueQte(val,i){
-
+console.log(this.modeAppel)
     this.totalLocation = {};
 
     switch (this.modeAppel) {
@@ -478,8 +478,15 @@ viewTable: boolean = false;
     this.tarificationTabCiblees = [];
     this.ligneLocation = {...ligneLocation};
 
-    this.dateEnvoie = this.ligneLocation.r_date_envoie.replace(' ', 'T');
-    this.dateretour = this.ligneLocation.r_date_retour.replace(' ', 'T');
+    // Affecter les dates aux champs dateheure pour consultation
+    this.dateEnvoie = this.ligneLocation.r_date_envoie.replace(' ','T');
+    this.dateretour = this.ligneLocation.r_date_retour.replace(' ','T');
+    //Récupération du nombre de jour
+    let debut = moment(this.ligneLocation.r_date_envoie);
+    let fin = moment(this.ligneLocation.r_date_retour);
+    this.nbreJrLocation = fin.diff(debut, 'days');
+    
+
     this.selectedCityarrive = this.ligneLocation.r_destination;
 
     this.selectedVehicule = this.ligneLocation.r_logistik;
@@ -815,32 +822,36 @@ viewTable: boolean = false;
 
   _getdatedebut(){
     const a = this.locationData.value.p_date_envoie.split('T')[0];
-    this.dateData.debut = [...a.split('-')];
+    this.dateData.debut = a;//[...a.split('-')];
+
+    console.log(this.dateData.debut);
   }
 
   _getdatefin(){
     const a = this.locationData.value?.p_date_retour.split('T')[0];
-    this.dateData.fin = [...a.split('-')];
+    this.dateData.fin = a;//[...a.split('-')];
+    console.log(this.dateData.fin);
 
-    let c = moment(this.dateData.fin);
-    let d = moment(this.dateData.debut);
-    this.nbreJrLocation = c.diff(d, 'days');
+    let debut = moment(this.dateData.debut);
+    let fin = moment(this.dateData.fin);
+    
+    this.nbreJrLocation = fin.diff(debut, 'days');
     this.totalLocation.mewTotal = this.totalLocation?.mntTotal * this.nbreJrLocation;
     this.remisepercent = 0;
     this.remisemnt = 0;
     this.remisenewmnt = 0;
-    
+    console.log(this.nbreJrLocation)
   }
 
   _getdatedebutModif(){
     const a = this.showLocationData.value.p_date_envoie.split('T')[0];
-    this.dateData.debut = [...a.split('-')];
+    this.dateData.debut = a;//[...a.split('-')];
     
     
   }
   _getdatefinModif(){
     const a = this.showLocationData.value?.p_date_retour.split('T')[0];
-    this.dateData.fin = [...a.split('-')];
+    this.dateData.fin = a;// [...a.split('-')];
    
     let d = (this.dateData.debut == undefined)? moment(this.dateEnvoie.split('T')[0].split('-')) : moment(this.dateData.debut);
     let c = moment(this.dateData.fin);

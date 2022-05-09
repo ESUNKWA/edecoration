@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import * as moment from 'moment'; 
+import * as moment from 'moment';
 
 import pdfmake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
@@ -28,8 +28,8 @@ export class TestComponent implements OnInit {
     }
   ]; //
 
-  a = moment([2022,4,7]);
-  b = moment([2022,4,1]);
+  fin = moment("2022-5-1");
+  debut = moment("2022-4-29");
 
   constructor() { }
 
@@ -64,14 +64,12 @@ export class TestComponent implements OnInit {
       }
     ];
     let now1 = moment("2022-04-04T16:52", "YYYYMMDD");
-
      // 1
-    
-    console.log(this.a.diff(this.b, 'days'));
-    
+    console.log(this.fin.diff(this.debut, 'days'));
+
   }
 
-  
+
 
   public export(): void {
 
@@ -84,16 +82,16 @@ export class TestComponent implements OnInit {
           { text: 'Right part', alignment: 'right' }
         ]
       },
-      
-    
+
+
       content: [
-       
-        { 
+
+        {
           columns: [
             [
               {
                 text: 'Facture N° : ' + "this.detailsFacture.r_num",
-                
+
               },
               {
                 text: "this.detailsFacture.created_at"
