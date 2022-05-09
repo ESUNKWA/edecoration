@@ -34,8 +34,8 @@ export class LocationService {
     return this.http.get(`${this.env.backendServer}/detailslocation/${idlocation}`);
   }
 
-  _update(data: any, id: number): Observable<any>{
-    return this.http.put(`${this.env.backendServer}/location/${id}`, data).pipe(catchError(this.error));
+  _update(data: any): Observable<any>{
+    return this.http.post(`${this.env.backendServer}/updatelocation`, data).pipe(catchError(this.error));
   }
 
   _add_reglmnt_paiemnt(data: any): Observable<any> {

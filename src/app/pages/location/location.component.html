@@ -125,7 +125,8 @@
                         <!-- <td style="width:12%" >{{location.r_telephone | mask: "(000) 00-00-00-00-00"}}</td> -->
 
                         <td style="width:10%" >{{location.r_mnt_total | mask: 'separator':' '}}</td>
-                        <td style="width:10%" *ngIf="location.r_remise <= 100" >{{location.r_remise}}%</td>
+                        <td style="width:10%" *ngIf="location.r_remise == 0 || location.r_remise == null" >0</td>
+                        <td style="width:10%" *ngIf="location.r_remise > 0" >{{location.r_remise}}%</td>
                         <td style="width:10%" *ngIf="location.r_remise > 100" >{{location.r_remise | mask: 'separator':' '}}</td>
                         <td style="width:10%"  >{{location.r_mnt_total_remise | mask: 'separator':' '}}</td>
                         <td style="width:10%" >{{location.r_date_envoie | date: 'dd-MM-YYYY à hh:mm:ss'}}</td>
@@ -272,7 +273,7 @@
 
 
                         <ul class="list-inline wizard mt-2">
-                          <li class="next list-inline-item float-end"><button class="btn btn-primary" [disabled]="totalLocation?.mntTotal == 0" awNextStep>Suivant</button>
+                          <li class="next list-inline-item float-end"><button class="btn btn-primary" [disabled]="totalLocation?.mntTotal == 0 || totalLocation?.mntTotal == undefined" awNextStep>Suivant</button>
                           </li>
                         </ul>
                       </aw-wizard-step>
@@ -795,7 +796,6 @@
 
   <!-- Tab Content -->
   <ng-template #TabContent1>
-
     <div class="row mt-2" >
       <div class="col-10" >
         <ng-select [items]="tarificationTabCiblees"
@@ -970,7 +970,7 @@
           <div class="col-lg-6">
             <div class="card">
               <div class="card-body">
-                <h4 class="card-title mb-4">Total Produits: ({{totalLocation.qteproduits}})</h4>
+                <h4 class="card-title mb-4">Total Produits: ({{totalLocationModif.qteproduits}})</h4>
                 <!-- <div class="mt-2" *ngFor="let prd of recapTab">
                   <h5 class="font-size-15 text-uppercase">{{prd?.r_libelle}}</h5>
                   <span class="text-muted mb-0">{{prd.qte}} x {{prd?.r_prix_location}} = {{prd?.total}}</span>
