@@ -26,6 +26,7 @@ import { JwtInterceptor } from './core/helpers/jwt.interceptor';
 import { FakeBackendInterceptor } from './core/helpers/fake-backend';
 import { DataTablesModule } from 'angular-datatables';
 import { ToastrModule } from 'ngx-toastr';
+import { NgApexchartsModule } from 'ng-apexcharts';
 if (environment.defaultauth === 'firebase') {
   initFirebaseBackend(environment.firebaseConfig);
 } else {
@@ -65,7 +66,8 @@ export function createTranslateLoader(http: HttpClient): any {
     ScrollToModule.forRoot(),
     NgbModule,
     DataTablesModule,
-    ToastrModule.forRoot(), 
+    ToastrModule.forRoot(),
+    NgApexchartsModule
   ],
   bootstrap: [AppComponent],
   providers: [

@@ -8,6 +8,39 @@ import { DashService } from 'src/app/core/services/dash/dash.service';
 
 import * as moment from 'moment';
 
+//Chart---------------------------------------------------------//
+
+import {
+  ChartComponent,
+  ApexAxisChartSeries,
+  ApexNonAxisChartSeries,
+  ApexChart,
+  ApexXAxis,
+  ApexDataLabels,
+  ApexTitleSubtitle,
+  ApexStroke,
+  ApexGrid,
+  ApexResponsive
+} from "ng-apexcharts";
+
+export type ChartOptions = {
+  series: ApexAxisChartSeries;
+  chart: ApexChart;
+  xaxis: ApexXAxis;
+  dataLabels: ApexDataLabels;
+  grid: ApexGrid;
+  stroke: ApexStroke;
+  title: ApexTitleSubtitle;
+};
+
+export type ChartOptionsPie = {
+  series: ApexNonAxisChartSeries;
+  chart: ApexChart;
+  responsive: ApexResponsive[];
+  labels: any;
+  title: ApexTitleSubtitle;
+};
+
 @Component({
   selector: 'app-saas',
   templateUrl: './saas.component.html',
@@ -16,10 +49,17 @@ import * as moment from 'moment';
 /**
  * Saas-dashboard component
  */
-export class SaasComponent implements OnInit, AfterViewInit {
+export class SaasComponent implements OnInit {
 
   @ViewChild('scrollRef') scrollRef;
+//----------------------------------------------------Chart--------------------------------------------//
+  @ViewChild("chart") chart: ChartComponent;
+  public chartOptions: Partial<ChartOptions>;
 
+  @ViewChild("chartPie") chartPie: ChartComponent;
+  
+  public chartOptionsPie: Partial<ChartOptionsPie>;
+//----------------------------------------------------Chart--------------------------------------------//
   // bread crumb items
   breadCrumbItems: Array<{}>;
 
@@ -36,12 +76,19 @@ export class SaasComponent implements OnInit, AfterViewInit {
   chatSubmit: boolean;
   dashOne: any = {};
   dashTwo: any = [];
-  dashThree: any = [];
+  StatParProduits: any = [];
 
   tab: any = [];
   totalAvance: number = 0;
 
-  constructor(public formBuilder: FormBuilder, private configService: ConfigService, private dashServices: DashService,) { }
+  TabProdLoue:any = [];
+  tabMntLoueProd:any = [];
+  tabVentMensuel: any = [];
+  tabMois: any = [];
+
+  constructor(public formBuilder: FormBuilder, private configService: ConfigService, private dashServices: DashService,) {
+    
+   }
 
   /**
    * Returns form
@@ -50,20 +97,21 @@ export class SaasComponent implements OnInit, AfterViewInit {
     return this.formData.controls;
   }
 
-  ngOnInit(): void {
-    let paymntEchTab:any = [];
+  async ngOnInit() {
+    let paymntEchTab:any = [], ventMensuel: any = [];
     this.breadCrumbItems = [{ label: 'Eden décoration' }, { label: 'Tableau de bords', active: true }];
-    this.dashServices._dashbord().subscribe(
-      (data) => {
-        //console.log(data[3]);
-        this.dashOne = {...data[0][0]};
-        //this.dashTwo = [...data[1][0]];
-        this.dashThree = [...data[2]];
-        
 
-        data[3].forEach((item) => {
+    let data: any =await this.dashServices._dashbord().toPromise();
+
+    ventMensuel = data[data.length - 1];
+
+      this.dashOne = {...data[0][0]};
+
+      this.StatParProduits = [...data[2]];
+
+          data[3].forEach((item) => {
           paymntEchTab.push(JSON.parse(item.r_paiement_echell));
-        })
+        });
 
         this.tab = paymntEchTab.flat();
         if (this.tab.length >= 1) {
@@ -75,9 +123,149 @@ export class SaasComponent implements OnInit, AfterViewInit {
           );
 
         }
+
+        
+      this.StatParProduits.forEach((item)=>{
+        this.TabProdLoue.push(item.produit);
+        this.tabMntLoueProd.push(item.total);
+      });
+
+      ventMensuel.forEach((item)=>{
+        this.tabVentMensuel.push(item.total);
+        switch(item.mois){
+            case 1:
+            this.tabMois.push('Janvier');
+              break;
+            case 2:
+              this.tabMois.push('Février');
+              break;
+            case 3:
+                this.tabMois.push('Mars');
+              break;
+            case 4:
+            this.tabMois.push('Avril');
+              break;
+            case 5:
+            this.tabMois.push('Mai');
+              break;
+            case 6:
+            this.tabMois.push('Juin');
+              break;
+            case 7:
+            this.tabMois.push('Juillet');
+              break;
+            case 8:
+            this.tabMois.push('Août');
+              break;
+            case 9:
+            this.tabMois.push('Septembre');
+              break;
+            case 10:
+            this.tabMois.push('Octobre');
+              break;
+            case 11:
+            this.tabMois.push('Novembre');
+              break;
+            case 12:
+            this.tabMois.push('Décembre');
+              break;
+            
+        }
+        
+      });
+
+    //----------------------------------------------------Chart--------------------------------------------//
+    this.chartOptions = {
+      series: [
+        {
+          name: "Vente annuelle par mois",
+          data: this.tabVentMensuel
+        }
+      ],
+      chart: {
+        height: 350,
+        type: "area",
+        zoom: {
+          enabled: false
+        }
       },
-      (err) => {console.log(err.stack)})
-    this._fetchData();
+      dataLabels: {
+        enabled: false
+      },
+      stroke: {
+        curve: "straight"
+      },
+      title: {
+        text: "Statistique annuelle des ventes",
+        align: "left"
+      },
+      grid: {
+        row: {
+          colors: ["#f3f3f3", "transparent"], // takes an array which will be repeated on columns
+          opacity: 0.5
+        }
+      },
+      xaxis: {
+        categories: this.tabMois
+      }
+    };
+
+    this.chartOptionsPie = {
+      series: this.tabMntLoueProd,
+      chart: {
+        width: 600,
+        type: "pie"
+      },
+      title: {
+        text: "Statistique mensuelle par produit",
+        align: "left"
+      },
+      labels: this.TabProdLoue,
+      responsive: [
+        {
+          breakpoint: 480,
+          options: {
+            chart: {
+              width: 400
+            },
+            legend: {
+              position: "bottom"
+            }
+          }
+        }
+      ]
+    };
+    //----------------------------------------------------Chart--------------------------------------------//
+
+    // await this.dashServices._dashbord().subscribe(
+    //   (data) => {
+    //     this.dashOne = {...data[0][0]};
+    //     this.StatParProduits = [...data[2]];
+        
+    //     this.StatParProduits.forEach((item)=>{
+    //     this.TabProdLoue.push(item.produit);
+    //     this.tabMntLoueProd.push(item.total);
+    //   });
+        
+    //   console.log(this.TabProdLoue);
+      
+    //     data[3].forEach((item) => {
+    //       paymntEchTab.push(JSON.parse(item.r_paiement_echell));
+    //     });
+
+    //     this.tab = paymntEchTab.flat();
+    //     if (this.tab.length >= 1) {
+          
+    //       this.totalAvance =this.tab?.reduce(function (acc, obj) {
+    //         ( obj.p_date_creation == moment().format().split('T')[0])? obj.p_mntverse : obj.p_mntverse = 0;
+    //           return acc + obj.p_mntverse; 
+    //         }, 0
+    //       );
+
+    //     }
+    //   },
+    //   (err) => {console.log(err.stack)})
+
 
     this.formData = this.formBuilder.group({
       message: ['', [Validators.required]],
@@ -93,290 +281,6 @@ export class SaasComponent implements OnInit, AfterViewInit {
   /**
    * Save the message in chat
    */
-  messageSave() {
-    const message = this.formData.get('message').value;
-    const currentDate = new Date();
-    if (this.formData.valid && message) {
-      // Message Push in Chat
-      this.ChatData.push({
-        align: 'right',
-        name: 'Henry Wells',
-        message,
-        time: currentDate.getHours() + ':' + currentDate.getMinutes()
-      });
-      this.onListScroll();
-      // Set Form Data Reset
-      this.formData = this.formBuilder.group({
-        message: null
-      });
-    }
-
-    this.chatSubmit = true;
-  }
-
-  private _fetchData() {
-    this.earningLineChart = earningLineChart;
-    this.salesAnalyticsDonutChart = {
-      series: [56, 38, 26],
-      chart: {
-          type: 'donut',
-          height: 240,
-      },
-      labels: ['Series A', 'Series B', 'Series C'],
-      colors: ['#556ee6', '#34c38f', '#f46a6a'],
-      legend: {
-          show: false,
-      },
-      plotOptions: {
-          pie: {
-              donut: {
-                  size: '70%',
-              }
-          }
-      }
-  };
-    this.ChatData = ChatData;
-  }
-
-  ngAfterViewInit() {
-    this.scrollRef.SimpleBar.getScrollElement().scrollTop = 500;
-  }
-
-  onListScroll() {
-    if (this.scrollRef !== undefined) {
-      setTimeout(() => {
-        this.scrollRef.SimpleBar.getScrollElement().scrollTop =
-          this.scrollRef.SimpleBar.getScrollElement().scrollHeight + 1500;
-      }, 500);
-    }
-  }
-
-  selectMonth(value) {
-    switch (value) {
-      case "january":
-        this.sassEarning = [
-          {
-            name: "This month",
-            amount: "$2007.35",
-            revenue: "0.2",
-            time: "From previous period",
-            month: "Last month",
-            previousamount: "$784.04",
-            series: [
-              {
-                name: "series1",
-                data: [22, 35, 20, 41, 51, 42, 49, 45, 58, 42, 75, 48],
-              },
-            ],
-          },
-        ];
-        break;
-      case "december":
-        this.sassEarning = [
-          {
-            name: "This month",
-            amount: "$2007.35",
-            revenue: "0.2",
-            time: "From previous period",
-            month: "Last month",
-            previousamount: "$784.04",
-            series: [
-              {
-                name: "series1",
-                data: [22, 28, 31, 34, 40, 52, 29, 45, 68, 60, 47, 12],
-              },
-            ],
-          },
-        ];
-        break;
-      case "november":
-        this.sassEarning = [
-          {
-            name: "This month",
-            amount: "$2887.35",
-            revenue: "0.4",
-            time: "From previous period",
-            month: "Last month",
-            previousamount: "$684.04",
-            series: [
-              {
-                name: "series1",
-                data: [28, 30, 48, 50, 47, 40, 35, 48, 56, 42, 65, 41],
-              },
-            ],
-          },
-        ];
-        break;
-      case "october":
-        this.sassEarning = [
-          {
-            name: "This month",
-            amount: "$2100.35",
-            revenue: "0.4",
-            time: "From previous period",
-            month: "Last month",
-            previousamount: "$674.04",
-            series: [
-              {
-                name: "series1",
-                data: [28, 48, 39, 47, 48, 41, 28, 46, 25, 32, 24, 28],
-              },
-            ],
-          },
-        ];
-        break;
-    }
-  }
-
-  sellingProduct(event) {
-    let month = event.target.value;
-    switch (month) {
-      case "january":
-        this.sassTopSelling = [
-          {
-            title: "Product B",
-            amount: "$ 7842",
-            revenue: "0.4",
-            list: [
-              {
-                name: "Product D",
-                text: "Neque quis est",
-                sales: 41,
-                chartVariant: "#34c38f"
-              },
-              {
-                name: "Product E",
-                text: "Quis autem iure",
-                sales: 14,
-                chartVariant: "#556ee6"
-              },
-              {
-                name: "Product F",
-                text: "Sed aliquam mauris.",
-                sales: 85,
-                chartVariant: "#f46a6a"
-              },
-            ],
-          },
-        ];
-        break;
-      case "december":
-        this.sassTopSelling = [
-          {
-            title: "Product A",
-            amount: "$ 6385",
-            revenue: "0.6",
-            list: [
-              {
-                name: "Product A",
-                text: "Neque quis est",
-                sales: 37,
-                chartVariant: "#556ee6"
-              },
-              {
-                name: "Product B",
-                text: "Quis autem iure",
-                sales: 72,
-                chartVariant: "#f46a6a"
-              },
-              {
-                name: "Product C",
-                text: "Sed aliquam mauris.",
-                sales: 54,
-                chartVariant: "#34c38f"
-              },
-            ],
-          },
-        ];
-        break;
-      case "november":
-        this.sassTopSelling = [
-          {
-            title: "Product C",
-            amount: "$ 4745",
-            revenue: "0.8",
-            list: [
-              {
-                name: "Product G",
-                text: "Neque quis est",
-                sales: 37,
-                chartVariant: "#34c38f"
-              },
-              {
-                name: "Product H",
-                text: "Quis autem iure",
-                sales: 42,
-                chartVariant: "#556ee6"
-              },
-              {
-                name: "Product I",
-                text: "Sed aliquam mauris.",
-                sales: 63,
-                chartVariant: "#f46a6a"
-              },
-            ],
-          },
-        ];
-        break;
-      case "october":
-        this.sassTopSelling = [
-          {
-            title: "Product A",
-            amount: "$ 6385",
-            revenue: "0.6",
-            list: [
-              {
-                name: "Product A",
-                text: "Neque quis est",
-                sales: 37,
-                chartVariant: "#f46a6a"
-              },
-              {
-                name: "Product B",
-                text: "Quis autem iure",
-                sales: 72,
-                chartVariant: "#556ee6"
-              },
-              {
-                name: "Product C",
-                text: "Sed aliquam mauris.",
-                sales: 54,
-                chartVariant: "#34c38f"
-              },
-            ],
-          },
-        ];
-        break;
-      default:
-        this.sassTopSelling = [
-          {
-            title: "Product A",
-            amount: "$ 6385",
-            revenue: "0.6",
-            list: [
-              {
-                name: "Product A",
-                text: "Neque quis est",
-                sales: 37,
-                chartVariant: "#556ee6"
-              },
-              {
-                name: "Product B",
-                text: "Quis autem iure",
-                sales: 72,
-                chartVariant: "#34c38f"
-              },
-              {
-                name: "Product C",
-                text: "Sed aliquam mauris.",
-                sales: 54,
-                chartVariant: "#f46a6a"
-              }
-            ]
-          }
-        ];
-        break;
-    }
-  }
+  
 
 }

@@ -33,6 +33,7 @@
               "src/assets"
             ],
             "styles": [
+              "node_modules/apexcharts/dist/apexcharts.min.js",
               "node_modules/ngx-toastr/toastr.css",
               "src/styles.scss",
               "src/assets/scss/bootstrap.scss",
