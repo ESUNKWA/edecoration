@@ -126,7 +126,7 @@
 
                         <td style="width:10%" >{{location.r_mnt_total | mask: 'separator':' '}}</td>
                         <td style="width:10%" *ngIf="location.r_remise == 0 || location.r_remise == null" >0</td>
-                        <td style="width:10%" *ngIf="location.r_remise > 0" >{{location.r_remise}}%</td>
+                        <td style="width:10%" *ngIf="location.r_remise > 0 && location.r_remise <= 100" >{{location.r_remise}}%</td>
                         <td style="width:10%" *ngIf="location.r_remise > 100" >{{location.r_remise | mask: 'separator':' '}}</td>
                         <td style="width:10%"  >{{location.r_mnt_total_remise | mask: 'separator':' '}}</td>
                         <td style="width:10%" >{{location.r_date_envoie | date: 'dd-MM-YYYY à hh:mm:ss'}}</td>
@@ -585,11 +585,11 @@
 
                       <div class="col-md-6">
                         <label for="mntAvance" class="col-form-label">Montant avance</label>
-                        <input #mntAvance class="form-control" name="mntAvance" type="text" mask="0000000000" (keyup)="_calculReliquat(mntAvance.value)" placeholder="">
+                        <input #mntAvance class="form-control" name="mntAvance" type="text" mask="separator.2" (keyup)="_calculReliquat(mntAvance.value)" placeholder="">
                       </div>
                       <div class="col-md-6 text-danger">
                         <label for="mntAvance" class="col-form-label">Réliquat</label>
-                        <input #mntresta class="form-control text-danger text-bold" name="mntresta" type="text" [(ngModel)]="reliquat" mask="0000000000" readonly placeholder="">
+                        <input #mntresta class="form-control text-danger text-bold" name="mntresta" type="text" [(ngModel)]="reliquat" mask="separator.2" readonly placeholder="">
                       </div>
                     </div>
                   </div>
@@ -652,7 +652,7 @@
                           </ng-template>
 
                         </li>
-                        <li [hidden]="paymntTab == 'null'" [ngbNavItem]="3">
+                        <li [hidden]="paymntTab == 'null' || btnValidation !== 'validation'" [ngbNavItem]="3">
                           <a ngbNavLink>
                             <span class="d-block d-sm-none"><i class="fas fa-home"></i></span>
                             <span class="d-none d-sm-block">Paiement</span>

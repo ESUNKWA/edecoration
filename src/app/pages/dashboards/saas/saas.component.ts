@@ -6,6 +6,8 @@ import { ChartType, ChatMessage } from './saas.model';
 import { ConfigService } from '../../../core/services/config.service';
 import { DashService } from 'src/app/core/services/dash/dash.service';
 
+import * as moment from 'moment';
+
 @Component({
   selector: 'app-saas',
   templateUrl: './saas.component.html',
@@ -36,6 +38,9 @@ export class SaasComponent implements OnInit, AfterViewInit {
   dashTwo: any = [];
   dashThree: any = [];
 
+  tab: any = [];
+  totalAvance: number = 0;
+
   constructor(public formBuilder: FormBuilder, private configService: ConfigService, private dashServices: DashService,) { }
 
   /**
@@ -46,13 +51,30 @@ export class SaasComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
+    let paymntEchTab:any = [];
     this.breadCrumbItems = [{ label: 'Eden décoration' }, { label: 'Tableau de bords', active: true }];
     this.dashServices._dashbord().subscribe(
       (data) => {
+        //console.log(data[3]);
         this.dashOne = {...data[0][0]};
         //this.dashTwo = [...data[1][0]];
         this.dashThree = [...data[2]];
         
+
+        data[3].forEach((item) => {
+          paymntEchTab.push(JSON.parse(item.r_paiement_echell));
+        })
+
+        this.tab = paymntEchTab.flat();
+        if (this.tab.length >= 1) {
+          
+          this.totalAvance =this.tab?.reduce(function (acc, obj) {
+            ( obj.p_date_creation == moment().format().split('T')[0])? obj.p_mntverse : obj.p_mntverse = 0;
+              return acc + obj.p_mntverse; 
+            }, 0
+          );
+
+        }
       },
       (err) => {console.log(err.stack)})
     this._fetchData();

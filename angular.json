@@ -33,11 +33,13 @@
               "src/assets"
             ],
             "styles": [
+              "node_modules/ngx-toastr/toastr.css",
               "src/styles.scss",
               "src/assets/scss/bootstrap.scss",
               "src/assets/scss/app.scss",
               "src/assets/scss/icons.scss",
               "node_modules/datatables.net-dt/css/jquery.dataTables.min.css"
+              
             ],
             "scripts": [
               "node_modules/jquery/dist/jquery.min.js",

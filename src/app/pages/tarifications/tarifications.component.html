@@ -33,19 +33,17 @@
                         <thead class="bg-dark text-white">
                           <tr>
                             <th style="width:50%" >Produits</th>
-                            <th style="width:20%" >Prix location</th>
-                            <th style="width: 15%;">Durée</th>
-                            <th style="width:15%" >Action</th>
+                            <th style="width:15%" >Prix location</th>
+                            <th style="width:10%" >Quantité minimale</th>
+                            <th style="width:15%;">Durée</th>
                           </tr>
                         </thead>
                         <tbody>
                           <tr *ngFor="let produit of tarificationTab ; let i = index">
                             <td style="width:50%" >{{produit.r_libelle}}</td>
-                            <td style="width:20%" >{{produit.r_prix_location}}</td>
-                            <td style="width:15%" >{{produit.r_duree}} jour</td>
-                            <td style="width:15%">
-                              <button type="button" class="btn btn-primary" title="Modification" (click)="_actionProduits(largeDataModal)" ><i class="fas fa-edit"></i></button>&nbsp;
-                            </td>
+                            <td style="width:15%" >{{produit.r_prix_location}}</td>
+                            <td style="width:10%" >{{produit.r_quantite}}</td>
+                            <td style="width:15%" >{{produit.r_duree}} /jour</td>
                           </tr>
                         </tbody>
                     </table>

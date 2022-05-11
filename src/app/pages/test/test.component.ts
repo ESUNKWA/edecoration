@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import * as moment from 'moment';
 
+import { ToastrService } from 'ngx-toastr';
+
 import pdfmake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
 pdfmake.vfs = pdfFonts.pdfMake.vfs;
@@ -31,7 +33,7 @@ export class TestComponent implements OnInit {
   fin = moment("2022-5-1");
   debut = moment("2022-4-29");
 
-  constructor() { }
+  constructor(private toastr: ToastrService) { }
 
   ngOnInit(): void {
     this.items = [...this.tab];
@@ -66,7 +68,7 @@ export class TestComponent implements OnInit {
     let now1 = moment("2022-04-04T16:52", "YYYYMMDD");
      // 1
     console.log(this.fin.diff(this.debut, 'days'));
-
+    this.toastr.success('Hello world!', 'Toastr fun!');
   }
 
 

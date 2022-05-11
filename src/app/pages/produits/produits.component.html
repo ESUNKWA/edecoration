@@ -242,7 +242,7 @@
           <button type="button" title="Enregistrer" class="btn btn-primary m-2" style="float: right" (click)="_registerTarification()">Enregistrer</button>
         </ng-template>
 
-        <button class="btn btn-info m-2" type="button" style="float: left" *ngIf="tarificationTab.length >= 1" (click)="_tarifAppliquer()" >Tarification à appliquer</button>
+        <button class="btn btn-success m-2" type="button" style="float: left" *ngIf="tarificationTab.length >= 1" (click)="_tarifAppliquer()" >Tarification à appliquer</button>
         <button *ngIf="modeAppeltarif !== 'saisie'" class="btn btn-warning m-2" type="button" style="float: right" (click)="_saisie_tarification()" >Nouvelle tarification</button>
 
         <table class="table mb-0 table-striped" >

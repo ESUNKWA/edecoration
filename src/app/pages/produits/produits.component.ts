@@ -1,6 +1,7 @@
 import { Component, OnInit, QueryList, ViewChildren } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { ToastrService } from 'ngx-toastr';
 import { Observable } from 'rxjs';
 import { CategoriesService } from 'src/app/core/services/categories/categories.service';
 import { NotifService } from 'src/app/core/services/notif.service';
@@ -58,7 +59,7 @@ export class ProduitsComponent implements OnInit {
   
   constructor( private fb: FormBuilder, private produitServices: ProduitService, private notifications: NotifService,
                 private modalService: NgbModal, private categorieServices: CategoriesService, 
-                private taficationService: TarificationsService, private user: UserService, ) { 
+                private taficationService: TarificationsService, private user: UserService, private toastr: ToastrService) { 
                  }
 
   ngOnInit(): void {
@@ -118,7 +119,6 @@ export class ProduitsComponent implements OnInit {
     
     this.taficationService._tarifAppliquer(this.params).subscribe(
       (res: any= {})=>{
-        console.log(res);
         this.notifications.sendMessage(res._result,'success');
         this._list_tarification(this.ligneProduit.r_i);
       },
@@ -244,10 +244,11 @@ export class ProduitsComponent implements OnInit {
           
           this.produitServices._addTrarification(this.datastock).subscribe(
             (response) =>{
-              Swal.fire({
-                title: `Succès`,
-                text: `${response._result}`
-              })
+              this.toastr.success('Succès', response._result);
+              // Swal.fire({
+              //   title: `Succès`,
+              //   text: `${response._result}`
+              // })
               this._listProduits();
 
             },
@@ -347,7 +348,8 @@ export class ProduitsComponent implements OnInit {
             break;
 
           case 1:
-            this.notifications.sendMessage(`${dataServer._result}`,'success');
+            //this.notifications.sendMessage(`${dataServer._result}`,'success');
+            this.toastr.success('Succès', dataServer._result);
             this.tarificationData.reset();
             this._list_tarification(this.ligneProduit.r_i);
             break;

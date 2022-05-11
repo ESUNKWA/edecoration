@@ -6,6 +6,8 @@ import { UIModule } from "src/app/shared/ui/ui.module";
 import { TestRoutingModule } from "./test-routing.module";
 import { TestComponent } from "./test.component";
 
+import { ToastrModule } from 'ngx-toastr'
+
 @NgModule({
   declarations: [TestComponent],
   imports: [
@@ -14,7 +16,8 @@ import { TestComponent } from "./test.component";
       UIModule,
       FormsModule,
       ReactiveFormsModule,
-      NgxDocViewerModule
+      NgxDocViewerModule,
+      
   ]
 })
 

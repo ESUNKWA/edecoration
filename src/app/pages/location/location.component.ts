@@ -16,6 +16,7 @@ import pdfFonts from 'pdfmake/build/vfs_fonts';
 import { DataprintformatService } from 'src/app/core/services/dataprintformat/dataprintformat.service';
 import { Observable } from 'rxjs';
 import Swal from 'sweetalert2';
+import { ToastrService } from 'ngx-toastr';
 pdfmake.vfs = pdfFonts.pdfMake.vfs;
 
 @Component({
@@ -136,7 +137,7 @@ viewTable: boolean = false;
 
   constructor(private notifications: NotifService, private user: UserService, private modalService: NgbModal, private tarifService: TarificationsService,
               private fb: FormBuilder, private communeService: CommunesService, private logistkService: LogistikService, private location: LocationService,
-              private exportpdf: DataprintformatService) { }          
+              private exportpdf: DataprintformatService, private toastr: ToastrService) { }          
 
   ngOnInit(): void {
     this.userData = this.user._donnesUtilisateur()[0];
@@ -241,6 +242,7 @@ viewTable: boolean = false;
 
   //Calcul de la remise de la remise
   _calculateRemise(val, typeremise){
+
       switch (typeremise) {
         case 'percent':
           this.remisemnt = 0;
@@ -270,7 +272,9 @@ viewTable: boolean = false;
 
   //Calcule réliquat
   _calculReliquat(val) {
-    this.mntAvance = parseInt(val,10)
+    let mntSai: any;
+    mntSai = val.split(' ').join('')
+    this.mntAvance = parseInt(mntSai,10);
     this.reliquat = (this.totalLocation.mewTotal || this.totalLocation.mntTotal) - this.mntAvance;
   }
 
@@ -357,12 +361,6 @@ viewTable: boolean = false;
         }
         break;
     }
-
-
-
-
-    // tslintthis.detailsLocationTab = [...this.tarificationTab]
-
   }
 
   //Liste des communes
@@ -420,9 +418,6 @@ viewTable: boolean = false;
     this.locationData.value.p_duree = this.nbreJrLocation;
     this.locationData.value.p_utilisateur = this.userData.r_i;
     this.locationData.value.p_signe = "-";
-    //this.locationData.value.p_avance = this.mntAvance;
-    //this.locationData.value.p_reglmnt_total = (this.reglmtPartiel == 1)? false : true;
-    //this.locationData.value.p_solder = (this.reglmtPartiel == 1)? false : true;
 
     this.locationData.value.p_date_envoie = this.locationData.value.p_date_envoie.replace('T', ' ');
     this.locationData.value.p_date_retour = this.locationData.value.p_date_retour.replace('T', ' ');
@@ -432,7 +427,7 @@ viewTable: boolean = false;
       this.paramsPaiement.p_mntverse = this.mntAvance;
       this.paramsPaiement.p_utilisateur = this.userData.r_nom + " " + this.userData.r_prenoms;
       this.paramsPaiement.p_description = "";
-      this.paramsPaiement.p_date_creation = "";
+      this.paramsPaiement.p_date_creation = this.getDateJour();
       this.locationData.value.p_paiement = [this.paramsPaiement];
     }else{
       this.locationData.value.p_solder = true;
@@ -447,7 +442,6 @@ viewTable: boolean = false;
           this.notifications.sendMessage(data._result,'success');
       
           this.reliquat = null;
-          
           this.recapTab = [];
           
           this.nbreJrLocation = 0;
@@ -517,6 +511,7 @@ viewTable: boolean = false;
     
     switch(mode){
       case 'modif':
+        this.btnValidation = '';
         this.modeAppel = 'modif';
         this._listDetailLocationByidLocation(this.ligneLocation.r_i);
         this.modalTitle = `Modification de la location N° [ ${this.ligneLocation.r_num} ]`;
@@ -542,11 +537,16 @@ viewTable: boolean = false;
         break;
 
       default:
-
+        this.btnValidation = '';
         this.detailsLocationTab = [];
 
         let dataPrint: any = [];
-        let dataPrintTitle: any = ['Produits','Quantités','Prix unitaire','Sous total'];
+        let dataPrintTitle: any = [
+                                    {text:'Produits', bold:true, italics: true,alignment:"center",},
+                                    {text:'Quantités', bold:true, italics: true,alignment:"center",},
+                                    {text:'Prix unitaire', bold:true, italics: true,alignment:"center",},
+                                    {text:'Sous total', bold:true, italics: true,alignment:"center",}
+                                  ];
 
         dataPrint.push(dataPrintTitle);
 
@@ -564,16 +564,32 @@ viewTable: boolean = false;
 
               dataPrint.push(obj);
             });
-            dataPrint.push([{text: 'Total', colSpan:3},'','', {text:this.ligneLocation?.r_mnt_total/this.ligneLocation?.r_duree, color: "green"}]);
+            dataPrint.push([{text: '-------------------------------------------------------------------------------------------------------------------',
+                background:"#ACACAC", color: "#ACACAC",alignment:"justify",colSpan:4, }]);
+            dataPrint.push([{text: 'Sous total', colSpan:3},'','', {text:this.ligneLocation?.r_mnt_total/this.ligneLocation?.r_duree, color: "green"}]);
             dataPrint.push([{text: 'Durée (Jours)', colSpan:3},'','', {text:this.ligneLocation?.r_duree, color: "red"}]);
-            dataPrint.push([{text: 'Total sur la durée', colSpan:3},'','', {text:this.ligneLocation?.r_mnt_total, color: "black"}]);
+            dataPrint.push([{text: 'Montant total sur la durée', colSpan:3},'','', {text:this.ligneLocation?.r_mnt_total, color: "black"}]);
             dataPrint.push([{text: 'Rémise', colSpan:3},'','', (this.ligneLocation?.r_remise >= 100)? this.ligneLocation?.r_remise : this.ligneLocation?.r_remise + '%']);
-            dataPrint.push([{text: 'Total à payer', colSpan:3},'','', {text: this.ligneLocation?.r_mnt_total_remise, color: "blue"}]);
+
+            dataPrint.push([{text: 'Total après rémise', colSpan:3},'','', {text: parseInt(this.ligneLocation?.r_mnt_total_remise), color: "blue"}]);
+
+            dataPrint.push([{text: '-------------------------------------------------------------------------------------------------------------------',
+                background:"#ACACAC", color: "#ACACAC",alignment:"justify",colSpan:4, }]);
+
+            dataPrint.push([{text: 'Expédition', colSpan:3},'','', {text: this.ligneLocation?.r_frais_transport, color: "black"}]);
+
+            dataPrint.push([{text: 'Total à payer', colSpan:3},'','', 
+            {text: parseInt(this.ligneLocation?.r_mnt_total_remise) + parseInt(this.ligneLocation?.r_frais_transport), color: "blue"}]);
+
+            dataPrint.push([{text: '-------------------------------------------------------------------------------------------------------------------',
+                background:"#ACACAC", color: "#ACACAC",alignment:"justify",colSpan:4},'','', {text: ""}]);
 
             if( this.paymntTab !== "null" ){
               dataPrint.push([{text: 'Avance', colSpan:3},'','', {text: (this.ligneLocation.r_solder !== 0)? 0 : this.totalPaiement, color: "black"}]);
               dataPrint.push([{text: 'Réliquat', colSpan:3},'','', {text:  this.ligneLocation?.r_mnt_total_remise - this.totalPaiement, color: "black"}]);
             }
+
+            
 
             // Données transport produits
             // tranportData.push([{text: 'Frais'},{text:this.ligneLocation?.r_frais_transport}]);
@@ -782,14 +798,21 @@ viewTable: boolean = false;
 
   }
 
-
-  _reglmntArriere(){
+  getDateJour(){
     const d = new Date();
-    let mois = d.getMonth();
+    let mois = d.getMonth() + 1;
+    let datejour = d.getDate();
+
+    return d.getFullYear() + '-' + ((mois < 10 )? '0'+mois : mois) + '-' + ((datejour < 10 )? '0'+datejour : datejour);
+  }
+
+  
+  _reglmntArriere(){
+    
     let b: any = {};
     
     //this.reglmntData.value.p_idlocation = this.ligneLocation.r_i;
-    this.reglmntData.value.p_date_creation = d.getDate() + '-' + ((mois < 10 )? '0'+mois : mois) + '-' + d.getFullYear();
+    this.reglmntData.value.p_date_creation = this.getDateJour();
     this.reglmntData.value.p_utilisateur = this.userData.r_nom + ' ' + this.userData.r_prenoms;
     this.reglmntData.value.p_mntverse = parseInt(this.reglmntData.value.p_mntverse,10);
     
@@ -807,7 +830,8 @@ viewTable: boolean = false;
       (data: number) => {
         
         if(data){
-          this.notifications.sendMessage('Enregistrement effectué avec success','success');
+          //this.notifications.sendMessage('Enregistrement effectué avec success','success');
+          this.toastr.success('Succès', 'Enregistrement effectué avec success.');
           this.modalService.dismissAll('close');
           this._search_location(this.searchData.value);
         }
@@ -913,7 +937,8 @@ viewTable: boolean = false;
       (data) => {
 
         if(data._status == 1){
-          this.notifications.sendMessage(data._result,'success');
+          //this.notifications.sendMessage(data._result,'success');
+          this.toastr.success('Succès', data._result);
           this.showLocationData.reset();
           this.modalService.dismissAll('close');
           this._search_location(this.searchData.value);
@@ -992,15 +1017,19 @@ viewTable: boolean = false;
           columns: [
             [
               {
-                text: 'Facture N° : ' + dataClient.r_num,
-
+                text: (dataClient.r_status == 0)? 'Facture Proforma' : 'Facture N° : ' + dataClient.r_num,
+                style:"momo"
               },
               {
                 text: dataClient.created_at
               }
-            ]
+            ],
+            // {
+            //   text: (dataClient.r_status == 0)? 'Facture Proforma' : 'Facture N° : ' + dataClient.r_num,
+            //   style:"momo"
+            // }
           ],
-          margin: [ 0, 50, 0, 0 ]
+          margin: [ 0, 30, 0, 0 ]
         },
 
         {
@@ -1115,6 +1144,12 @@ viewTable: boolean = false;
         },
         footer: {
           margin: [0, 10, 10, 0]
+        },
+        momo:{
+          fontSize: 13,
+          bold: true,
+          color: 'black',
+          decoration:"underline",
         }
       }
     };
