@@ -117,7 +117,7 @@ export class SaasComponent implements OnInit {
         if (this.tab.length >= 1) {
           
           this.totalAvance =this.tab?.reduce(function (acc, obj) {
-            ( obj.p_date_creation == moment().format().split('T')[0])? obj.p_mntverse : obj.p_mntverse = 0;
+            ( obj?.p_date_creation == moment().format().split('T')[0])? obj?.p_mntverse : obj.p_mntverse = 0;
               return acc + obj.p_mntverse; 
             }, 0
           );
