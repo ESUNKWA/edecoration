@@ -26,8 +26,8 @@
                                     </div>
                                     <div class="col">
                                         <div>
-                                            <p class="text-success text-truncate mb-2">validées</p>
-                                            <h5 class="mb-0">{{dashOne.total_location_mois_val}}</h5>
+                                            <p class="text-success text-truncate mb-2">validées et en cours</p>
+                                            <h5 class="mb-0">{{dashOne.total_location_mois_encours}}</h5>
                                         </div>
                                     </div>
                                     <div class="col">
@@ -48,7 +48,7 @@
                         </div>
 
                         <div class="col-lg-7 offset-md-1 align-self-center">
-                            <h6 >Prévisions</h6><br>
+                            <h6 >Prévisions(Mensuel)</h6><br>
                             <div class="text-lg-center mt-4 mt-lg-0">
                                 <div class="row">
                                     <div class="col-3">
@@ -128,7 +128,7 @@
         </div> -->
         <div class="col-xl-12">
             <div class="row">
-                <div class="col-sm-4">
+                <div class="col">
                     <div class="card">
                         <div class="card-body">
                             <div class="d-flex align-items-center mb-3">
@@ -141,7 +141,7 @@
                                 <h5 class="font-size-14 mb-0">Revenue mensuel</h5>
                             </div>
                             <div class="text-muted mt-4">
-                                <h4>{{dashOne.r_mnt_total_mois | mask: 'separator':' '}} <i class="mdi mdi-chevron-up ms-1 text-success"></i></h4>
+                                <h4>{{dashOne.mnt_total_mois | mask: 'separator':' '}} <i class="mdi mdi-chevron-up ms-1 text-success"></i></h4>
                                 <!-- <div class="d-flex">
                                     <span class="badge badge-soft-success font-size-12"> + 0.2% </span> <span
                                         class="ms-2 text-truncate">From previous period</span>
@@ -152,7 +152,7 @@
                 </div>
                 
 
-                <div class="col-sm-4">
+                <div class="col">
                     <div class="card">
                         <div class="card-body">
                             <div class="d-flex align-items-center mb-3">
@@ -165,7 +165,7 @@
                                 <h5 class="font-size-14 mb-0">Revenue du jour</h5>
                             </div>
                             <div class="text-muted mt-4">
-                                <h4>{{dashOne.total_location_jours + this.totalAvance | mask: 'separator':' '}} <i class="mdi mdi-chevron-up ms-1 text-success"></i></h4>
+                                <h4>{{dashOne.mnt_total_location_jours + this.totalAvance | mask: 'separator':' '}} <i class="mdi mdi-chevron-up ms-1 text-success"></i></h4>
                                 <!-- <div class="d-flex">
                                     <span class="badge badge-soft-success font-size-12"> + 0.2% </span> <span
                                         class="ms-2 text-truncate">From previous period</span>
@@ -175,7 +175,7 @@
                     </div>
                 </div>
 
-                <div class="col-sm-4">
+                <div class="col">
                     <div class="card">
                         <div class="card-body">
                             <div class="d-flex align-items-center mb-3">
@@ -188,7 +188,30 @@
                                 <h5 class="font-size-14 mb-0">Total achat du mois</h5>
                             </div>
                             <div class="text-muted mt-4">
-                                <h4>{{dashOne.total_achat_mois | mask: 'separator':' '}} <i class="mdi mdi-chevron-up ms-1 text-success"></i></h4>
+                                <h4>{{dashOne.mnt_total_achat_mois | mask: 'separator':' '}} <i class="mdi mdi-chevron-up ms-1 text-success"></i></h4>
+
+                                <!-- <div class="d-flex">
+                                    <span class="badge badge-soft-warning font-size-12"> 0% </span> <span
+                                        class="ms-2 text-truncate">From previous period</span>
+                                </div> -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="avatar-xs me-3">
+                                    <span
+                                        class="avatar-title rounded-circle bg-primary bg-soft text-primary font-size-18">
+                                        <i class="bx bx-archive-in"></i>
+                                    </span>
+                                </div>
+                                <h5 class="font-size-14 mb-0">Total location expirés</h5>
+                            </div>
+                            <div class="text-muted mt-4">
+                                <h4>{{dashOne.total_location_expire | mask: 'separator':' '}} <i class="mdi mdi-chevron-up ms-1 text-success"></i></h4>
 
                                 <!-- <div class="d-flex">
                                     <span class="badge badge-soft-warning font-size-12"> 0% </span> <span
