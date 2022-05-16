@@ -51,6 +51,7 @@ viewTable: boolean = false;
   showLocationData: FormGroup;
   reglmntData: FormGroup;
   searchData: FormGroup;
+  penaliteFormData: FormGroup;
   valremise: any = 0;
 
   CommunesTab: any = [];
@@ -126,6 +127,7 @@ viewTable: boolean = false;
   tabindex: any = 0;
   nbreLigne: number;
   produitsTabLoues: any[] = [];
+  penalitaInfo: any = {};
 
   getPremiumData() {
     this.paginateData = this.locationtab.slice(
@@ -190,6 +192,11 @@ viewTable: boolean = false;
       p_avancePayer: [],
       p_mntverse: [],
       p_description: []
+    });
+
+    this.penaliteFormData = this.fb.group({
+      p_mnt: [],
+      p_motif: []
     });
 
     this.breadCrumbItems = [{ label: 'Eden décoration' }, { label: 'Liste des locations', active: true }];
@@ -877,6 +884,46 @@ viewTable: boolean = false;
     this.remisemnt = 0;
     this.remisenewmnt = 0;
     
+  }
+
+  _addPenalite(){
+    this.penaliteFormData.value.p_location = this.ligneLocation.r_i;
+    this.penaliteFormData.value.p_utilisateur = this.userData.r_i;
+
+    try {
+      this.location._add_penalite(this.penaliteFormData.value).subscribe(
+        (res: any = {})=> {
+          if(res._status == 1){
+            this.toastr.success('Succès', res._result);
+            this.penaliteFormData.reset();
+            this._getPenalite();
+          }
+          
+        }
+      )
+    } catch (error) {
+      console.log(error.stack);
+      
+    }
+    
+  }
+
+  _getPenalite(){    
+    try{  
+        
+       this.location._list_penalite(this.ligneLocation.r_i).subscribe(
+        (res: any = {})=> {
+          if(res._status == 1){
+            this.penalitaInfo.r_mnt = res._result[0].r_mnt;
+            this.penalitaInfo.r_motif = res._result[0].r_motif;
+          }
+          
+        }
+      );
+
+    }catch (error) {
+
+    }
   }
 
   //Appel de la modal

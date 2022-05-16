@@ -647,7 +647,7 @@
                           <ng-template ngbNavContent>
                             <ng-template [ngTemplateOutlet]="TabContent1"></ng-template>
 
-                            <button type="button" class="btn btn-primary nouveau" title="Modifier" (click)="updateLocation()" >Modifier</button>
+                            <button style="float: right" type="button" class="btn btn-primary nouveau" title="Modifier" [hidden]="desactiver" (click)="updateLocation()" >Modifier</button>
 
                           </ng-template>
 
@@ -804,7 +804,8 @@
                    [multiple]="true"
                    placeholder="Sélectionner les produits à ajouter"
                    [(ngModel)]="selectedProductIds"
-                  (change)="addNewProduct($event)" >
+                  (change)="addNewProduct($event)"
+                  [hidden]="desactiver" >
         </ng-select>
       </div>
       <div class="col-2">
@@ -967,7 +968,7 @@
      <div class="col-md-12">
       <form class="needs-validation">
         <div class="row">
-          <div class="col-lg-6">
+          <div class="col">
             <div class="card">
               <div class="card-body">
                 <h4 class="card-title mb-4">Total Produits: ({{totalLocationModif.qteproduits}})</h4>
@@ -986,7 +987,7 @@
               </div>
             </div>
           </div>
-          <div class="col-lg-6" hidden>
+          <div class="col" hidden>
             <fieldset class="form-group border p-3 scheduler-border">
               <legend class="w-auto px-2 scheduler-border">Rémises</legend>
               <div class="row mb-3">
@@ -1027,6 +1028,35 @@
               <div class="col-md-6 text-danger">
                 <label for="mntAvance" class="col-form-label">Réliquat</label>
                 <input #mntresta class="form-control text-danger text-bold" name="mntresta" type="text" [(ngModel)]="reliquat" mask="0000000000" readonly placeholder="">
+              </div>
+            </div>
+          </div>
+          <div class="col">
+            <div class="card">
+              <div class="card-body">
+                <h4 class="card-title mb-4">Pénalité</h4>
+               
+                <form [formGroup]="penaliteFormData" >
+
+                  <div class="row" >
+                    <div class="col-md-6">
+                      <label for="validationCustom01">Montant</label>
+                      <input type="text" class="form-control" mask="separator.2" formControlName="p_mnt" [(ngModel)]="penalitaInfo.r_mnt">
+                    </div>
+                  </div>
+                  <div class="row" >
+                    <div class="col-md-12">
+                      <label for="validationCustom01">Motif</label>
+                      <textarea class="form-control" rows="3" formControlName="p_motif" [(ngModel)]="penalitaInfo.r_motif"></textarea>
+                    </div>
+                  </div>
+                  <button type="button" 
+                          title="Enregistrer" 
+                          class="btn btn-primary mt-2"
+                          style="float: right" (click)="_addPenalite()" >Enregistrer</button>
+
+                </form>
+
               </div>
             </div>
           </div>

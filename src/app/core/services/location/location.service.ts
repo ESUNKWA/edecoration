@@ -42,6 +42,16 @@ export class LocationService {
     return this.http.post(`${this.env.backendServer}/paymentpartiel`, data).pipe(catchError(this.error));
   }
 
+  _add_penalite(data: any): Observable<any> {
+    return this.http.post(`${this.env.backendServer}/penalite`, data).pipe(catchError(this.error))
+  }
+  _list_penalite(idlocation: any): Observable<any> {
+    return this.http.get(`${this.env.backendServer}/penalite/${idlocation}`);
+  }
+  _maj_penalite(data: any): Observable<any>{
+    return this.http.put(`${this.env.backendServer}/penalite`, data).pipe(catchError(this.error));
+  }
+
 
   // Handle Errors
   error(error: HttpErrorResponse) {
