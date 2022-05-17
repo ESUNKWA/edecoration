@@ -129,8 +129,8 @@
                         <td style="width:10%" *ngIf="location.r_remise > 0 && location.r_remise <= 100" >{{location.r_remise}}%</td>
                         <td style="width:10%" *ngIf="location.r_remise > 100" >{{location.r_remise | mask: 'separator':' '}}</td>
                         <td style="width:10%"  >{{location.r_mnt_total_remise | mask: 'separator':' '}}</td>
-                        <td style="width:10%" >{{location.r_date_envoie | date: 'dd-MM-YYYY à hh:mm:ss'}}</td>
-                        <td style="width:10%" >{{location.r_date_retour | date: 'dd-MM-YYYY à hh:mm:ss'}}</td>
+                        <td style="width:10%" >{{location.r_date_envoie | date: 'dd-MM-YYYY à HH:mm:ss'}}</td>
+                        <td style="width:10%" >{{location.r_date_retour | date: 'dd-MM-YYYY à HH:mm:ss'}}</td>
                         <td style="width:5%" *ngIf="location.r_solder==1" ><span class="badge badge-pill badge-soft-success font-size-12">Oui</span></td>
                         <td style="width:5%" *ngIf="location.r_solder==0" ><span class="badge badge-pill badge-soft-danger font-size-12">Non</span></td>
                         <td style="width:5%" *ngIf="location.r_status==0" ><span class="badge badge-pill badge-soft-warning font-size-12">En attente de validation</span></td>
@@ -678,53 +678,6 @@
                         </div>
                       </div>
                     </div>
-                    <!-- Ajouter de noveau produits au panier -->
-                    <!-- <div *ngSwitchDefault >
-
-                      <div class="row" >
-                        <div class="col-12">
-                          <button style="float: right;"
-                          type="button"
-                          class="btn btn-primary"
-                          title=""
-                          (click)="_addProdut(false)"> <i class="fas fa-list-ul"></i></button>
-                        </div>
-                      </div>
-
-                      <table class="table mt-1 table-striped" >
-                        <thead class="bg-dark text-white">
-                          <tr>
-                            <th style="width:5%;" >Choix</th>
-                            <th style="width:20%;" >Produits</th>
-                            <th style="width:10%;" >Stock actuel</th>
-                            <th style="width:10%;" >Prix location</th>
-                            <th style="width:10%;">Durée</th>
-                            <th style="width:10%;">Quantité</th>
-                            <th style="width:15%;">Montant total</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr *ngFor="let produit of tarificationTab ; let i = index">
-                            <td style="width:5%;">
-                              <input #inpchecks class="form-check-input" type="checkbox" (change)="_changeValcheck(inpchecks.checked,i)" >
-                            </td>
-                            <td style="width:20%;" >{{produit?.r_libelle}}</td>
-                            <td style="width:10%;" >{{produit?.r_stock}}</td>
-                            <td style="width:10%;" >{{produit?.r_prix_location | mask: 'separator':' '}}</td>
-                            <td style="width:10%;" >{{produit?.r_duree}} jour</td>
-                            <td style="width:10%;">
-                              <input #inpqte class="form-control" min="0" value="{{produit?.qte}}" type="number" [(disabled)]="!produit.check" (change)="_valueQte(inpqte.value,i)" placeholder="">
-                            </td>
-                            <td style="width: 15%;">
-                              <input disabled class="form-control" type="text" value="{{produit?.total}}" mask="separator.2" placeholder="">
-                            </td>
-                          </tr>
-                        </tbody>
-                      </table>
-
-                    </div> -->
-
-
                   </div>
     <!-- -------------------------------------------------------------------------------------------------------------------------------------------------------- -->
 
@@ -737,7 +690,7 @@
 
         </div>
         <div class="modal-footer">
-          <button type="button" title="fermer" class="btn btn-secondary" (click)="modal.close('Close click')">Fermer</button>
+          <button type="button" title="fermer" class="btn btn-secondary" (click)="modal.close('Close click');">Fermer</button>
           <!-- <button type="button" title="Enregistrer"
            class="btn btn-primary" >Enregistrer</button> -->
         </div>
@@ -809,7 +762,7 @@
         </ng-select>
       </div>
       <div class="col-2">
-        <button style="float: right;" [hidden]="desactiver"
+        <button style="float: left;" [hidden]="desactiver"
         type="button"
         class="btn btn-primary mt-1"
         title="Ajouter de nouveau produits"
@@ -1031,7 +984,7 @@
               </div>
             </div>
           </div>
-          <div class="col">
+          <div class="col" [hidden]="!isPenalite" >
             <div class="card">
               <div class="card-body">
                 <h4 class="card-title mb-4">Pénalité</h4>

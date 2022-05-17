@@ -77,7 +77,7 @@
           <div class="card-body">
             <div class="avatar-sm mx-auto mb-4" *ngIf="!data.image">
               <span class="avatar-title rounded-circle bg-soft bg-primary text-primary font-size-16">
-                {{data.r_nom?.charAt(0)}}
+                {{data.r_nom?.charAt(0) + data.r_prenoms?.charAt(0)}}
               </span>
             </div>
             <div *ngIf="data.image" class="mb-4">

@@ -128,6 +128,7 @@ viewTable: boolean = false;
   nbreLigne: number;
   produitsTabLoues: any[] = [];
   penalitaInfo: any = {};
+  isPenalite: boolean = true;
 
   getPremiumData() {
     this.paginateData = this.locationtab.slice(
@@ -477,7 +478,7 @@ viewTable: boolean = false;
   }
 
   _actionLocation(largeDataModal,ligneLocation, mode){
-    
+    this.penalitaInfo = {};
     this.nbreLigne = 0;
     this.tarificationTabCiblees = [];
     this.ligneLocation = {...ligneLocation};
@@ -539,8 +540,17 @@ viewTable: boolean = false;
         this.desactiver = true;
         this.clientsData.disable();
         this.showLocationData.disable();
+
+        if( (this.ligneLocation.penalite == null && this.ligneLocation.r_status == 1) ){
+          //Affiche le champs pour la saisie des pénalités
+          this.isPenalite = true;
+        }else{
+          this._getPenalite();
+        }
+
         this._produits();
-        this.largeModal(largeDataModal)
+        this.largeModal(largeDataModal);
+
         break;
 
       default:
@@ -914,10 +924,13 @@ viewTable: boolean = false;
        this.location._list_penalite(this.ligneLocation.r_i).subscribe(
         (res: any = {})=> {
           if(res._status == 1){
-            this.penalitaInfo.r_mnt = res._result[0].r_mnt;
-            this.penalitaInfo.r_motif = res._result[0].r_motif;
+            this.penalitaInfo.r_mnt = res._result[0]?.r_mnt;
+            this.penalitaInfo.r_motif = res._result[0]?.r_motif;
+            this.isPenalite = true;
+          }else {
+            this.penalitaInfo = {};
+            this.isPenalite = false;
           }
-          
         }
       );
 

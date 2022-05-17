@@ -20,7 +20,8 @@ import {
   ApexTitleSubtitle,
   ApexStroke,
   ApexGrid,
-  ApexResponsive
+  ApexResponsive,
+  
 } from "ng-apexcharts";
 
 export type ChartOptions = {
@@ -193,7 +194,7 @@ export class SaasComponent implements OnInit {
         enabled: false
       },
       stroke: {
-        curve: "straight"
+        curve: "smooth"
       },
       title: {
         text: "Statistique annuelle des ventes",

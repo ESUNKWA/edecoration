@@ -141,7 +141,7 @@
                                 <h5 class="font-size-14 mb-0">Revenue mensuel</h5>
                             </div>
                             <div class="text-muted mt-4">
-                                <h4>{{dashOne.mnt_total_mois | mask: 'separator':' '}} <i class="mdi mdi-chevron-up ms-1 text-success"></i></h4>
+                                <h5>{{dashOne.mnt_total_mois | mask: 'separator':' '}} | <span style="color: #a6aae2" >frais:</span> {{dashOne.frais_mois | mask: 'separator':' '}} = {{dashOne.mnt_total_mois + dashOne.frais_mois | mask: 'separator':' '}} <i class="mdi mdi-chevron-up ms-1 text-success"></i></h5>
                                 <!-- <div class="d-flex">
                                     <span class="badge badge-soft-success font-size-12"> + 0.2% </span> <span
                                         class="ms-2 text-truncate">From previous period</span>
@@ -165,7 +165,7 @@
                                 <h5 class="font-size-14 mb-0">Revenue du jour</h5>
                             </div>
                             <div class="text-muted mt-4">
-                                <h4>{{dashOne.mnt_total_location_jours + this.totalAvance | mask: 'separator':' '}} <i class="mdi mdi-chevron-up ms-1 text-success"></i></h4>
+                                <h5>{{dashOne.mnt_total_location_jours + this.totalAvance | mask: 'separator':' '}} | <span style="color: #a6aae2" >frais:</span> {{dashOne.fraisjr | mask: 'separator':' '}} = {{dashOne.mnt_total_location_jours + dashOne.fraisjr | mask: 'separator':' '}} <i class="mdi mdi-chevron-up ms-1 text-success"></i></h5>
                                 <!-- <div class="d-flex">
                                     <span class="badge badge-soft-success font-size-12"> + 0.2% </span> <span
                                         class="ms-2 text-truncate">From previous period</span>
@@ -188,7 +188,7 @@
                                 <h5 class="font-size-14 mb-0">Total achat du mois</h5>
                             </div>
                             <div class="text-muted mt-4">
-                                <h4>{{dashOne.mnt_total_achat_mois | mask: 'separator':' '}} <i class="mdi mdi-chevron-up ms-1 text-success"></i></h4>
+                                <h5>{{dashOne.mnt_total_achat_mois | mask: 'separator':' '}} <i class="mdi mdi-chevron-up ms-1 text-success"></i></h5>
 
                                 <!-- <div class="d-flex">
                                     <span class="badge badge-soft-warning font-size-12"> 0% </span> <span
@@ -201,23 +201,14 @@
                 <div class="col">
                     <div class="card">
                         <div class="card-body">
-                            <div class="d-flex align-items-center mb-3">
-                                <div class="avatar-xs me-3">
-                                    <span
-                                        class="avatar-title rounded-circle bg-primary bg-soft text-primary font-size-18">
-                                        <i class="bx bx-archive-in"></i>
-                                    </span>
-                                </div>
-                                <h5 class="font-size-14 mb-0">Total location expirés</h5>
-                            </div>
-                            <div class="text-muted mt-4">
-                                <h4>{{dashOne.total_location_expire | mask: 'separator':' '}} <i class="mdi mdi-chevron-up ms-1 text-success"></i></h4>
 
-                                <!-- <div class="d-flex">
-                                    <span class="badge badge-soft-warning font-size-12"> 0% </span> <span
-                                        class="ms-2 text-truncate">From previous period</span>
-                                </div> -->
-                            </div>
+                            <p class="mb-0">Montant pénalité<span class="mb-0 span">
+                                <i class="bx bx-right-arrow-alt font-size-16 text-primary align-middle ms-2"></i>{{dashOne.mnt_penalite | mask: 'separator':' '}}</span></p>
+                            <p class="mb-0">Montant frais<span class="mb-0 span">
+                                <i class="bx bx-right-arrow-alt font-size-16 text-primary align-middle ms-2"></i>{{dashOne.fraisjr | mask: 'separator':' '}}</span></p>
+                            <p class="mb-0">Nbre location expiré<span class="mb-0 span">
+                                <i class="bx bx-right-arrow-alt font-size-16 text-primary align-middle ms-2"></i>{{dashOne.total_location_expire | mask: 'separator':' '}}</span></p>
+
                         </div>
                     </div>
                 </div>
