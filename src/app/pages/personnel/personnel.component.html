@@ -3,9 +3,10 @@
 
   <div class="row mb-2">
     <div class="col-md-12 ">
-      <button type="button" class="btn btn-primary nouveau" title="Saisir un nouvelle catégorie de produits" (click)="fctSaisieCat(largeDataModal)">Nouveau</button>
+      <button type="button" class="btn btn-primary nouveau" title="Saisir un nouvelle catégorie de produits" (click)="_afficheModal(largeDataModal,'creation','')">Nouveau</button>
     </div>
   </div>
+  
 
   <ng-template [ngIf]="viewTable == false" >
     <app-spinner></app-spinner>
@@ -19,20 +20,25 @@
             <div class="media">
               <div class="avatar-md me-4">
                 <span class="avatar-title rounded-circle bg-light text-danger font-size-16">
-                  <img src="{{personnel?.image}}" alt height="30" />
+                  {{personnel.r_nom?.charAt(0) + personnel.r_prenoms?.charAt(0)}}
+                  <!-- <img src="{{personnel?.image}}" alt height="30" /> -->
                 </span>
               </div>
   
               <div class="media-body overflow-hidden">
                 <h5 class="text-truncate font-size-15">
-                  <a href="javascript: void(0);" class="text-dark">{{personnel.r_nom}} {{personnel.r_prenoms}}</a>
+                  <a href="javascript: void(0);" class="text-dark">{{personnel.r_nom}} {{personnel.r_prenoms}}
+                    <button 
+                          type="button" class="btn btn-info btn-sm" 
+                          title="Modification" style="position: absolute;right: 0;top: 0;margin: 5px;"
+                          (click)="_afficheModal(largeDataModal,'modif',personnel)" ><i class="fas fa-edit"></i></button></a>
                 </h5>
                 <p class="text-muted mb-4">{{personnel.fonction}}</p>
                 <div class="avatar-group">
                   <div class="avatar-group-item">
-                    <a href="javascript: void(0);" class="d-inline-block">
+                    <!-- <a href="javascript: void(0);" class="d-inline-block">
                       <img src="{{personnel?.users}}" class="rounded-circle avatar-xs" alt />
-                    </a>
+                    </a> -->
                   </div>
                 </div>
               </div>
@@ -45,13 +51,17 @@
                       'bg-warning': personnel.status === 'Pending',
                       'bg-danger': personnel.status === 'Delay' }">{{personnel?.status}}</span>
               </li>
-              <li class="list-inline-item me-3" title="Due Date" ngbTooltip="Due Date">
+              <li class="list-inline-item me-3" title="Date d'entrée" ngbTooltip="Date d'entrée">
                 <i class="bx bx-calendar me-1"></i>
                 {{personnel.created_at | date: 'dd/MM/yyyy'}}
               </li>
-              <li class="list-inline-item me-3" title="Comments" ngbTooltip="Comments">
-                <i class="bx bx-comment-dots me-1"></i>
+              <li class="list-inline-item me-3" title="Dommicile" ngbTooltip="Dommicile">
+                <i class="bx bxs-home me-1"></i>
                 {{personnel.domicile}}
+              </li>
+              <li class="list-inline-item me-3" style="float: right;" title="Contact" ngbTooltip="Contact">
+                <i class="bx bxs-phone-call me-1"></i>
+                {{personnel.r_contact}}
               </li>
             </ul>
           </div>
@@ -75,7 +85,7 @@
       <div class="row">
         <div class="col-md-6">
             <label for="validationCustom01">Nom</label>
-            <input type="text" class="form-control" name="" formControlName="p_nom"  >
+            <input type="text" class="form-control" name="" formControlName="p_nom" [(ngModel)]="detailsPersonnel.r_nom"  >
             <div *ngIf="f.p_nom.touched && f.p_nom.invalid" class="text-danger">
                 <span *ngIf="f.p_nom.errors.required">
                   Le nom de l'employé est obligatoire
@@ -84,7 +94,7 @@
         </div>
         <div class="col-md-6">
           <label for="validationCustom01">Prenoms</label>
-          <input type="text" class="form-control"  formControlName="p_prenoms"  >
+          <input type="text" class="form-control"  formControlName="p_prenoms" [(ngModel)]="detailsPersonnel.r_prenoms" >
           <div *ngIf="f.p_prenoms.touched && f.p_prenoms.invalid" class="text-danger">
             <span *ngIf="f.p_prenoms.errors.required">
               Le prenoms de l'employé est obligatoire
@@ -95,7 +105,7 @@
       <div class="row mt-2">
         <div class="col-md-6">
             <label for="validationCustom01">Contact</label>
-            <input type="text" class="form-control" mask="00 00 00 00 00" formControlName="p_contact" >
+            <input type="text" class="form-control" mask="(000) 00 00 00 00 00" formControlName="p_contact" [(ngModel)]="detailsPersonnel.r_contact" >
             <div *ngIf="f.p_contact.touched && f.p_contact.invalid" class="text-danger">
               <span *ngIf="f.p_contact.errors.required">
                 Le numéro de téléphone est obligatoire
@@ -105,7 +115,7 @@
         </div>
         <div class="col-md-6">
           <label for="validationCustom01">Email</label>
-          <input type="text" class="form-control"  formControlName="p_email"  >
+          <input type="text" class="form-control"  formControlName="p_email" [(ngModel)]="detailsPersonnel.r_email" >
         </div>
       </div>
       <div class="row mt-2">
@@ -132,13 +142,14 @@
           <ng-select [items]="CommunesTab" formControlName="p_quatier"
           bindLabel = "label"
           bindValue = "value"
+          
            [(ngModel)]="quatierid" ></ng-select>
         </div>
       </div>
       <div class="row mt-2">
         <div class="col-md-12">
           <label for="validationCustom05">Description</label>
-            <textarea class="form-control" rows="3" formControlName="p_description"  placeholder=""></textarea>
+            <textarea class="form-control" rows="3" formControlName="p_description" [(ngModel)]="detailsPersonnel.r_description" placeholder=""></textarea>
         </div>
       </div>
     </form>

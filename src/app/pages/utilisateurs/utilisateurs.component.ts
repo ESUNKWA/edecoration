@@ -92,6 +92,7 @@ export class UtilisateursComponent implements OnInit {
         if(data._status == 1){
           this.userData.reset();
           this.notifications.sendMessage(data._result,'success');
+          this._listutilisateur();
           this._listPersonnelNotUser();
         }else{
           this.notifications.sendMessage(Object.values(data)[0][0],'error');

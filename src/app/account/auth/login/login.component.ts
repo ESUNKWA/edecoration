@@ -58,6 +58,7 @@ export class LoginComponent implements OnInit {
 
         this.authenticationService._login(this.loginForm.value).subscribe(
         (res: any = {})=>{
+  console.log(res._result);
   
           switch(res._status){
             case 0:

@@ -30,6 +30,7 @@ quatierid: any;
 viewTable: boolean = false;
 submitted: boolean = false;
   utilisateur: any;
+  detailsPersonnel: any = {};
 
   constructor( private personnelService: UtilisateursService,private modalService: NgbModal,
                 private fb: FormBuilder, private communeService: CommunesService, private fonctionServices: FonctionService, 
@@ -129,12 +130,26 @@ submitted: boolean = false;
     
   }
 
-  fctSaisieCat(largeDataModal: any){
-    this.modeAppel = 'creation';
-    this.modalTitle = 'Saisie un nouveau employé';
+  _afficheModal(largeDataModal: any, modeAppel, data){
+    //this.modeAppel = 'creation';
+    
+
+    switch (this.modeAppel) {
+      case 'creation':
+        this.modalTitle = 'Saisie un nouveau employé';
+        break;
+
+      default:
+        this.modalTitle = `Modification de l\'employé [ ${data.r_nom} ${data.r_prenoms} ]`;
+        this.detailsPersonnel = data;
+        this.quatierid = this.detailsPersonnel.r_quartier;
+        break;
+    }
+
     //this.categoriesData.reset();
     this.largeModal(largeDataModal);
   }
+
   //Appel de la modal
   largeModal(exlargeModal: any) {
     this.modalService.open(exlargeModal, { size: 'lg', centered: true });
