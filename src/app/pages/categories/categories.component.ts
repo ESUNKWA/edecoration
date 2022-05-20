@@ -33,11 +33,26 @@ modeAppel: any = 'création';
   viewTable: boolean = false;
   searChIn: any;
   userData: any;
+  term: any;
 
+  //Paginations
+  premiumData: any[] = [];
+  paginateData: any[] = [];
+  source$: Observable<any>;
+  page = 1;
+  pageSize = 5; //Nbre de ligne à afficher
+  collectionSize = 0;
+
+  getPremiumData() {
+    this.paginateData = this.categoriesTab.slice(
+      (this.page - 1) * this.pageSize,
+      (this.page - 1) * this.pageSize + this.pageSize
+    );
+    
+  }
 
   constructor(public service: AdvancedService, private modalService: NgbModal, private categories: CategoriesService,
               public fb: FormBuilder, private notifications: NotifService, private user: UserService) { }
-
 
 
   ngOnInit(): void {
@@ -58,6 +73,8 @@ modeAppel: any = 'création';
     this.categories._getCategories().subscribe(
       (data: any) => {
         this.categoriesTab = [...data._result];
+        this.collectionSize = this.categoriesTab.length;
+        this.getPremiumData();
         setTimeout(() => {
           this.viewTable = true;
         }, 500);

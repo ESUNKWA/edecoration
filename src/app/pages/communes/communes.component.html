@@ -18,12 +18,16 @@
             <ng-template [ngIf]="viewTable == true" >
               <!-- Table -->
             <div class="table-responsive">
+             
               <!-- Search -->
-            <div id="tickets-table_filter" class="dataTables_filter text-md-end"><label
-              class="d-inline-flex align-items-center">Recherche:
-              <input type="text" name="searchTerm" class="form-control form-control-sm ms-2"
-                aria-controls="tickets-table" [(ngModel)]="searChIn"></label></div>
+              <div class="search-box me-2 mb-2 d-inline-block">
+                <div class="position-relative">
+                  <input type="text" class="form-control" placeholder="Recherche..." [(ngModel)]="term" />
+                  <i class="bx bx-search-alt search-icon"></i>
+                </div>
+              </div>
             <!-- End search -->
+
               <table class="table mb-0 table-striped" >
                         <thead class="bg-dark text-white">
                           <tr>
@@ -33,7 +37,7 @@
                           </tr>
                         </thead>
                         <tbody>
-                          <tr *ngFor="let commune of CommunesTab; let i = index">
+                          <tr *ngFor="let commune of paginateData| filter: term ; let i = index">
                             <td style="width:30%" >{{commune.created_at | date: 'dd/MM/yyyy à hh:mm:ss'}}</td>
                             <td style="width:55%" >{{commune.label}}</td>
                             <td style="width:15%">
@@ -42,6 +46,31 @@
                           </tr>
                         </tbody>
                       </table>
+
+
+                      <!-- Paginations -->
+                        <div class="d-flex justify-content-between p-2">
+                          <ngb-pagination
+                            [collectionSize]="collectionSize"
+                            [(page)]="page"
+                            [pageSize]="pageSize"
+                            (pageChange)="getPremiumData()"
+                          >
+                          </ngb-pagination>
+
+                          <select
+                            class="form-control"
+                            style="width: auto"
+                            [(ngModel)]="pageSize"
+                            (ngModelChange)="getPremiumData()"
+                          >
+                            <option [ngValue]="5">5 lignes</option>
+                            <option [ngValue]="10">10 lignes</option>
+                            <option [ngValue]="25">25 lignes</option>
+                            <option [ngValue]="50">50 lignes</option>
+                          </select>
+                        </div>
+                        <!-- Paginations -->
                       
             </div>
             </ng-template>

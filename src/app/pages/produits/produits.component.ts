@@ -54,7 +54,7 @@ export class ProduitsComponent implements OnInit {
       (this.page - 1) * this.pageSize,
       (this.page - 1) * this.pageSize + this.pageSize
     );
-    
+
   }
   
   constructor( private fb: FormBuilder, private produitServices: ProduitService, private notifications: NotifService,

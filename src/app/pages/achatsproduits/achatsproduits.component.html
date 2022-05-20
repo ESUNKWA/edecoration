@@ -20,30 +20,60 @@
               </ng-template>
 
               <ng-template [ngIf]="viewTable == true" >
+                
+                
                 <!-- Search -->
-                  <div id="tickets-table_filter" class="dataTables_filter text-md-end"><label
-                    class="d-inline-flex align-items-center">Recherche:
-                    <input type="text" name="searchTerm" class="form-control form-control-sm ms-2"
-                      aria-controls="tickets-table"></label></div>
-                  <!-- End search -->
+                <div class="search-box me-2 mb-2 d-inline-block">
+                  <div class="position-relative">
+                    <input type="text" class="form-control" placeholder="Recherche..." [(ngModel)]="term" />
+                    <i class="bx bx-search-alt search-icon"></i>
+                  </div>
+                </div>
+              <!-- End search -->
+
                   <table class="table mb-0 table-striped" >
                     <thead class="bg-dark text-white">
                       <tr>
                         <th style="width:20%" >Date d'achat</th>
                         <th style="width:40%" >Produit</th>
                         <th style="width:20%" >Quantité</th>
-                        <th style="width:20%;">Monatnt</th>
+                        <th style="width:20%;">Montant</th>
                       </tr>
                     </thead>
                     <tbody>
-                      <tr *ngFor="let achat of achatProduiTab ; let i = index">
+                      <tr *ngFor="let achat of paginateData | filter: term ; let i = index">
                         <td style="width:20%" >{{achat.created_at | date: 'dd/MM/yyyy à hh:mm:ss'}}</td>
                         <td style="width:40%" >{{achat.r_libelle}}</td>
                         <td style="width:20%" >{{achat.r_quantite}}</td>
-                        <td style="width:20%" >{{achat.r_prix_achat}}</td>
+                        <td style="width:20%" >{{achat.r_prix_achat | mask: 'separator':''}}</td>
                       </tr>
                     </tbody>
                   </table>
+
+                  <!-- Paginations -->
+                  <div class="d-flex justify-content-between p-2">
+                    <ngb-pagination
+                      [collectionSize]="collectionSize"
+                      [(page)]="page"
+                      [pageSize]="pageSize"
+                      (pageChange)="getPremiumData()"
+                    >
+                    </ngb-pagination>
+
+                    <select
+                      class="form-control"
+                      style="width: auto"
+                      [(ngModel)]="pageSize"
+                      (ngModelChange)="getPremiumData()"
+                    >
+                      <option [ngValue]="5">5 lignes</option>
+                      <option [ngValue]="10">10 lignes</option>
+                      <option [ngValue]="25">25 lignes</option>
+                      <option [ngValue]="50">50 lignes</option>
+                    </select>
+                  </div>
+                  <!-- Paginations -->
+
             </ng-template>
                         
               </div>

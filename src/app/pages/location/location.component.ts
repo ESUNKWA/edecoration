@@ -135,7 +135,13 @@ viewTable: boolean = false;
       (this.page - 1) * this.pageSize,
       (this.page - 1) * this.pageSize + this.pageSize
     );
+  }
 
+  getPremiumDataDkem() {
+    this.paginateData = this.tarificationTab.slice(
+      (this.page - 1) * this.pageSize,
+      (this.page - 1) * this.pageSize + this.pageSize
+    );
   }
 
   constructor(private notifications: NotifService, private user: UserService, private modalService: NgbModal, private tarifService: TarificationsService,
@@ -396,7 +402,7 @@ viewTable: boolean = false;
 
   //Cocher la ligne produit à sélectionner
   _changeValcheck(val,i){
-
+  
     this.tarificationTab[i].check = val;
     if(val == false){
       this.tarificationTab[i].qte = 0;
@@ -429,6 +435,10 @@ viewTable: boolean = false;
 
     this.locationData.value.p_date_envoie = this.locationData.value.p_date_envoie.replace('T', ' ');
     this.locationData.value.p_date_retour = this.locationData.value.p_date_retour.replace('T', ' ');
+
+
+    console.log(this.recapTab);
+    return;
 
     if( this.reglmtPartiel == 1 ){
       this.locationData.value.p_solder = false;
@@ -670,6 +680,8 @@ viewTable: boolean = false;
     this.tarifService._getTarifications().subscribe(
       (data: any) => {
         this.tarificationTab = [...data._result];
+        this.collectionSize = this.tarificationTab.length;
+        this.getPremiumDataDkem();
         setTimeout(() => {
           this.viewTable = true;
 

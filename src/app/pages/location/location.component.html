@@ -233,6 +233,14 @@
                               <ng-template [ngIf]="viewTable == true" >
 
 
+                                <!-- Search -->
+                                <div class="search-box me-2 mb-2 d-inline-block">
+                                  <div class="position-relative">
+                                    <input type="text" class="form-control" placeholder="Recherche..." [ngModelOptions]="{standalone: true}" [(ngModel)]="term" />
+                                    <i class="bx bx-search-alt search-icon"></i>
+                                  </div>
+                                </div>
+                              <!-- End search -->
 
                                 <table class="table mb-0 table-striped" >
                                   <thead class="bg-dark text-white">
@@ -241,13 +249,13 @@
                                       <th style="width:20%" >Produits</th>
                                       <th style="width:10%" >Stock actuel</th>
                                       <th style="width:10%" >Prix location</th>
-                                      <th style="width: 10%;">Durée</th>
-                                      <th style="width: 10%;">Quantité</th>
-                                      <th style="width: 15%;">Montant total</th>
+                                      <th style="width:10%;">Durée</th>
+                                      <th style="width:10%;">Quantité</th>
+                                      <th style="width:15%;">Montant total</th>
                                     </tr>
                                   </thead>
                                   <tbody>
-                                    <tr *ngFor="let produit of tarificationTab ; let i = index">
+                                    <tr *ngFor="let produit of tarificationTab | filter: term; let i = index">
                                       <td style="width:5%;">
                                         <input #inpcheck class="form-check-input" type="checkbox" (change)="_changeValcheck(inpcheck.checked,i)" >
                                       </td>
@@ -264,6 +272,7 @@
                                     </tr>
                                   </tbody>
                                 </table>
+                                  
                               </ng-template>
 
 
@@ -690,7 +699,7 @@
 
         </div>
         <div class="modal-footer">
-          <span>Saisie par : {{ligneLocation.nom_person_eng +" " + ligneLocation.prenoms_person_engg}}</span>
+          <span class="text-danger" >Saisie par : {{ligneLocation.nom_person_eng +" " + ligneLocation.prenoms_person_engg}}</span>
           <button type="button" title="fermer" class="btn btn-secondary" (click)="modal.close('Close click');">Fermer</button>
           <!-- <button type="button" title="Enregistrer"
            class="btn btn-primary" >Enregistrer</button> -->

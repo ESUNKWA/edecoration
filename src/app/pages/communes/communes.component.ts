@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { Observable } from 'rxjs';
 import { CommunesService } from 'src/app/core/services/communes/communes.service';
 import { NotifService } from 'src/app/core/services/notif.service';
 import { UserService } from 'src/app/core/services/usersinfos/user.service';
@@ -20,6 +21,23 @@ export class CommunesComponent implements OnInit {
   modalTitle: any = '';
   ligneCommune: any = {};
   communesData: FormGroup
+  term: any;
+
+   //Paginations
+   premiumData: any[] = [];
+   paginateData: any[] = [];
+   source$: Observable<any>;
+   page = 1;
+   pageSize = 5; //Nbre de ligne à afficher
+   collectionSize = 0;
+ 
+   getPremiumData() {
+     this.paginateData = this.CommunesTab.slice(
+       (this.page - 1) * this.pageSize,
+       (this.page - 1) * this.pageSize + this.pageSize
+     );
+     
+   }
 
   constructor(private modalService: NgbModal, private communeService: CommunesService, private fb: FormBuilder, private notifications: NotifService,
               private user: UserService) { }
@@ -44,7 +62,8 @@ export class CommunesComponent implements OnInit {
     this.communeService._getCommunes().subscribe(
       (data: any) => {
         this.CommunesTab = [...data._result];
-        
+        this.collectionSize = this.CommunesTab.length;
+        this.getPremiumData();
         setTimeout(() => {
           this.viewTable = true;
         }, 500);
