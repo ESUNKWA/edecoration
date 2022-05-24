@@ -155,7 +155,7 @@ export class ProduitsComponent implements OnInit {
   _saisieProduits(largeDataModal: any){
     this.modeAppel = 'creation';
     this.modalTitle = 'Saisie un nouveau produit';
-    console.log(this.modeAppel);
+    this.ligneTarification = {};
     this.produitsData.reset();
     this.largeModal(largeDataModal);
   }
@@ -368,7 +368,7 @@ export class ProduitsComponent implements OnInit {
   }
 
   _resetForm(){
-    this.ligneTarification = {}
+    this.ligneTarification = {};
     this.produitsData.reset();
   }
 

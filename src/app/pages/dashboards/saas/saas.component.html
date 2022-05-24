@@ -126,7 +126,7 @@
                                 <h5 class="font-size-14 mb-0">Revenue du jour</h5>
                             </div>
                             <div class="text-muted mt-4">
-                                <h5>{{dashOne.mnt_total_location_jours + this.totalAvance | mask: 'separator':' '}} | <span style="color: #a6aae2" >frais:</span> {{dashOne.fraisjr | mask: 'separator':' '}} = {{dashOne.mnt_total_location_jours + dashOne.fraisjr | mask: 'separator':' '}} <i class="mdi mdi-chevron-up ms-1 text-success"></i></h5>
+                                <h5>{{dashOne.mnt_total_location_jours + this.totalAvance | mask: 'separator':' '}} | <span style="color: #a6aae2" >frais:</span> {{dashOne.fraisjr | mask: 'separator':' '}} = {{dashOne.mnt_total_location_jours + this.totalAvance + dashOne.fraisjr | mask: 'separator':' '}} <i class="mdi mdi-chevron-up ms-1 text-success"></i></h5>
                                 <!-- <div class="d-flex">
                                     <span class="badge badge-soft-success font-size-12"> + 0.2% </span> <span
                                         class="ms-2 text-truncate">From previous period</span>

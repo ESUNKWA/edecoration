@@ -407,10 +407,9 @@ viewTable: boolean = false;
     if(val == false){
       this.tarificationTab[i].qte = 0;
       this.tarificationTab[i].total =  this.tarificationTab[i].qte*this.tarificationTab[i].r_prix_location;
+      return;
     }
-
     this.recapTab = this.tarificationTab.filter( el => el.qte >= 1);
-
   }
 
 
@@ -435,10 +434,6 @@ viewTable: boolean = false;
 
     this.locationData.value.p_date_envoie = this.locationData.value.p_date_envoie.replace('T', ' ');
     this.locationData.value.p_date_retour = this.locationData.value.p_date_retour.replace('T', ' ');
-
-
-    console.log(this.recapTab);
-    return;
 
     if( this.reglmtPartiel == 1 ){
       this.locationData.value.p_solder = false;

@@ -7,7 +7,7 @@
 
             <div class="row mb-2">
               <div class="col-md-12 ">
-                <button type="button" style="float: right;" class="btn btn-primary nouveau" title="Saisir un nouvelle catégorie de produits" (click)="_saisieProduits(largeDataModal)">Nouveau</button>
+                <button type="button" style="float: right;" class="btn btn-primary nouveau" title="Saisir un nouvelle catégorie de produits" (click)="_saisieProduits(largeDataModal);_resetForm();">Nouveau</button>
               </div>
             </div>
 
@@ -159,11 +159,11 @@
             </div>
         </div>
         <div class="row">
-          <div class="col-md-8">
+          <div class="col-md-12">
             <label for="validationCustom05">Description du produit</label>
               <textarea class="form-control" rows="3" formControlName="p_description" [(ngModel)]="ligneProduit.r_description" placeholder=""></textarea>
           </div>
-          <div class="col-md-4 mb-3">
+          <div class="col-md-4 mb-3" hidden>
             <label for="formFile" class="form-label">Image</label>
             <input class="form-control" type="file" id="formFile">
           </div>
@@ -214,7 +214,7 @@
                   <input type="number" class="form-control" min="1" formControlName="p_duree" [(ngModel)]="ligneTarification.r_duree" >
               </div>
             </div>
-            <div class="row mb-3">
+            <div class="row mb-3" hidden>
               <div class="col-6">
                 <label class="col-md-4 col-form-label">Période du</label>
                     <input class="form-control" type="date" name="p_date_debut" formControlName="p_date_debut" value="2019-08-19T13:45:00"
@@ -239,7 +239,7 @@
               </div>
             </div>
           </form>
-          <button type="button" title="Enregistrer" class="btn btn-primary m-2" style="float: right" (click)="_registerTarification()">Enregistrer</button>
+          <button type="button" title="Enregistrer" class="btn btn-primary m-2" style="float: right" (click)="_registerTarification();">Enregistrer</button>
         </ng-template>
 
         <button class="btn btn-success m-2" type="button" style="float: left" *ngIf="tarificationTab.length >= 1" (click)="_tarifAppliquer()" >Tarification à appliquer</button>
@@ -250,11 +250,12 @@
             <tr>
               <th style="width:5%" >Choix</th>
               <!-- <th style="width:30%" >Produits</th> -->
+              <th style="width:25%" >Date de création</th>
               <th style="width:20%" >Prix location</th>
               <th style="width: 15%;">Durée</th>
-              <th style="width: 20%;">Quantité</th>
+              <th style="width: 10%;">Quantité</th>
               <th style="width: 20%;">Appliquer</th>
-              <th style="width:15%" >Action</th>
+              
             </tr>
           </thead>
           <tbody>
@@ -263,15 +264,13 @@
                 <input type="radio" #inpValTarif class="form-check-input" [value]="i" [(ngModel)]="dkem" (change)="onChangeCheck(inpValTarif.checked,i)">
               </td>
               <!-- <td style="width:30%" >{{produit.r_libelle}}</td> -->
+              <td style="width:25%" >{{produit.created_at | date: 'dd-MM-YYYY'}}</td>
               <td style="width:20%" >{{produit.r_prix_location}}</td>
               <td style="width:15%" >{{produit.r_duree}} jour</td>
-              <td style="width:20%" >{{produit.r_quantite}}</td>
+              <td style="width:10%" >{{produit.r_quantite}}</td>
               <td style="width:20%" *ngIf="produit.r_es_utiliser == 1" ><span class="badge badge-pill badge-soft-success font-size-12">Tarif appliqué</span></td>
               <td style="width:20%" *ngIf="produit.r_es_utiliser == 0" >--</td>
-              
-              <td style="width:15%">
-                <button type="button" class="btn btn-primary" title="Modification" ><i class="fas fa-edit"></i></button>&nbsp;
-              </td>
+            
             </tr>
           </tbody>
       </table>
@@ -279,7 +278,7 @@
       
       </div>
       <div class="modal-footer">
-        <button type="button" title="fermer" class="btn btn-secondary" (click)="modal.close('Close click');">Fermer</button>
+        <button type="button" title="fermer" class="btn btn-secondary" (click)="modal.close('Close click');_resetForm();">Fermer</button>
         <!-- <button type="button" title="Enregistrer" class="btn btn-primary" (click)="_registerTarification()">Enregistrer</button> -->
       </div>
     </ng-template>
