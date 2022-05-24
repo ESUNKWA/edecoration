@@ -7,7 +7,7 @@
   
             <div class="row mb-2">
               <div class="col-md-12 ">
-                <button type="button" class="btn btn-primary nouveau" title="Saisir un nouveau Véhicule" (click)="_saisieLogistik(largeDataModal)" >Nouveau</button>
+                <button type="button" class="btn btn-primary nouveau" *ngIf="this.userData.r_code_profil == 'admin'" title="Saisir un nouveau Véhicule" (click)="_saisieLogistik(largeDataModal)" >Nouveau</button>
               </div>
             </div>
             
@@ -25,7 +25,7 @@
                             <th style="width:25%" >Matricule</th>
                             <th style="width: 50%;">Véhicule</th>
                             <th style="width:10%" >Status</th>
-                            <th style="width:15%" >Action</th>
+                            <th style="width:15%" *ngIf="this.userData.r_code_profil == 'admin'" >Action</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -33,7 +33,7 @@
                             <td style="width:25%" >{{logistik.r_matricule }}</td>
                             <td style="width:50%" >{{logistik.label}}</td>
                             <td style="width:10%" >{{logistik.r_status}}</td>
-                            <td style="width:15%">
+                            <td style="width:15%" *ngIf="this.userData.r_code_profil == 'admin'" >
                               <button type="button" class="btn btn-primary" (click)="_action(logistik,largeDataModal)" ><i class="fas fa-edit"></i></button>
                             </td>
                           </tr>

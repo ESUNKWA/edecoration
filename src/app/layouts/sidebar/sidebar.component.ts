@@ -8,6 +8,7 @@ import { HttpClient } from '@angular/common/http';
 import { MENU } from './menu';
 import { MenuItem } from './menu.model';
 import { TranslateService } from '@ngx-translate/core';
+import { UserService } from 'src/app/core/services/usersinfos/user.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -23,12 +24,12 @@ export class SidebarComponent implements OnInit, AfterViewInit, OnChanges {
   @Input() isCondensed = false;
   menu: any;
   data: any;
-
+  userData: any = {};
   menuItems = [];
 
   @ViewChild('sideMenu') sideMenu: ElementRef;
 
-  constructor(private eventService: EventService, private router: Router, public translate: TranslateService, private http: HttpClient) {
+  constructor(private eventService: EventService, private router: Router, public translate: TranslateService, private http: HttpClient, private user: UserService) {
     router.events.forEach((event) => {
       if (event instanceof NavigationEnd) {
         this._activateMenuDropdown();
@@ -38,8 +39,10 @@ export class SidebarComponent implements OnInit, AfterViewInit, OnChanges {
   }
 
   ngOnInit() {
-    this.initialize();
+    this.userData = this.user._donnesUtilisateur()[0];
+    this.initialize(this.userData.r_code_profil);
     this._scrollElement();
+
   }
 
   ngAfterViewInit() {
@@ -138,8 +141,41 @@ export class SidebarComponent implements OnInit, AfterViewInit, OnChanges {
   /**
    * Initialize
    */
-  initialize(): void {
-    this.menuItems = MENU;
+  initialize(codeProdil): void {
+    let menu, sousMenus: any = [], sousMenusValid;
+
+  this.menuItems = MENU;
+  
+    if( codeProdil == 'exp' ){
+
+      //Récupération du ménu selon  le profil
+      menu = this.menuItems.filter((item) => {
+        return item.code == codeProdil;
+      });
+
+      //Récupération du sousMenu selon le profil
+      menu.forEach((item, index, a) => {
+
+        sousMenus = item.subItems;
+
+        if( sousMenus!== undefined ){
+
+          sousMenusValid = sousMenus.filter((item) =>{
+            return item?.code == codeProdil
+          });
+          
+          menu[index].subItems = sousMenusValid;
+
+          
+        }
+    
+        
+      });
+
+      // Menu à afficher
+      this.menuItems = menu;
+    }
+  
   }
 
   /**

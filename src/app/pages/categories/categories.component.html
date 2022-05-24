@@ -8,7 +8,7 @@
       <div class="card">
         <div class="card-body">
 
-          <div class="row mb-2">
+          <div class="row mb-2" *ngIf="this.userData.r_code_profil == 'admin'" >
             <div class="col-md-12 ">
               <button type="button" class="btn btn-primary nouveau" title="Saisir un nouvelle catégorie de produits" (click)="fctSaisieCat(largeDataModal)">Nouveau</button>
             </div>
@@ -34,14 +34,14 @@
                         <tr>
                           <th style="width:30%" >Catégorie</th>
                           <th style="width: 55%;">Description</th>
-                          <th style="width:15%" >Action</th>
+                          <th style="width:15%" *ngIf="this.userData.r_code_profil == 'admin'" >Action</th>
                         </tr>
                       </thead>
                       <tbody>
                         <tr *ngFor="let categorie of paginateData | filter:term ;let i = index;">
                           <td style="width:30%" >{{categorie.r_libelle}}</td>
                           <td style="width:55%" >{{categorie.r_description}}</td>
-                          <td style="width:15%">
+                          <td style="width:15%" *ngIf="this.userData.r_code_profil == 'admin'">
                             <button type="button" class="btn btn-primary" (click)="fctModiCat(largeDataModal, categorie)" ><i class="fas fa-edit"></i></button>
                           </td>
                         </tr>

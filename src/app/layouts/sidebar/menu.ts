@@ -6,6 +6,7 @@ export const MENU: MenuItem[] = [
         label: 'Tableau de bords',
         icon: 'bx bxs-home',
         link: '/edeco/dashboards',
+        code: 'exp'
     },
     {
         id: 29,
@@ -16,24 +17,25 @@ export const MENU: MenuItem[] = [
                 id: 30,
                 label: 'Catégories',
                 link: '/edeco/categories',
-                //parentId: 29
+                code: 'exp'
             },{
               id: 30,
               label: 'Produits',
               link: '/edeco/produits',
-              //parentId: 29
+              code: 'exp'
           },{
             id: 30,
             label: 'Tarifications',
             link: '/edeco/tarification',
-            //parentId: 29
+            code: 'exp'
         },{
             id: 30,
             label: 'Achats de produits',
             link: '/edeco/achat',
-            //parentId: 29
+            code: 'exp'
         }
-        ]
+        ],
+        code: 'exp'
     },
     {
         id: 36,
@@ -44,21 +46,22 @@ export const MENU: MenuItem[] = [
                 id: 37,
                 label: 'Communes',
                 link: '/edeco/commune',
-                parentId: 36
+                code: "exp"
             },
             {
               id: 37,
               label: 'Logistiques',
               link: '/edeco/logistik',
-              parentId: 36
+              code: "exp"
           },
           {
             id: 37,
             label: 'Location',
             link: '/edeco/location',
-            parentId: 36
+            code: "exp"
         }
-        ]
+        ],
+        code: 'exp'
     },
     {
         id: 39,
@@ -71,7 +74,8 @@ export const MENU: MenuItem[] = [
                 link: '/edeco/personnel',
                 parentId: 38
             }
-        ]
+        ],
+        code: 'admin'
     },
     {
         id: 44,
@@ -84,7 +88,8 @@ export const MENU: MenuItem[] = [
                 link: '/edeco/tasks/list',
                 parentId: 44
             }
-        ]
+        ],
+        code: 'admin'
     },
     {
         id: 48,
@@ -97,7 +102,8 @@ export const MENU: MenuItem[] = [
               link: '/edeco/utilisateurs',
               parentId: 48
           }
-        ]
+        ],
+        code: 'admin'
     }
 ];
 

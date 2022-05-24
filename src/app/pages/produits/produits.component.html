@@ -5,7 +5,7 @@
         <div class="card">
           <div class="card-body">
 
-            <div class="row mb-2">
+            <div class="row mb-2" *ngIf="this.userData.r_code_profil == 'admin'">
               <div class="col-md-12 ">
                 <button type="button" style="float: right;" class="btn btn-primary nouveau" title="Saisir un nouvelle catégorie de produits" (click)="_saisieProduits(largeDataModal);_resetForm();">Nouveau</button>
               </div>
@@ -51,7 +51,7 @@
                               <th style="width:35%" >Produits</th>
                               <th style="width:15%" >Quantité en stock</th>
                               <th style="width: 30%;">Description</th>
-                              <th style="width:20%" >Action</th>
+                              <th style="width:20%" *ngIf="this.userData.r_code_profil == 'admin'" >Action</th>
                             </tr>
                           </thead>
                           <tbody>
@@ -59,7 +59,7 @@
                               <td style="width:35%" >{{produit.r_libelle}}</td>
                               <td style="width:15%" >{{produit.r_stock}}</td>
                               <td style="width:30%" >{{produit.r_description}}</td>
-                              <td style="width:20%">
+                              <td style="width:20%" *ngIf="this.userData.r_code_profil == 'admin'">
                                 <button type="button" class="btn btn-primary" title="Modification" (click)="_actionProduits(largeDataModal, produit,'modif')" ><i class="fas fa-edit"></i></button>&nbsp;
                                 <button type="button" class="btn btn-warning" title="Tarification" (click)="_actionProduits(tarificationModal, produit,'tarification')" ><i class="fas fa-money-check-alt"></i></button>&nbsp;
                                 <button type="button" class="btn btn-secondary" title="Nouveau stock" (click)="_actionProduits('', produit,'stock')" ><i class="fas fa-folder-plus"></i></button>

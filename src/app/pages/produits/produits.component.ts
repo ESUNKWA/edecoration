@@ -34,7 +34,7 @@ export class ProduitsComponent implements OnInit {
   datastock: any = {};
   searChIn: any;
   viewTable: boolean = false;
-  userData: any;
+  userData: any = {};
   term: any;
   pattern: any;
   tarificationTab: any[] = [];

@@ -7,7 +7,7 @@
   
             <div class="row mb-2">
               <div class="col-md-12 ">
-                <button type="button" class="btn btn-primary nouveau" title="Saisir un nouvelle commune" (click)="_saisieCommune(largeDataModal)">Nouveau</button>
+                <button type="button" class="btn btn-primary nouveau" title="Saisir un nouvelle commune" *ngIf="this.userData.r_code_profil == 'admin'" (click)="_saisieCommune(largeDataModal)">Nouveau</button>
               </div>
             </div>
             
@@ -33,14 +33,14 @@
                           <tr>
                             <th style="width:30%" >Date création</th>
                             <th style="width: 55%;">Commune</th>
-                            <th style="width:15%" >Action</th>
+                            <th style="width:15%" *ngIf="this.userData.r_code_profil == 'admin'" >Action</th>
                           </tr>
                         </thead>
                         <tbody>
                           <tr *ngFor="let commune of paginateData| filter: term ; let i = index">
                             <td style="width:30%" >{{commune.created_at | date: 'dd/MM/yyyy à hh:mm:ss'}}</td>
                             <td style="width:55%" >{{commune.label}}</td>
-                            <td style="width:15%">
+                            <td style="width:15%" *ngIf="this.userData.r_code_profil == 'admin'">
                               <button type="button" class="btn btn-primary" (click)="_action(commune,largeDataModal)" ><i class="fas fa-edit"></i></button>
                             </td>
                           </tr>
