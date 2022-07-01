@@ -149,6 +149,20 @@ viewTable: boolean = false;
               private exportpdf: DataprintformatService, private toastr: ToastrService) { }          
 
   ngOnInit(): void {
+
+debugger;
+    var x = 1;
+    var d;
+
+    function foo(x){
+      x = x + x;
+     return x
+    }
+    
+    foo(x);
+
+    console.log(x)
+
     this.userData = this.user._donnesUtilisateur()[0];
 
     this.cboDefaultValue = "null";

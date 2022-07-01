@@ -11,5 +11,6 @@ export const environment = {
     appId: '',
     measurementId: ''
   },
-  backendServer: 'https://ws.edecoration-ci.com/api'
+  backendServer: 'https://ws.edecoration-ci.com/api',
+  cryptPassword: '123456789',
 };
