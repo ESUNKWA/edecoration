@@ -21,7 +21,7 @@ import {
   ApexStroke,
   ApexGrid,
   ApexResponsive,
-  
+
 } from "ng-apexcharts";
 
 export type ChartOptions = {
@@ -58,7 +58,7 @@ export class SaasComponent implements OnInit {
   public chartOptions: Partial<ChartOptions>;
 
   @ViewChild("chartPie") chartPie: ChartComponent;
-  
+
   public chartOptionsPie: Partial<ChartOptionsPie>;
 //----------------------------------------------------Chart--------------------------------------------//
   // bread crumb items
@@ -88,7 +88,7 @@ export class SaasComponent implements OnInit {
   tabMois: any = [];
 
   constructor(public formBuilder: FormBuilder, private configService: ConfigService, private dashServices: DashService,) {
-    
+
    }
 
   /**
@@ -116,16 +116,16 @@ export class SaasComponent implements OnInit {
 
         this.tab = paymntEchTab.flat();
         if (this.tab.length >= 1) {
-          
+
           this.totalAvance =this.tab?.reduce(function (acc, obj) {
             ( obj?.p_date_creation == moment().format().split('T')[0])? obj?.p_mntverse : obj.p_mntverse = 0;
-              return acc + obj.p_mntverse; 
+              return acc + obj.p_mntverse;
             }, 0
           );
 
         }
 
-        
+
       this.StatParProduits.forEach((item)=>{
         this.TabProdLoue.push(item.produit);
         this.tabMntLoueProd.push(item.total);
@@ -170,9 +170,9 @@ export class SaasComponent implements OnInit {
             case 12:
             this.tabMois.push('Décembre');
               break;
-            
+
         }
-        
+
       });
 
     //----------------------------------------------------Chart--------------------------------------------//
@@ -242,24 +242,24 @@ export class SaasComponent implements OnInit {
     //   (data) => {
     //     this.dashOne = {...data[0][0]};
     //     this.StatParProduits = [...data[2]];
-        
+
     //     this.StatParProduits.forEach((item)=>{
     //     this.TabProdLoue.push(item.produit);
     //     this.tabMntLoueProd.push(item.total);
     //   });
-        
+
     //   console.log(this.TabProdLoue);
-      
+
     //     data[3].forEach((item) => {
     //       paymntEchTab.push(JSON.parse(item.r_paiement_echell));
     //     });
 
     //     this.tab = paymntEchTab.flat();
     //     if (this.tab.length >= 1) {
-          
+
     //       this.totalAvance =this.tab?.reduce(function (acc, obj) {
     //         ( obj.p_date_creation == moment().format().split('T')[0])? obj.p_mntverse : obj.p_mntverse = 0;
-    //           return acc + obj.p_mntverse; 
+    //           return acc + obj.p_mntverse;
     //         }, 0
     //       );
 
@@ -275,13 +275,13 @@ export class SaasComponent implements OnInit {
     this.configService.getConfig().subscribe(response => {
       this.sassEarning = response.sassEarning;
       this.sassTopSelling = response.sassTopSelling;
-    
+
     });
   }
 
   /**
    * Save the message in chat
    */
-  
+
 
 }

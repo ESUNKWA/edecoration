@@ -32,7 +32,7 @@ export class AuthenticationService {
      * @param password password of user
      */
     _login(data: any): Observable<any> {
-       return this.http.post(`${this.env.backendServer}/auth`, data);
+       return this.http.post(`${this.env.backendServer}/login`, data);
     }
 
     /**

@@ -58,33 +58,33 @@ export class LoginComponent implements OnInit {
 
         this.authenticationService._login(this.loginForm.value).subscribe(
         (res: any = {})=>{
-  console.log(res._result);
-  
+  console.log(res);
+
           switch(res._status){
             case 0:
               this.error = res._result;
               break;
-  
+
             case 1:
               sessionStorage.setItem('userData', JSON.stringify(res._result));
               this.router.navigate(['/edeco/dashboard']);
               break;
-  
+
             default:
               this.error = res._result;
               break;
           }
-  
+
           this.btnspinner = false;
         }
       );
 
     } catch (error) {
       console.log(error);
-      
+
     }
 
-    
+
   }
-  
+
 }
