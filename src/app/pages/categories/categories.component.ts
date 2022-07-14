@@ -9,6 +9,7 @@ import { CategoriesService } from 'src/app/core/services/categories/categories.s
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NotifService } from 'src/app/core/services/notif.service';
 import { UserService } from 'src/app/core/services/usersinfos/user.service';
+import { CryptDataService } from 'src/app/core/services/cryptojs/crypt-data.service';
 
 
 @Component({
@@ -51,8 +52,10 @@ modeAppel: any = 'création';
     
   }
 
+
+
   constructor(public service: AdvancedService, private modalService: NgbModal, private categories: CategoriesService,
-              public fb: FormBuilder, private notifications: NotifService, private user: UserService) { }
+              public fb: FormBuilder, private notifications: NotifService, private user: UserService, private cryptDataService: CryptDataService) { }
 
 
   ngOnInit(): void {
@@ -105,6 +108,14 @@ modeAppel: any = 'création';
     this.categoriesData.reset()
   }
 
+  // cryptData(data: any = {}){
+    
+  //   let password = '123456';
+  //   return CryptoJS.AES.encrypt(JSON.stringify(data), password,{
+  //     format: this.JsonFormatter
+  //   }).toString();
+  // }
+
   _register(): void {
 
     if (this.categoriesData.invalid) {
@@ -112,25 +123,32 @@ modeAppel: any = 'création';
     }
 
     this.categoriesData.value.p_utilisateur = parseInt(this.userData.r_i, 10);
+   
+    let donnees = this.cryptDataService.crypt(this.categoriesData.value);
+    
 
     switch (this.modeAppel) {
       case 'creation':
-          this.categories._create(this.categoriesData.value).subscribe(
+          this.categories._create({p_data: donnees}).subscribe(
             (dataServer: any) => {
+             
+              let messageAffiche = this.cryptDataService.decrypt(dataServer._result);
+
+              
               switch(dataServer._status){
                 case -100:
-                  for (const key in dataServer._result) {
-                    this.notifications.sendMessage(dataServer._result[key],'warning');
+                  for (const key in messageAffiche._result) {
+                    this.notifications.sendMessage(messageAffiche[key],'warning');
                     break;
                   }
                   break;
 
                 case 0:
-                  this.notifications.sendMessage(`${dataServer._result}`,'error');
+                  this.notifications.sendMessage(`${messageAffiche}`,'error');
                   break;
 
                 case 1:
-                  this.notifications.sendMessage(`${dataServer._result}`,'success');
+                  this.notifications.sendMessage(`${messageAffiche}`,'success');
                   break;
               }
               this.categoriesData.reset();

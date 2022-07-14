@@ -15,7 +15,8 @@ export const environment = {
     appId: '',
     measurementId: ''
   },
-  backendServer: 'http://127.0.0.1:8000/api'
+  backendServer: 'http://127.0.0.1:8000/api',
+  cryptPassword: '123456789',
 };
 
 
