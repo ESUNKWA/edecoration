@@ -103,6 +103,10 @@ export class SaasComponent implements OnInit {
     this.breadCrumbItems = [{ label: 'Eden décoration' }, { label: 'Tableau de bords', active: true }];
 
     let data: any =await this.dashServices._dashbord().toPromise();
+    
+
+   /*  console.log(data);
+    
 
     ventMensuel = data[data.length - 1];
 
@@ -112,7 +116,7 @@ export class SaasComponent implements OnInit {
 
           data[3].forEach((item) => {
           paymntEchTab.push(JSON.parse(item.r_paiement_echell));
-        });
+        }); */
 
         this.tab = paymntEchTab.flat();
         if (this.tab.length >= 1) {

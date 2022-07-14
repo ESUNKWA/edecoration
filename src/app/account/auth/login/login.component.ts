@@ -58,7 +58,6 @@ export class LoginComponent implements OnInit {
 
         this.authenticationService._login(this.loginForm.value).subscribe(
         (res: any = {})=>{
-  console.log(res);
 
           switch(res._status){
             case 0:
@@ -67,6 +66,7 @@ export class LoginComponent implements OnInit {
 
             case 1:
               sessionStorage.setItem('userData', JSON.stringify(res._result));
+              sessionStorage.setItem('token', JSON.stringify(res._access_token));
               this.router.navigate(['/edeco/dashboard']);
               break;
 
