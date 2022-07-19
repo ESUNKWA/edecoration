@@ -5,6 +5,7 @@ import { DefaultComponent } from './default/default.component';
 import { SaasComponent } from './saas/saas.component';
 import { CryptoComponent } from './crypto/crypto.component';
 import { BlogComponent } from './blog/blog.component';
+import { AccessGuard } from 'src/app/core/guards/access/access.guard';
 
 const routes: Routes = [
     {

@@ -90,8 +90,9 @@ export class TopbarComponent implements OnInit {
    * Logout the user
    */
   deconnect() {
-    this.authService.logout({idUtilisateur: this.userData.r_i}).subscribe(data => {
-      if( data == true ) {
+    this.authService.logout({p_id: this.userData.r_i}).subscribe(data => {
+      if( data._status == 1 ) {
+        sessionStorage.removeItem('token');
         this.router.navigate(['/auth/login']);
       }
     });

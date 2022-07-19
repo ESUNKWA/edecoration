@@ -28,6 +28,7 @@ import { DataTablesModule } from 'angular-datatables';
 import { ToastrModule } from 'ngx-toastr';
 import { NgApexchartsModule } from 'ng-apexcharts';
 import { TestInterceptorInterceptor } from './core/interceptor/test-interceptor.interceptor';
+import { AccessGuard } from './core/guards/access/access.guard';
 if (environment.defaultauth === 'firebase') {
   initFirebaseBackend(environment.firebaseConfig);
 } else {
@@ -78,6 +79,7 @@ export function createTranslateLoader(http: HttpClient): any {
     { provide: HTTP_INTERCEPTORS, useClass: TestInterceptorInterceptor, multi: true },
     // LoaderService,
     // { provide: HTTP_INTERCEPTORS, useClass: LoaderInterceptorService, multi: true },
+    AccessGuard
   ],
 })
 export class AppModule { }

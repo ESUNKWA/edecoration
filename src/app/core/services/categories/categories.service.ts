@@ -9,7 +9,8 @@ import { environment } from "../../../../../src/environments/environment";
 })
 export class CategoriesService {
   env = environment;
-  headers = new HttpHeaders().set('Content-Type', 'application/json');
+  headers = new HttpHeaders()
+                .set('Content-Type', 'application/json');
 
   constructor( private http: HttpClient ) {
   }
@@ -19,7 +20,9 @@ export class CategoriesService {
   }
 
   _getCategories(){
-    return this.http.get(`${this.env.backendServer}/categories`);
+
+    const token = sessionStorage.getItem('token');
+    return this.http.get(`${this.env.backendServer}/categories`, { 'headers': this.headers });
   }
 
   _update(data: any, id: number): Observable<any>{

@@ -36,12 +36,10 @@ export class AuthenticationService {
     }
 
     /**
-     * Logout the user
+     * déconnexion de l'utilisateur
      */
     logout(idUtilisateur: any): Observable<any> {
-        // logout the user
-       // getFirebaseBackend().logout();
-       return this.http.post(`${this.env.backendServer}/deconnect`, idUtilisateur);
+       return this.http.post(`${this.env.backendServer}/logout`, idUtilisateur);
     }
 }
 

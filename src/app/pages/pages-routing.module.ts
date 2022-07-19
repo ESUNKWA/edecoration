@@ -7,11 +7,11 @@ import { DefaultComponent } from './dashboards/default/default.component';
 import { FilemanagerComponent } from './filemanager/filemanager.component';
 import { CategoriesModule } from './categories/categories.module';
 import { SaasComponent } from './dashboards/saas/saas.component';
+import { AccessGuard } from '../core/guards/access/access.guard';
 
 const routes: Routes = [
-  { path: '', redirectTo: 'dashboard' },
+  { path: '', redirectTo: 'dashboards' },
 
-  { path: 'dashboard', component: SaasComponent },
   { path: 'calendar', component: CalendarComponent },
   { path: 'chat', component: ChatComponent },
   { path: 'filemanager', component: FilemanagerComponent },
@@ -31,7 +31,7 @@ const routes: Routes = [
   { path: 'charts', loadChildren: () => import('./chart/chart.module').then(m => m.ChartModule) },
   { path: 'maps', loadChildren: () => import('./maps/maps.module').then(m => m.MapsModule) },
 
-  { path: 'dashboards', loadChildren: () => import('./dashboards/dashboards.module').then(m => m.DashboardsModule) },
+  { path: 'dashboard', loadChildren: () => import('./dashboards/dashboards.module').then(m => m.DashboardsModule) },
   { path: 'categories', loadChildren: () => import('./categories/categories.module').then(m => m.CategoriesModule) },
   { path: 'produits', loadChildren: () => import('./produits/produits.module').then(m => m.ProduitsModule) },
   { path: 'tarification', loadChildren: () => import('./tarifications/tarification.module').then(m => m.TarificationModule) },

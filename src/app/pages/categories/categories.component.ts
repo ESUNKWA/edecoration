@@ -73,6 +73,9 @@ modeAppel: any = 'création';
   get f () { return this.categoriesData.controls;}
 
   _listCategories(): void {
+
+
+  try {
     this.categories._getCategories().subscribe(
       (data: any) => {
         this.categoriesTab = [...data._result];
@@ -82,9 +85,14 @@ modeAppel: any = 'création';
           this.viewTable = true;
         }, 500);
       },
-      (err) => {console.log(err.stack);
+      (err) => {console.log(err);
       }
     );
+  } catch (error) {
+    console.log(error)
+  }
+
+    
   }
 
   fctSaisieCat(largeDataModal: any){
