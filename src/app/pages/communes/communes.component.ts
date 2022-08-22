@@ -30,13 +30,13 @@ export class CommunesComponent implements OnInit {
    page = 1;
    pageSize = 5; //Nbre de ligne à afficher
    collectionSize = 0;
- 
+
    getPremiumData() {
      this.paginateData = this.CommunesTab.slice(
        (this.page - 1) * this.pageSize,
        (this.page - 1) * this.pageSize + this.pageSize
      );
-     
+
    }
 
   constructor(private modalService: NgbModal, private communeService: CommunesService, private fb: FormBuilder, private notifications: NotifService,

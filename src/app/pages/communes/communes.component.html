@@ -4,21 +4,21 @@
       <div class="col-12">
         <div class="card">
           <div class="card-body">
-  
+
             <div class="row mb-2">
               <div class="col-md-12 ">
                 <button type="button" class="btn btn-primary nouveau" title="Saisir un nouvelle commune" *ngIf="this.userData.r_code_profil == 'admin'" (click)="_saisieCommune(largeDataModal)">Nouveau</button>
               </div>
             </div>
-            
+
             <ng-template [ngIf]="viewTable == false" >
               <app-spinner></app-spinner>
             </ng-template>
-  
+
             <ng-template [ngIf]="viewTable == true" >
               <!-- Table -->
             <div class="table-responsive">
-             
+
               <!-- Search -->
               <div class="search-box me-2 mb-2 d-inline-block">
                 <div class="position-relative">
@@ -71,20 +71,20 @@
                           </select>
                         </div>
                         <!-- Paginations -->
-                      
+
             </div>
             </ng-template>
-  
-            
+
+
           </div>
         </div>
-  
+
       </div>
     </div>
   </div>
 
 
-  
+
 <!-- Large Modal -->
 <ng-template #largeDataModal let-modal>
   <div class="modal-header">
@@ -112,4 +112,3 @@
     <button type="button" title="Enregistrer" class="btn btn-primary" (click)="_register()">Enregistrer</button>
   </div>
 </ng-template>
-  
