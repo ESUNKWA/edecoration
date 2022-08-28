@@ -1,21 +1,20 @@
+import { NgSelectModule } from '@ng-select/ng-select';
+import { AchatsRoutingModule } from './achats-routing.module';
+import { AchatsComponent } from './achats.component';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { NgbModule, NgbNavModule, NgbPaginationModule, NgbTooltipModule } from "@ng-bootstrap/ng-bootstrap";
-import { UIModule } from '../../shared/ui/ui.module';
-import { CategoriesRoutingModule } from './categories-routing.module';
-import { Ng2SmartTableModule } from 'ng2-smart-table';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { CategoriesComponent } from './categories.component';
-import { SearchDossierPipe, SearchPipe } from 'src/app/table.pipe';
-import { DataTablesModule } from 'angular-datatables';
 import { Ng2SearchPipeModule } from 'ng2-search-filter';
+import { UIModule } from 'src/app/shared/ui/ui.module';
+import { Ng2SmartTableModule } from 'ng2-smart-table';
 
 @NgModule({
-    declarations: [CategoriesComponent,SearchPipe],
+    declarations: [AchatsComponent],
     imports: [
-        CommonModule,
-        CategoriesRoutingModule,
+      CommonModule,
+      AchatsRoutingModule,
         NgbNavModule,
         NgbTooltipModule,
         UIModule,
@@ -23,10 +22,10 @@ import { Ng2SearchPipeModule } from 'ng2-search-filter';
         Ng2SmartTableModule,
         FormsModule,
         ReactiveFormsModule,
-        DataTablesModule,
+        NgbPaginationModule,
         Ng2SearchPipeModule,
-        NgbModule
+        NgSelectModule
     ]
 })
 
-export class CategoriesModule { }
+export class AchatsModule { }

@@ -37,12 +37,6 @@ import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { ChatComponent } from './chat/chat.component';
 
 import { FilemanagerComponent } from './filemanager/filemanager.component';
-import { AchatsproduitsComponent } from './achatsproduits/achatsproduits.component';
-import { CommunesComponent } from './communes/communes.component';
-import { LogistikComponent } from './logistik/logistik.component';
-import { TestComponent } from './test/test.component';
-import { UtilisateursComponent } from './utilisateurs/utilisateurs.component';
-import { PersonnelComponent } from './personnel/personnel.component';
 
 FullCalendarModule.registerPlugins([ // register FullCalendar plugins
   dayGridPlugin,

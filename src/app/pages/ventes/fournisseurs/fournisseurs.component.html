@@ -1,0 +1,135 @@
+
+
+
+<div class="container-fluid">
+  <app-page-title title="Catégories de produits" [breadcrumbItems]="breadCrumbItems"></app-page-title>
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-body">
+
+          <div class="row mb-2" *ngIf="this.userData.r_code_profil == 'admin'" >
+            <div class="col-md-12 ">
+              <button type="button" class="btn btn-primary nouveau" title="Saisir un nouvelle catégorie de produits" (click)="fctSaisieFourniss(largeDataModal)">Nouveau</button>
+            </div>
+          </div>
+
+          <ng-template [ngIf]="viewTable == false" >
+            <app-spinner></app-spinner>
+          </ng-template>
+
+          <ng-template [ngIf]="viewTable == true" >
+            <!-- Table -->
+          <div class="table-responsive">
+            <!-- Search -->
+            <div class="search-box me-2 mb-2 d-inline-block">
+              <div class="position-relative">
+                <input type="text" class="form-control" placeholder="Recherche..." [(ngModel)]="term" />
+                <i class="bx bx-search-alt search-icon"></i>
+              </div>
+            </div>
+          <!-- End search -->
+            <table class="table mb-0 table-striped" >
+                      <thead class="bg-dark text-white">
+                        <tr>
+                          <th style="width:30%" >Fournisseurs</th>
+                          <th style="width: 55%;">Description</th>
+                          <th style="width:15%" *ngIf="this.userData.r_code_profil == 'admin'" >Action</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr *ngFor="let fournisseur of paginateData | filter:term ;let i = index;">
+                          <td style="width:30%" >{{fournisseur.r_nom_fournisseur}}</td>
+                          <td style="width:55%" >{{fournisseur.r_contact}}</td>
+                          <td style="width:15%" *ngIf="this.userData.r_code_profil == 'admin'">
+                            <button type="button" class="btn btn-primary" (click)="fctModiFourniss(largeDataModal, fournisseur)" ><i class="fas fa-edit"></i></button>
+                          </td>
+                        </tr>
+                      </tbody>
+            </table>
+            <!-- Paginations -->
+            <div class="d-flex justify-content-between p-2">
+              <ngb-pagination
+                [collectionSize]="collectionSize"
+                [(page)]="page"
+                [pageSize]="pageSize"
+                (pageChange)="getPremiumData()"
+              >
+              </ngb-pagination>
+
+              <select
+                class="form-control"
+                style="width: auto"
+                [(ngModel)]="pageSize"
+                (ngModelChange)="getPremiumData()"
+              >
+                <option [ngValue]="5">5 lignes</option>
+                <option [ngValue]="10">10 lignes</option>
+                <option [ngValue]="25">25 lignes</option>
+                <option [ngValue]="50">50 lignes</option>
+              </select>
+            </div>
+            <!-- Paginations -->
+          </div>
+          </ng-template>
+
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+<!-- Large Modal -->
+<ng-template #largeDataModal let-modal>
+  <div class="modal-header">
+    <h5 class="modal-title mt-0">{{modalTitle}}</h5>
+    <button type="button" class="btn-close" (click)="modal.dismiss('Cross click')" aria-hidden="true"></button>
+  </div>
+  <div class="modal-body">
+    <form class="needs-validation" [formGroup]="categoriesData">
+      <div class="row">
+
+        <div class="col">
+            <label for="validationCustom01">Nom de l'établissement</label>
+            <input type="text" class="form-control"  formControlName="r_libelle" [(ngModel)]="ligneCategorie.r_libelle" >
+
+            <div *ngIf="f.r_libelle.touched && f.r_libelle.invalid" class="text-danger" >
+              <div *ngIf="f.r_libelle.errors.required" class="">
+                Veuillez le nom du fournisseur
+              </div>
+              <div *ngIf="f.r_libelle.errors.minlength" >
+                  <p>Veuillez un nom valide</p>
+              </div>
+            </div>
+        </div>
+        <div class="col">
+          <label for="validationCustom01">Nom du fournisseur</label>
+          <input type="text" class="form-control"  formControlName="r_libelle" [(ngModel)]="ligneCategorie.r_libelle" >
+
+          <div *ngIf="f.r_libelle.touched && f.r_libelle.invalid" class="text-danger" >
+            <div *ngIf="f.r_libelle.errors.required" class="">
+              Veuillez le nom du fournisseur
+            </div>
+            <div *ngIf="f.r_libelle.errors.minlength" >
+                <p>Veuillez un nom valide</p>
+            </div>
+          </div>
+      </div>
+
+      </div>
+      <div class="row mt-2">
+        <div class="col-md-12">
+          <label for="validationCustom05">Description de la catégorie</label>
+            <textarea class="form-control" rows="3" formControlName="p_description" [(ngModel)]="ligneCategorie.r_description" placeholder=""></textarea>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button type="button" title="fermer" class="btn btn-secondary" (click)="modal.close('Close click'); _resetForm()">Fermer</button>
+    <button [disabled]="categoriesData.invalid" type="button" title="Enregistrer" class="btn btn-primary" (click)="_register()">Enregistrer</button>
+  </div>
+</ng-template>

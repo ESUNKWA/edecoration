@@ -69,7 +69,8 @@ export function createTranslateLoader(http: HttpClient): any {
     NgbModule,
     DataTablesModule,
     ToastrModule.forRoot(),
-    NgApexchartsModule
+    NgApexchartsModule,
+
   ],
   bootstrap: [AppComponent],
   providers: [

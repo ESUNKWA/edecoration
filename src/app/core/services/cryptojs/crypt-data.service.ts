@@ -7,7 +7,7 @@ import { environment } from 'src/environments/environment';
 })
 export class CryptDataService {
   env = environment;
-  
+
   JsonFormatter = {
     stringify: function(cipherParams) {
       // create json object with ciphertext
@@ -51,7 +51,7 @@ export class CryptDataService {
   constructor() { }
 
   public crypt(data: any = {}){
-    return CryptoJS.AES.encrypt(JSON.stringify(data), 
+    return CryptoJS.AES.encrypt(JSON.stringify(data),
             this.env.cryptPassword,{
             format: this.JsonFormatter
           }).toString();

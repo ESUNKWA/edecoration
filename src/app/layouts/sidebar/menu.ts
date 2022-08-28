@@ -104,6 +104,55 @@ export const MENU: MenuItem[] = [
           }
         ],
         code: 'admin'
+    },
+    {
+      id: 2,
+      label: '---------------------------',
+  },
+    {
+      id: 48,
+      label: 'Gestion des achats',
+      icon: 'bxs-user-detail',
+      subItems: [
+          {
+            id: 49,
+            label: 'Fournisseurs',
+            link: '/edeco/fournisseurs',
+            parentId: 48
+        },{
+          id: 49,
+          label: 'Achats de produits',
+          link: '/edeco/achats',
+          parentId: 48
+      }
+      ],
+      code: 'admin'
+  },{
+    id: 48,
+    label: 'Gestion des produits',
+    icon: 'bxs-user-detail',
+    subItems: [
+        {
+          id: 49,
+          label: 'Articles',
+          link: '/edeco/articles',
+          parentId: 48
+      }
+    ],
+    code: 'admin'
+},{
+  id: 48,
+  label: 'Gestion des ventes',
+  icon: 'bxs-user-detail',
+  subItems: [
+      {
+        id: 49,
+        label: 'Vente',
+        link: '/edeco/shop/products',
+        parentId: 48
     }
+  ],
+  code: 'admin'
+}
 ];
 

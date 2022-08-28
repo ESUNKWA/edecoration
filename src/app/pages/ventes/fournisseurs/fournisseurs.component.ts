@@ -1,26 +1,22 @@
-import { DecimalPipe } from '@angular/common';
+import { FournisseursService } from '../../../core/services/fournisseurs/fournisseurs.service';
 import { Component, OnInit, QueryList, ViewChildren } from '@angular/core';
-import { Observable } from 'rxjs';
-import { AdvancedSortableDirective, SortEvent } from '../tables/advancedtable/advanced-sortable.directive';
-import { Table } from '../tables/advancedtable/advanced.model';
-import { AdvancedService } from '../../core/services/advanced.service';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { CategoriesService } from 'src/app/core/services/categories/categories.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Table } from '@fullcalendar/daygrid';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { Observable } from 'rxjs';
+import { CryptDataService } from 'src/app/core/services/cryptojs/crypt-data.service';
 import { NotifService } from 'src/app/core/services/notif.service';
 import { UserService } from 'src/app/core/services/usersinfos/user.service';
-import { CryptDataService } from 'src/app/core/services/cryptojs/crypt-data.service';
-
+import { AdvancedSortableDirective } from '../../tables/advancedtable/advanced-sortable.directive';
 
 @Component({
-  selector: 'app-categories',
-  templateUrl: './categories.component.html',
-  styleUrls: ['./categories.component.scss'],
-  providers: [AdvancedService, DecimalPipe]
+  selector: 'app-fournisseurs',
+  templateUrl: './fournisseurs.component.html',
+  styleUrls: ['./fournisseurs.component.scss']
 })
-export class CategoriesComponent implements OnInit {
+export class FournisseursComponent implements OnInit {
 
-// bread crum data
+  // bread crum data
 breadCrumbItems: Array<{}>;
 @ViewChildren(AdvancedSortableDirective) headers: QueryList<AdvancedSortableDirective>;
 
@@ -52,11 +48,9 @@ modeAppel: any = 'création';
 
   }
 
-
-
-  constructor(public service: AdvancedService, private modalService: NgbModal, private categories: CategoriesService,
-              public fb: FormBuilder, private notifications: NotifService, private user: UserService, private cryptDataService: CryptDataService) { }
-
+  constructor(private modalService: NgbModal, private fournisseurServices: FournisseursService,
+    public fb: FormBuilder, private notifications: NotifService, private user: UserService,
+    private cryptDataService: CryptDataService) { }
 
   ngOnInit(): void {
     this.userData = this.user._donnesUtilisateur()[0];
@@ -67,18 +61,23 @@ modeAppel: any = 'création';
       r_libelle: ['', [Validators.required, Validators.pattern('[a-zA-Z0-9]+'), Validators.minLength(4)]],
       p_description: ['']
     });
-    this._listCategories();
+    this._listFournisseurs();
   }
 
   get f () { return this.categoriesData.controls;}
 
-  _listCategories(): void {
+  _listFournisseurs(): void {
 
 
   try {
-    this.categories._getCategories().subscribe(
+    this.fournisseurServices._list().subscribe(
       (data: any) => {
-        this.categoriesTab = [...data._result];
+
+        let fournisseurs = this.cryptDataService.decrypt(data);
+
+
+        this.categoriesTab = [...fournisseurs.original._result];
+        console.log(this.categoriesTab);
         this.collectionSize = this.categoriesTab.length;
         this.getPremiumData();
         setTimeout(() => {
@@ -95,14 +94,14 @@ modeAppel: any = 'création';
 
   }
 
-  fctSaisieCat(largeDataModal: any){
+  fctSaisieFourniss(largeDataModal: any){
     this.modeAppel = 'creation';
     this.modalTitle = 'Saisie d\'une nouelle catégorie de produit';
     this.categoriesData.reset();
     this.largeModal(largeDataModal);
   }
 
-  fctModiCat(largeDataModal: any, categorie){
+  fctModiFourniss(largeDataModal: any, categorie){
     this.ligneCategorie = {...categorie};
 
     this.modeAppel = 'modif';
@@ -137,7 +136,7 @@ modeAppel: any = 'création';
 
     switch (this.modeAppel) {
       case 'creation':
-          this.categories._create({p_data: donnees}).subscribe(
+          this.fournisseurServices._create({p_data: donnees}).subscribe(
             (dataServer: any) => {
 
               let messageAffiche = this.cryptDataService.decrypt(dataServer._result);
@@ -161,7 +160,7 @@ modeAppel: any = 'création';
               }
               this.categoriesData.reset();
 
-              this._listCategories();
+              this._listFournisseurs();
             },
             (err: any) => {
               console.log(err);
@@ -170,11 +169,11 @@ modeAppel: any = 'création';
         break;
 
       case 'modif':
-        this.categories._update(this.categoriesData.value, this.ligneCategorie.r_i).subscribe(
+        this.fournisseurServices._update(this.categoriesData.value, this.ligneCategorie.r_i).subscribe(
           (dataServer: any) => {
             this.categoriesData.reset();
             this.notifications.sendMessage(`${dataServer._result}`,'success');
-            this._listCategories();
+            this._listFournisseurs();
           },
           (err: any) => {
             console.log(err);
