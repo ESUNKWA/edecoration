@@ -19,9 +19,9 @@
                 </tr>
               </thead>
               <tbody>
-                <tr *ngFor="let product of cartData">
+                <tr *ngFor="let product of cartData; let i = index;">
                   <td>
-                    <img src="{{ product.r_image }}" alt="product-img" title="product-img" class="avatar-md" />
+                    <img src="assets/images/product/img-1.png" alt="product-img" title="product-img" class="avatar-md" />
                   </td>
                   <td>
                     <h5 class="font-size-14 text-truncate"><a routerLink="/ecommerce/product-detail"
@@ -33,7 +33,7 @@
                   <td>
                     <div style="width: 120px;">
                       <div class="input-group bootstrap-touchspin bootstrap-touchspin-injected">
-                        <input type="number" [(ngModel)]="product.quantity" name="demo_vertical" class="form-control">
+                        <input #stock type="number" [(ngModel)]="product.quantity" name="demo_vertical" (change)="setStock(stock, i)" class="form-control">
                       </div>
                     </div>
                   </td>
@@ -51,12 +51,12 @@
           <div class="row mt-4">
             <div class="col-sm-6">
               <a routerLink="/edeco/shop/products" class="btn btn-secondary">
-                <i class="mdi mdi-arrow-left me-1"></i> Continue Shopping </a>
+                <i class="mdi mdi-arrow-left me-1"></i> Retour </a>
             </div> <!-- end col -->
             <div class="col-sm-6">
               <div class="text-sm-end mt-2 mt-sm-0">
-                <a routerLink="/edeco/shop/checkout" class="btn btn-success">
-                  <i class="mdi mdi-cart-arrow-right me-1"></i> Checkout </a>
+                <a (click)="navigateCart()" class="btn btn-success">
+                  <i class="mdi mdi-cart-arrow-right me-1"></i> Continuer </a>
               </div>
             </div> <!-- end col -->
           </div> <!-- end row-->
@@ -65,81 +65,22 @@
     </div>
     <div class="col-xl-4">
       <div class="card">
-        <div class="card-body">
-          <h5 class="card-title mb-4">Card Details</h5>
-
-          <div class="card bg-primary text-white visa-card mb-0">
-            <div class="card-body">
-              <div>
-                <i class="bx bxl-visa visa-pattern"></i>
-
-                <div class="float-end">
-                  <i class="bx bxl-visa visa-logo display-3"></i>
-                </div>
-
-                <div>
-                  <i class="bx bx-chip h1 text-warning"></i>
-                </div>
-              </div>
-
-              <div class="row mt-5">
-                <div class="col-4">
-                  <p>
-                    <i class="fas fa-star-of-life m-1"></i>
-                    <i class="fas fa-star-of-life m-1"></i>
-                    <i class="fas fa-star-of-life m-1"></i>
-                  </p>
-                </div>
-                <div class="col-4">
-                  <p>
-                    <i class="fas fa-star-of-life m-1"></i>
-                    <i class="fas fa-star-of-life m-1"></i>
-                    <i class="fas fa-star-of-life m-1"></i>
-                  </p>
-                </div>
-                <div class="col-4">
-                  <p>
-                    <i class="fas fa-star-of-life m-1"></i>
-                    <i class="fas fa-star-of-life m-1"></i>
-                    <i class="fas fa-star-of-life m-1"></i>
-                  </p>
-                </div>
-              </div>
-
-              <div class="mt-5">
-                <h5 class="text-white float-end mb-0">12/22</h5>
-                <h5 class="text-white mb-0">Fredrick Taylor</h5>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
       <div class="card">
         <div class="card-body">
-          <h4 class="card-title mb-3">Order Summary</h4>
+          <h4 class="card-title mb-3">Détails ventes</h4>
 
           <div class="table-responsive">
             <table class="table mb-0">
               <tbody>
-                <tr>
-                  <td>Grand Total :</td>
-                  <td>$ 1,857</td>
+                <tr *ngFor="let item of cartData" >
+                  <td>{{ item.r_nom_produit }} :</td>
+                  <td>{{ item.r_sous_total }}</td>
                 </tr>
-                <tr>
-                  <td>Discount : </td>
-                  <td>- $ 157</td>
-                </tr>
-                <tr>
-                  <td>Shipping Charge :</td>
-                  <td>$ 25</td>
-                </tr>
-                <tr>
-                  <td>Estimated Tax : </td>
-                  <td>$ 19.22</td>
-                </tr>
+
                 <tr>
                   <th>Total :</th>
-                  <th>$ 1744.22</th>
+                  <th>{{ totalAchat.value }}</th>
                 </tr>
               </tbody>
             </table>

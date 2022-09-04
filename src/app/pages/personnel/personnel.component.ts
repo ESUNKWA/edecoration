@@ -33,7 +33,7 @@ submitted: boolean = false;
   detailsPersonnel: any = {};
 
   constructor( private personnelService: UtilisateursService,private modalService: NgbModal,
-                private fb: FormBuilder, private communeService: CommunesService, private fonctionServices: FonctionService, 
+                private fb: FormBuilder, private communeService: CommunesService, private fonctionServices: FonctionService,
                 private userServices: UserService, private notifications: NotifService ) { }
 
   ngOnInit(): void {
@@ -52,7 +52,7 @@ submitted: boolean = false;
       p_email: [''],
     })
 
-    
+
     this._listCommunes();
     this._listFonctions();
     this._listPersonnel();
@@ -77,7 +77,7 @@ submitted: boolean = false;
     this.communeService._getCommunes().subscribe(
       (data: any) => {
         this.CommunesTab = [...data._result];
-        
+
       },
       (err) => {console.log(err.stack);
       }
@@ -88,7 +88,7 @@ submitted: boolean = false;
     this.fonctionServices._list().subscribe(
       (data: any) => {
         this.fonctionsTab = [...data._result];
-        
+
       },
       (err) => {console.log(err.stack);
       }
@@ -97,8 +97,8 @@ submitted: boolean = false;
 
   _getdatedebut(){
     const a = this.personnelData.value.p_date_entree?.split('T')[0];
-    this.datentree = [...a.split('T')]; 
-    
+    this.datentree = [...a.split('T')];
+
   }
 
   _register(){
@@ -124,15 +124,15 @@ submitted: boolean = false;
         }else{
           this.notifications.sendMessage(Object.values(data)[0][0],'error');
         }
-        
+
       }
     )
-    
+
   }
 
   _afficheModal(largeDataModal: any, modeAppel, data){
     //this.modeAppel = 'creation';
-    
+
 
     switch (this.modeAppel) {
       case 'creation':

@@ -5,6 +5,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Observable } from 'rxjs';
 import { ArticlesService } from 'src/app/core/services/articles/articles.service';
 import { CryptDataService } from 'src/app/core/services/cryptojs/crypt-data.service';
+import { FournisseursService } from 'src/app/core/services/fournisseurs/fournisseurs.service';
 import { NotifService } from 'src/app/core/services/notif.service';
 import { UserService } from 'src/app/core/services/usersinfos/user.service';
 import { AdvancedSortableDirective } from '../../tables/advancedtable/advanced-sortable.directive';
@@ -24,9 +25,9 @@ export class AchatsComponent implements OnInit {
   datas: Observable<Table[]>;
   modalTitle: any = '';
   modeAppel: any = 'création';
-    categoriesTab: any = [];
-    categoriesData: FormGroup;
-    ligneArticles: any = {};
+    achatsTab: any = [];
+    achatsData: FormGroup;
+    ligneAchats: any = {};
 
     viewTable: boolean = false;
     searChIn: any;
@@ -41,9 +42,10 @@ export class AchatsComponent implements OnInit {
     pageSize = 5; //Nbre de ligne à afficher
     collectionSize = 0;
   produitsTab: any[] = [];
+  fournisseursTab: any[] = [];
 
     getPremiumData() {
-      this.paginateData = this.categoriesTab.slice(
+      this.paginateData = this.achatsTab.slice(
         (this.page - 1) * this.pageSize,
         (this.page - 1) * this.pageSize + this.pageSize
       );
@@ -51,7 +53,7 @@ export class AchatsComponent implements OnInit {
     }
   constructor(private modalService: NgbModal, private artcilesServices: ArticlesService,
     public fb: FormBuilder, private notifications: NotifService, private user: UserService,
-    private cryptDataService: CryptDataService) { }
+    private cryptDataService: CryptDataService, private fournisseurServices: FournisseursService) { }
 
 
   ngOnInit(): void {
@@ -59,26 +61,30 @@ export class AchatsComponent implements OnInit {
 
     this.breadCrumbItems = [{ label: 'Eden décoration' }, { label: 'Achat des produits', active: true }];
 
-    this.categoriesData = this.fb.group({
-      r_nom_produit: ['', [Validators.required, Validators.pattern('[a-zA-Z0-9]+'), Validators.minLength(4)]],
+    this.achatsData = this.fb.group({
+      r_produit: ['', [Validators.required]],
+      r_fournisseur: ['', [Validators.required]],
+      r_quantite: ['', [Validators.required]],
+      r_prix_achat: ['', [Validators.required]],
       r_description: ['']
     });
-    this._listArticles();
+    this._listAchats();
+    this._listProduits();
+    this._listFournisseurs();
   }
 
-  get f () { return this.categoriesData.controls;}
+  get f () { return this.achatsData.controls;}
 
-  _listArticles(): void {
-
+  _listAchats(): void {
 
   try {
-    this.artcilesServices._list().subscribe(
+    this.artcilesServices._list_achat_articles().subscribe(
       (data: any) => {
 
-        let fournisseurs = this.cryptDataService.decrypt(data);
-        this.categoriesTab = [...fournisseurs.original._result];
+        let achats = this.cryptDataService.decrypt(data);
+        this.achatsTab = [...achats.original._result];
 
-        this.collectionSize = this.categoriesTab.length;
+        this.collectionSize = this.achatsTab.length;
         this.getPremiumData();
         setTimeout(() => {
           this.viewTable = true;
@@ -94,25 +100,54 @@ export class AchatsComponent implements OnInit {
 
   }
 
+  _listFournisseurs(): void {
+
+
+    try {
+      this.fournisseurServices._list().subscribe(
+        (data: any) => {
+
+          let dataReponseDecrypt = this.cryptDataService.decrypt(data);
+          let result = dataReponseDecrypt.original;
+
+        result._result.forEach((item) => {
+          let obj:any = {};
+          obj.value = item.id;
+          obj.label = item.r_ets;
+          this.fournisseursTab.push(obj);
+        });
+
+        },
+        (err) => {console.log(err);
+        }
+      );
+    } catch (error) {
+      console.log(error)
+    }
+
+
+    }
+
   fctSaisieFourniss(largeDataModal: any){
     this.modeAppel = 'creation';
-    this.modalTitle = 'Saisie un nouveau article';
-    this.categoriesData.reset();
+    this.modalTitle = 'Enregistrer un achat';
+    this.achatsData.reset();
+
     this.largeModal(largeDataModal);
   }
 
   fctModiFourniss(largeDataModal: any, categorie){
-    this.ligneArticles = {...categorie};
+    this.ligneAchats = {...categorie};
 
     this.modeAppel = 'modif';
-    this.modalTitle = `Modification de l\'article [ ${this.ligneArticles.r_nom_produit} ]`;
+    this.modalTitle = `Modification achat [ ${this.ligneAchats.r_nom_produit} ]`;
 
 
     this.largeModal(largeDataModal);
   }
 
   _resetForm() {
-    this.categoriesData.reset()
+    this.achatsData.reset()
   }
 
   // cryptData(data: any = {}){
@@ -125,18 +160,19 @@ export class AchatsComponent implements OnInit {
 
   _register(): void {
 
-    if (this.categoriesData.invalid) {
-      return;
-    }
+    // if (this.achatsData.invalid) {
+    //   return;
+    // }
 
 
 
 
     switch (this.modeAppel) {
       case 'creation':
-        this.categoriesData.value.r_creer_par = parseInt(this.userData.r_i, 10);
-        let donnees = this.cryptDataService.crypt(this.categoriesData.value);
-          this.artcilesServices._create({p_data:donnees}).subscribe(
+
+        this.achatsData.value.r_creer_par = parseInt(this.userData.r_i, 10);
+        let donnees = this.cryptDataService.crypt(this.achatsData.value);
+          this.artcilesServices._achat_article({p_data:donnees}).subscribe(
             (dataServer: any) => {
 
               let messageAffiche = this.cryptDataService.decrypt(JSON.parse(dataServer._message));
@@ -157,9 +193,9 @@ export class AchatsComponent implements OnInit {
                   this.notifications.sendMessage(`${messageAffiche}`,'success');
                   break;
               }
-              this.categoriesData.reset();
+              this.achatsData.reset();
 
-              this._listArticles();
+              this._listAchats();
             },
             (err: any) => {
               console.log(err);
@@ -168,11 +204,11 @@ export class AchatsComponent implements OnInit {
         break;
 
       case 'modif':
-        this.categoriesData.value.r_modifier_par = parseInt(this.userData.r_i, 10);
 
-        let donneesUp = this.cryptDataService.crypt(this.categoriesData.value);
+        this.achatsData.value.r_modifier_par = parseInt(this.userData.r_i, 10);
+        let donneesUp = this.cryptDataService.crypt(this.achatsData.value);
 
-        this.artcilesServices._update({p_data:donneesUp}, this.ligneArticles.id).subscribe(
+        this.artcilesServices._update_achat({p_data:donneesUp}, this.ligneAchats.id).subscribe(
           (dataServer: any) => {
 
             let dataReponseDecrypt = this.cryptDataService.decrypt(dataServer);
@@ -196,9 +232,9 @@ export class AchatsComponent implements OnInit {
                 break;
             }
 
-            this.categoriesData.reset();
+            this.achatsData.reset();
             //this.notifications.sendMessage(`${dataServer._result}`,'success');
-            this._listArticles();
+            this._listAchats();
           },
           (err: any) => {
             console.log(err);
@@ -212,14 +248,22 @@ export class AchatsComponent implements OnInit {
   //Appel de la modal
   largeModal(exlargeModal: any) {
     this.modalService.open(exlargeModal, { size: 'lg', centered: true });
-
   }
 
-  //Liste des communes
+  //Liste des produits
   _listProduits(): void {
     this.artcilesServices._list().subscribe(
       (data: any) => {
-        this.produitsTab = [...data._result];
+        let dataReponseDecrypt = this.cryptDataService.decrypt(data);
+        let result = dataReponseDecrypt.original;
+
+        result._result.forEach((item) => {
+          let obj:any = {};
+          obj.value = item.id;
+          obj.label = item.r_nom_produit;
+          this.produitsTab.push(obj);
+        });
+
 
       },
       (err) => {console.log(err.stack);

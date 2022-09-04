@@ -3,6 +3,9 @@ import { produitModel, productList } from '../produit.model';
 import { Options } from 'ng5-slider';
 import { HttpClient } from '@angular/common/http';
 import { Router, ActivatedRoute } from '@angular/router';
+import { ArticlesService } from 'src/app/core/services/articles/articles.service';
+import { CryptDataService } from 'src/app/core/services/cryptojs/crypt-data.service';
+import { NotifService } from 'src/app/core/services/notif.service';
 
 @Component({
   selector: 'app-products',
@@ -34,8 +37,10 @@ export class ProductsComponent implements OnInit {
   public productTemp: produitModel[] = [];
 
   public panier: any[] = [];
+  produitsTab: any[] = [];
 
-  constructor(private http: HttpClient, private router: Router,) { }
+  constructor(private http: HttpClient, private router: Router, private artcilesServices: ArticlesService,
+    private cryptDataService: CryptDataService, private notifications: NotifService) { }
 
   ngOnInit() {
     this.breadCrumbItems = [{ label: 'Ecommerce' }, { label: 'Products', active: true }];
@@ -45,6 +50,8 @@ export class ProductsComponent implements OnInit {
     //   .subscribe((response) => {
     //     this.products = response.data;
     //   });
+
+    this._listProduits();
 
   }
 
@@ -90,18 +97,42 @@ export class ProductsComponent implements OnInit {
     }
   }
 
-  getDetailsProduct(product){
+  ajoutProduitPanier(product){
+
+    if( this.panier.includes(product) ){
+      this.notifications.sendMessage('Produit dejà ajouté au panier','warning');
+      return;
+    }
     this.panier.push(product);
   }
 
   navigateCart(){
-    this.router.navigate(
-                        ['/edeco/shop/cart'],
-                        { queryParams: { panier: JSON.stringify(this.panier) },
-                          skipLocationChange: true });
+
+    if( this.panier.length == 0 ){
+      this.notifications.sendMessage('Veuillez ajouter des produit au panier','warning');
+    }else{
+
+      this.router.navigate(
+        ['/edeco/shop/cart'],
+        { queryParams: { panier: JSON.stringify(this.panier) },
+          skipLocationChange: true });
+    }
 
 
+  }
 
+  /**********************************************************************/
+
+  _listProduits(): void {
+    this.artcilesServices._list().subscribe(
+      (data: any) => {
+        let dataReponseDecrypt = this.cryptDataService.decrypt(data);
+        let result = dataReponseDecrypt.original;
+        this.produitsTab = result._result;
+      },
+      (err) => {console.log(err.stack);
+      }
+    );
   }
 
 }

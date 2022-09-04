@@ -78,7 +78,10 @@ modeAppel: any = 'création';
   try {
     this.categories._getCategories().subscribe(
       (data: any) => {
-        this.categoriesTab = [...data._result];
+
+        let categoriesList = this.cryptDataService.decrypt(data);
+        this.categoriesTab = [...categoriesList.original._result];
+
         this.collectionSize = this.categoriesTab.length;
         this.getPremiumData();
         setTimeout(() => {

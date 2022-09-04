@@ -4,6 +4,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrService } from 'ngx-toastr';
 import { Observable } from 'rxjs';
 import { CategoriesService } from 'src/app/core/services/categories/categories.service';
+import { CryptDataService } from 'src/app/core/services/cryptojs/crypt-data.service';
 import { NotifService } from 'src/app/core/services/notif.service';
 import { ProduitService } from 'src/app/core/services/produits/produit.service';
 import { TarificationsService } from 'src/app/core/services/tarifications/tarifications.service';
@@ -56,10 +57,11 @@ export class ProduitsComponent implements OnInit {
     );
 
   }
-  
+
   constructor( private fb: FormBuilder, private produitServices: ProduitService, private notifications: NotifService,
-                private modalService: NgbModal, private categorieServices: CategoriesService, 
-                private taficationService: TarificationsService, private user: UserService, private toastr: ToastrService) { 
+                private modalService: NgbModal, private categorieServices: CategoriesService,
+                private taficationService: TarificationsService, private user: UserService, private toastr: ToastrService,
+                private cryptDataService: CryptDataService) {
                  }
 
   ngOnInit(): void {
@@ -87,15 +89,15 @@ export class ProduitsComponent implements OnInit {
 
     this._listProduits();
     this._listCategories();
-    
+
   }
 
   get f(){ return this.produitsData.controls;}
 
   onChangeCheck(val,index){
-    
+
     this.tarificationTab[index].p_es_utiliser = val;
-    
+
     //Paramètre d'envoie pour l'application de la tarification
     this.params.p_idtarification = this.tarificationTab[index].r_i;
     this.params.p_es_utiliser = this.tarificationTab[index].p_es_utiliser;
@@ -106,7 +108,7 @@ export class ProduitsComponent implements OnInit {
         this.tarificationTab[i].p_es_utiliser = false;
       }
     });
-    
+
   }
 
   _tarifAppliquer(){
@@ -116,7 +118,7 @@ export class ProduitsComponent implements OnInit {
       return;
     }
 
-    
+
     this.taficationService._tarifAppliquer(this.params).subscribe(
       (res: any= {})=>{
         this.notifications.sendMessage(res._result,'success');
@@ -129,8 +131,10 @@ export class ProduitsComponent implements OnInit {
   _listCategories(): void {
     this.categorieServices._getCategories().subscribe(
       (data: any) => {
-        this.categoriesTab = [...data._result];
-        
+
+        let categoriesList = this.cryptDataService.decrypt(data);
+        this.categoriesTab = [...categoriesList.original._result];
+
       },
       (err) => {console.log(err.stack);
       }
@@ -140,7 +144,10 @@ export class ProduitsComponent implements OnInit {
   _listProduits(): void {
     this.produitServices._getproduits().subscribe(
       (data: any) => {
-        this.produitsTab = [...data._result];
+
+        let produitsList = this.cryptDataService.decrypt(data);
+        this.produitsTab = [...produitsList.original._result];
+
         this.collectionSize = this.produitsTab.length;
         this.getPremiumData();
         setTimeout(() => {
@@ -173,12 +180,12 @@ export class ProduitsComponent implements OnInit {
       (err)=>{console.log(err.stack);}
     );
   }
- 
+
   _actionProduits(modal: any, categorie,action){
     this.ligneProduit = {...categorie};
     this.idCategory = this.ligneProduit.r_categorie;
-    
-    
+
+
     switch (action) {
 
       case 'modif':
@@ -187,7 +194,7 @@ export class ProduitsComponent implements OnInit {
         setTimeout(() => {
           this.largeModal(modal);
         }, 200);
-       
+
       break;
 
       case 'tarification':
@@ -200,7 +207,7 @@ export class ProduitsComponent implements OnInit {
           this.largeModal(modal);
         }, 1000);
         break;
-    
+
       default:
         Swal.fire({
           title: `[ ${this.ligneProduit.r_libelle} ] - Stock actuel : ${this.ligneProduit.r_stock}`,
@@ -216,11 +223,11 @@ export class ProduitsComponent implements OnInit {
           cancelButtonText:'Annuler',
           showLoaderOnConfirm: true,
           preConfirm: () => {
-            
+
           let qte, montantAchat;
           qte = (<HTMLInputElement>document.getElementById('qte')).value;
           montantAchat = (<HTMLInputElement>document.getElementById('montant')).value;
-            
+
           if (qte == '' || qte == null) {
             Swal.showValidationMessage(
               `Veuillez saisir la quantité`
@@ -241,7 +248,7 @@ export class ProduitsComponent implements OnInit {
             this.datastock.p_stock_actuel = this.ligneProduit.r_stock;
             this.datastock.p_description = '';
             this.datastock.p_utilisateur = this.userData.r_i;
-          
+
           this.produitServices._addTrarification(this.datastock).subscribe(
             (response) =>{
               this.toastr.success('Succès', response._result);
@@ -253,9 +260,9 @@ export class ProduitsComponent implements OnInit {
 
             },
             (err)=> console.log(err)
-            
-          )  
-          
+
+          )
+
           },
           allowOutsideClick: () => !Swal.isLoading()
         })
@@ -263,7 +270,7 @@ export class ProduitsComponent implements OnInit {
     }
   }
 
-  
+
 
   _register(): void {
 
@@ -271,37 +278,40 @@ export class ProduitsComponent implements OnInit {
       console.table(this.produitsData.value);
       return;
     }
-    
+
     this.produitsData.value.p_utilisateur = parseInt(this.userData.r_i, 10);;
     this.produitsData.value.p_categories = parseInt(this.idCategory,10);
-  
-    
-    
+
+    let donnees = this.cryptDataService.crypt(this.produitsData.value);
+
 
     switch (this.modeAppel) {
       case 'creation':
-      
-          this.produitServices._create(this.produitsData.value).subscribe(
+
+          this.produitServices._create({p_data: donnees}).subscribe(
             (dataServer: any) => {
-              
-              switch(dataServer._status){
+
+              let messageAffiche = this.cryptDataService.decrypt(dataServer._result);
+
+              switch(messageAffiche._status){
+
                 case -100:
-                  for (const key in dataServer._result) {
-                    this.notifications.sendMessage(dataServer._result[key],'warning');
+                  for (const key in messageAffiche._result) {
+                    this.notifications.sendMessage(messageAffiche._result[key],'warning');
                     break;
                   }
                   break;
 
                 case 0:
-                  this.notifications.sendMessage(`${dataServer._result}`,'error');
+                  this.notifications.sendMessage(`${messageAffiche._result}`,'error');
                   break;
 
                 case 1:
-                  this.notifications.sendMessage(`${dataServer._result}`,'success');
+                  this.notifications.sendMessage(`${messageAffiche._result}`,'success');
                   this.produitsData.reset();
                   break;
               }
-              
+
 
               this._listProduits();
             },
@@ -312,7 +322,7 @@ export class ProduitsComponent implements OnInit {
         break;
 
       case 'modif':
-        
+
         this.produitServices._update(this.produitsData.value, this.ligneProduit.r_i).subscribe(
           (dataServer: any) => {
             this.produitsData.reset();
@@ -334,7 +344,7 @@ export class ProduitsComponent implements OnInit {
 
     this.taficationService._create(this.tarificationData.value).subscribe(
       (dataServer: any) => {
-        
+
         switch(dataServer._status){
           case -100:
             for (const key in dataServer._result) {
@@ -354,13 +364,13 @@ export class ProduitsComponent implements OnInit {
             this._list_tarification(this.ligneProduit.r_i);
             break;
         }
-        
+
       },
       (err: any) => {
         console.log(err);
       }
     );
-    
+
   }
   //Appel de la modal
   largeModal(exlargeModal: any) {

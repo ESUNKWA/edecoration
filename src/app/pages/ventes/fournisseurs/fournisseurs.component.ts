@@ -23,9 +23,9 @@ breadCrumbItems: Array<{}>;
 datas: Observable<Table[]>;
 modalTitle: any = '';
 modeAppel: any = 'création';
-  categoriesTab: any = [];
-  categoriesData: FormGroup;
-  ligneCategorie: any = {};
+  fournisseursTab: any = [];
+  fournisseursData: FormGroup;
+  ligneFournisseur: any = {};
 
   viewTable: boolean = false;
   searChIn: any;
@@ -41,7 +41,7 @@ modeAppel: any = 'création';
   collectionSize = 0;
 
   getPremiumData() {
-    this.paginateData = this.categoriesTab.slice(
+    this.paginateData = this.fournisseursTab.slice(
       (this.page - 1) * this.pageSize,
       (this.page - 1) * this.pageSize + this.pageSize
     );
@@ -57,14 +57,18 @@ modeAppel: any = 'création';
 
     this.breadCrumbItems = [{ label: 'Eden décoration' }, { label: 'Catégories de produits', active: true }];
 
-    this.categoriesData = this.fb.group({
-      r_libelle: ['', [Validators.required, Validators.pattern('[a-zA-Z0-9]+'), Validators.minLength(4)]],
+    this.fournisseursData = this.fb.group({
+      r_ets: ['', [Validators.required, Validators.minLength(2)]],
+      r_nom_fournisseur: ['', [Validators.required, Validators.minLength(2)]],
+      r_contact: ['', [Validators.required, Validators.minLength(10)]],
+      r_lieu_de_vente: ['', [Validators.required]],
+      r_produit_fourni: [''],
       p_description: ['']
     });
     this._listFournisseurs();
   }
 
-  get f () { return this.categoriesData.controls;}
+  get f () { return this.fournisseursData.controls;}
 
   _listFournisseurs(): void {
 
@@ -75,10 +79,9 @@ modeAppel: any = 'création';
 
         let fournisseurs = this.cryptDataService.decrypt(data);
 
+        this.fournisseursTab = [...fournisseurs.original._result];
 
-        this.categoriesTab = [...fournisseurs.original._result];
-        console.log(this.categoriesTab);
-        this.collectionSize = this.categoriesTab.length;
+        this.collectionSize = this.fournisseursTab.length;
         this.getPremiumData();
         setTimeout(() => {
           this.viewTable = true;
@@ -96,23 +99,24 @@ modeAppel: any = 'création';
 
   fctSaisieFourniss(largeDataModal: any){
     this.modeAppel = 'creation';
-    this.modalTitle = 'Saisie d\'une nouelle catégorie de produit';
-    this.categoriesData.reset();
+    this.modalTitle = 'Saisie un nouveau fournisseur';
+    this.fournisseursData.reset();
     this.largeModal(largeDataModal);
   }
 
-  fctModiFourniss(largeDataModal: any, categorie){
-    this.ligneCategorie = {...categorie};
+  fctModiFourniss(largeDataModal: any, fournisseur){
+
+    this.ligneFournisseur = {...fournisseur};
 
     this.modeAppel = 'modif';
-    this.modalTitle = `Modification catégorie de produit [ ${this.ligneCategorie.r_libelle} ]`;
+    this.modalTitle = `Modification du fournisseur [ ${this.ligneFournisseur.r_ets} ]`;
 
 
     this.largeModal(largeDataModal);
   }
 
   _resetForm() {
-    this.categoriesData.reset()
+    this.fournisseursData.reset()
   }
 
   // cryptData(data: any = {}){
@@ -125,22 +129,23 @@ modeAppel: any = 'création';
 
   _register(): void {
 
-    if (this.categoriesData.invalid) {
+    if (this.fournisseursData.invalid) {
       return;
     }
 
-    this.categoriesData.value.p_utilisateur = parseInt(this.userData.r_i, 10);
 
-    let donnees = this.cryptDataService.crypt(this.categoriesData.value);
 
 
     switch (this.modeAppel) {
       case 'creation':
+
+        this.fournisseursData.value.r_creer_par = parseInt(this.userData.r_i, 10);
+        let donnees = this.cryptDataService.crypt(this.fournisseursData.value);
+
           this.fournisseurServices._create({p_data: donnees}).subscribe(
             (dataServer: any) => {
 
-              let messageAffiche = this.cryptDataService.decrypt(dataServer._result);
-
+              let messageAffiche = this.cryptDataService.decrypt(JSON.parse(dataServer._message));
 
               switch(dataServer._status){
                 case -100:
@@ -158,7 +163,7 @@ modeAppel: any = 'création';
                   this.notifications.sendMessage(`${messageAffiche}`,'success');
                   break;
               }
-              this.categoriesData.reset();
+              this.fournisseursData.reset();
 
               this._listFournisseurs();
             },
@@ -169,11 +174,39 @@ modeAppel: any = 'création';
         break;
 
       case 'modif':
-        this.fournisseurServices._update(this.categoriesData.value, this.ligneCategorie.r_i).subscribe(
+        this.fournisseursData.value.r_modifier_par = parseInt(this.userData.r_i, 10);
+
+        console.log(this.fournisseursData.value);
+
+
+        let donneesUp = this.cryptDataService.crypt(this.fournisseursData.value);
+
+        this.fournisseurServices._update({p_data:donneesUp}, this.ligneFournisseur.id).subscribe(
           (dataServer: any) => {
-            this.categoriesData.reset();
-            this.notifications.sendMessage(`${dataServer._result}`,'success');
-            this._listFournisseurs();
+
+            let dataReponseDecrypt = this.cryptDataService.decrypt(dataServer);
+            let result = dataReponseDecrypt.original;
+
+            switch(result._status){
+              case -100:
+                for (const key in result._result) {
+                  this.notifications.sendMessage(result[key],'warning');
+                  break;
+                }
+                break;
+
+              case 0:
+                this.notifications.sendMessage(`${result._message}`,'error');
+                break;
+
+              case 1:
+                this.notifications.sendMessage(`${result._message}`,'success');
+                this._listFournisseurs();
+                break;
+            }
+
+            this.fournisseursData.reset();
+
           },
           (err: any) => {
             console.log(err);

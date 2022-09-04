@@ -1,4 +1,6 @@
+import { ActivatedRoute } from '@angular/router';
 import { Component, OnInit } from '@angular/core';
+import { NotifService } from 'src/app/core/services/notif.service';
 
 @Component({
   selector: 'app-checkout',
@@ -15,19 +17,22 @@ export class CheckoutComponent implements OnInit {
   breadCrumbItems: Array<{}>;
   selectValue = [];
   stateValue = [];
+  panierAchat: any = [];
+  totalAchat: any;
 
-  constructor() { }
+  constructor( private activatedRoute: ActivatedRoute , private notifications: NotifService) { }
 
   ngOnInit() {
-    this.breadCrumbItems = [{ label: 'Ecommerce' }, { label: 'Checkout', active: true }];
+    this.breadCrumbItems = [{ label: 'Vente' }, { label: 'Client', active: true }];
+    this.panierAchat = JSON.parse(this.activatedRoute.snapshot.queryParamMap.get('panierAchat'));
+    this.totalAchat = JSON.parse(this.activatedRoute.snapshot.queryParamMap.get('totalAchat'));
 
-    this.selectValue = ['Afghanistan', 'Albania', 'Algeria', 'American Samoa', 'Andorra', 'Angola',
-      'Anguilla', 'Antarctica', 'Argentina', 'Hawaii', 'California', 'Colombia', 'Congo', 'Dominica', 'Denmark', 'Nevada', 'Oregon',
-      'Washington', 'Ecuador', 'Idaho', 'Montana', 'Namibia', 'Nauru', 'Nepal', 'Netherlands', 'Nicaragua', 'New Caledonia', 'North Dakota',
-      'Tonga', 'Tunisia', 'Thailand', 'Turkey', 'Illinois', 'Tuvalu', 'Uganda', 'Uruguay', 'United Arab Emirates', 'United Kingdom', 'Venezuela', 'Zimbabwe',
-      'Uruguay'];
-
-    this.stateValue = ['Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado', 'Delaware', 'Florida', 'Georgia', 'Hawaii', 'Montana', 'Nevada', 'New Mexico', 'New York', 'North Dakota', 'Texas', 'Virginia', 'Wisconsin', 'Wyoming']
   }
+
+  register(){
+    this.notifications.sendMessage('Nous sommes toujours en cours de developpement','warnong');
+  }
+
+
 
 }

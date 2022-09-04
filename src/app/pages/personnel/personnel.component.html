@@ -6,7 +6,7 @@
       <button type="button" class="btn btn-primary nouveau" title="Saisir un nouvelle catégorie de produits" (click)="_afficheModal(largeDataModal,'creation','')">Nouveau</button>
     </div>
   </div>
-  
+
 
   <ng-template [ngIf]="viewTable == false" >
     <app-spinner></app-spinner>
@@ -24,12 +24,12 @@
                   <!-- <img src="{{personnel?.image}}" alt height="30" /> -->
                 </span>
               </div>
-  
+
               <div class="media-body overflow-hidden">
                 <h5 class="text-truncate font-size-15">
                   <a href="javascript: void(0);" class="text-dark">{{personnel.r_nom}} {{personnel.r_prenoms}}
-                    <button 
-                          type="button" class="btn btn-info btn-sm" 
+                    <button
+                          type="button" class="btn btn-info btn-sm"
                           title="Modification" style="position: absolute;right: 0;top: 0;margin: 5px;"
                           (click)="_afficheModal(largeDataModal,'modif',personnel)" ><i class="fas fa-edit"></i></button></a>
                 </h5>
@@ -110,7 +110,7 @@
               <span *ngIf="f.p_contact.errors.required">
                 Le numéro de téléphone est obligatoire
               </span>
-              
+
             </div>
         </div>
         <div class="col-md-6">
@@ -135,14 +135,14 @@
               Veuillez selectionnez le poste de l'employé
             </span>
            </div>
-           
+
         </div>
         <div class="col-md-4">
           <label for="validationCustom01">Domicile</label>
           <ng-select [items]="CommunesTab" formControlName="p_quatier"
           bindLabel = "label"
           bindValue = "value"
-          
+
            [(ngModel)]="quatierid" ></ng-select>
         </div>
       </div>

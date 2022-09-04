@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import { Cart } from './cart.model';
 
@@ -20,15 +20,16 @@ export class CartComponent implements OnInit {
   breadCrumbItems: Array<{}>;
   value: number;
 
-  cartData: Cart[];
+  cartData: any[] = [];
   panier: any[] = [];
+  totalAchat: any = {};
 
-  constructor( private activatedRoute: ActivatedRoute) { }
+  constructor( private activatedRoute: ActivatedRoute, private router: Router) { }
 
   ngOnInit() {
 
     this.value = 4;
-    this.breadCrumbItems = [{ label: 'Ecommerce' }, { label: 'Cart', active: true }];
+    this.breadCrumbItems = [{ label: 'Vente' }, { label: 'Panier du client', active: true }];
     this.panier = JSON.parse(this.activatedRoute.snapshot.queryParamMap.get('panier'));
     /**
      * fetches the data
@@ -42,5 +43,22 @@ export class CartComponent implements OnInit {
   private _fetchData() {
     //this.cartData = cartData;
     this.cartData = this.panier;
+  }
+
+  setStock(val, index){
+
+  this.cartData[index].r_quantite = parseInt(val.value,10);
+  this.cartData[index].r_sous_total = this.cartData[index].r_quantite * this.cartData[index].r_prix_vente;
+
+  //Calcul du total
+  this.totalAchat = this.cartData.reduce((a, b) => ({value: a.r_sous_total + b.r_sous_total}));;
+
+  }
+
+  navigateCart(){
+    this.router.navigate(
+                        ['/edeco/shop/checkout'],
+                        { queryParams: { panierAchat: JSON.stringify(this.cartData), totalAchat: JSON.stringify(this.totalAchat.value)},
+                          skipLocationChange: true });
   }
 }

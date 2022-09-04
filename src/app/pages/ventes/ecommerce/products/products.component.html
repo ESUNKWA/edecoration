@@ -6,14 +6,10 @@
     <div class="col-lg-3">
       <div class="card">
         <div class="card-body">
-          <h4 class="card-title mb-4">Filter</h4>
+          <h4 class="card-title mb-4">Liste des produits</h4>
           <div>
-            <h5 class="font-size-14 mb-3">Clothes</h5>
             <ul class="list-unstyled product-list">
-              <li><a href="javascript: void(0);"><i class="mdi mdi-chevron-right me-1"></i> T-shirts</a></li>
-              <li><a href="javascript: void(0);"><i class="mdi mdi-chevron-right me-1"></i> Shirts</a></li>
-              <li><a href="javascript: void(0);"><i class="mdi mdi-chevron-right me-1"></i> Jeans</a></li>
-              <li><a href="javascript: void(0);"><i class="mdi mdi-chevron-right me-1"></i> Jackets</a></li>
+              <li><a href="javascript: void(0);" *ngFor="let item of produitsTab" ><i class="mdi mdi-chevron-right me-1"></i>{{ item.r_nom_produit }}</a></li>
             </ul>
           </div>
           <div class="mt-4 pt-3">
@@ -62,24 +58,25 @@
         </div>
       </div>
       <div class="row">
-        <div class="col-xl-4 col-sm-6" *ngFor="let product of products">
+        <div class="col-xl-4 col-sm-6" *ngFor="let product of produitsTab">
           <div class="card">
             <div class="card-body">
               <div class="product-img position-relative">
+                <p class="mt-0" >En stock:</p>
                 <div class="avatar-sm product-ribbon">
-                  <span class="avatar-title rounded-circle bg-primary">
-                      -{{product.discount}} %
+                  <span class="avatar-title rounded-circle bg-info">
+                      {{product.r_stock}}
                   </span>
                 </div>
 
-                <img src="{{product.r_image}}" alt="" class="img-fluid mx-auto d-block">
+                <img src="assets/images/product/img-1.png" alt="" class="img-fluid mx-auto d-block">
               </div>
               <div class="mt-1 text-center">
                 <h5 class="mb-1 text-truncate"><a [routerLink]="['/ecommerce/product-detail',product.id]" href="javascript: void(0);" class="text-dark">{{product.r_nom_produit}} </a>
                 </h5>
 
-                <h5 class="my-0"> <b>{{product.r_prix_vente}}</b> fcfa</h5>
-                  <button type="button" class="btn btn-primary sm m-2" (click)="getDetailsProduct(product)" >Ajouter</button>
+                <h5 class="my-0"> <b>{{product?.r_prix_vente}}</b> fcfa</h5>
+                  <button type="button" class="btn btn-primary sm m-2" [disabled]=" product?.r_prix_vente == 0 || product?.r_stock == 0 " (click)="ajoutProduitPanier(product)" >Ajouter</button>
               </div>
             </div>
           </div>

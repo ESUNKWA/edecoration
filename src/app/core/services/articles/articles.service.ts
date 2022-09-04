@@ -31,6 +31,22 @@ export class ArticlesService {
   }
 
 
+  /*******************************************************Achats de produits************************* */
+
+  _list_achat_articles(){
+
+    const token = sessionStorage.getItem('token');
+    return this.http.get(`${this.env.backendServer}/list_achat_articles`, { 'headers': this.headers });
+  }
+
+  _achat_article(data: any): Observable<any> {
+    return this.http.post(`${this.env.backendServer}/achat_article`,data).pipe(catchError(this.error));
+  }
+
+  _update_achat(data: any, id: number): Observable<any>{
+    return this.http.put(`${this.env.backendServer}/update_achat/${id}`, data).pipe(catchError(this.error));
+  }
+
   // Handle Errors
   error(error: HttpErrorResponse) {
     let errorMessage = '';
