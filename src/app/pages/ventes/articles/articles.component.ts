@@ -45,8 +45,8 @@ export class ArticlesComponent implements OnInit {
         (this.page - 1) * this.pageSize,
         (this.page - 1) * this.pageSize + this.pageSize
       );
-
     }
+
   constructor(private modalService: NgbModal, private artcilesServices: ArticlesService,
     public fb: FormBuilder, private notifications: NotifService, private user: UserService,
     private cryptDataService: CryptDataService) { }
@@ -55,10 +55,12 @@ export class ArticlesComponent implements OnInit {
   ngOnInit(): void {
     this.userData = this.user._donnesUtilisateur()[0];
 
-    this.breadCrumbItems = [{ label: 'Eden décoration' }, { label: 'Catégories de produits', active: true }];
+    this.breadCrumbItems = [{ label: 'Eden décoration' }, { label: 'Produits', active: true }];
 
     this.categoriesData = this.fb.group({
-      r_nom_produit: ['', [Validators.required, Validators.pattern('[a-zA-Z0-9]+'), Validators.minLength(4)]],
+      r_nom_produit: ['', [Validators.required]],
+      r_prix_vente: ['', [Validators.required]],
+      r_stock: ['', [Validators.required]],
       r_description: ['']
     });
     this._listArticles();
@@ -123,9 +125,9 @@ export class ArticlesComponent implements OnInit {
 
   _register(): void {
 
-    if (this.categoriesData.invalid) {
+    /* if (this.categoriesData.invalid) {
       return;
-    }
+    } */
 
 
 

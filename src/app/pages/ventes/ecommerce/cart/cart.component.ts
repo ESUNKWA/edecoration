@@ -31,9 +31,8 @@ export class CartComponent implements OnInit {
     this.value = 4;
     this.breadCrumbItems = [{ label: 'Vente' }, { label: 'Panier du client', active: true }];
     this.panier = JSON.parse(this.activatedRoute.snapshot.queryParamMap.get('panier'));
-    /**
-     * fetches the data
-     */
+    console.log(this.panier);
+
     this._fetchData();
   }
 
@@ -59,6 +58,13 @@ export class CartComponent implements OnInit {
     this.router.navigate(
                         ['/edeco/shop/checkout'],
                         { queryParams: { panierAchat: JSON.stringify(this.cartData), totalAchat: JSON.stringify(this.totalAchat.value)},
+                          skipLocationChange: true });
+  }
+
+  navigateProduct(){
+    this.router.navigate(
+                        ['/edeco/shop/products'],
+                        { queryParams: { panier: JSON.stringify(this.panier)},
                           skipLocationChange: true });
   }
 }

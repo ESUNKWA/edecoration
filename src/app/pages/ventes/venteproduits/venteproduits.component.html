@@ -1,5 +1,5 @@
 <div class="container-fluid">
-  <app-page-title title="Liste des produits" [breadcrumbItems]="breadCrumbItems"></app-page-title>
+  <app-page-title title="Catégories de produits" [breadcrumbItems]="breadCrumbItems"></app-page-title>
   <div class="row">
     <div class="col-12">
       <div class="card">
@@ -7,7 +7,6 @@
 
           <div class="row mb-2" *ngIf="this.userData.r_code_profil == 'admin'" >
             <div class="col-md-12 ">
-              <button type="button" class="btn btn-primary nouveau" title="Saisir un nouveau articles" (click)="fctSaisieFourniss(largeDataModal)">Nouveau</button>
             </div>
           </div>
 
@@ -29,18 +28,18 @@
             <table class="table mb-0 table-striped" >
                       <thead class="bg-dark text-white">
                         <tr>
-                          <th style="width:30%" >Nom de l'artcle</th>
-                          <th style="width: 55%;">Stock</th>
-                          <th style="width:15%" *ngIf="this.userData.r_code_profil == 'admin'" >Action</th>
+                          <th>Référence</th>
+                          <th>Montant total</th>
+                          <th>Action</th>
                         </tr>
                       </thead>
                       <tbody>
                         <tr *ngFor="let article of paginateData | filter:term ;let i = index;">
-                          <td style="width:30%" >{{article.r_nom_produit}}</td>
-                          <td style="width:55%" >{{article.r_stock}}</td>
-                          <td style="width:15%" *ngIf="this.userData.r_code_profil == 'admin'">
-                            <button type="button" class="btn btn-primary" (click)="fctModiFourniss(largeDataModal, article)" ><i class="fas fa-edit"></i></button>
-                          </td>
+                          <td>{{article.r_reference}}</td>
+                          <td>{{article.r_mnt_total}}</td>
+                          <td>
+                            <button type="button" class="btn btn-primary"><i class="fas fa-edit"></i></button>
+                         </td>
                         </tr>
                       </tbody>
             </table>
@@ -80,7 +79,7 @@
 
 
 <!-- Large Modal -->
-<ng-template #largeDataModal let-modal>
+<!-- <ng-template #largeDataModal let-modal>
   <div class="modal-header">
     <h5 class="modal-title mt-0">{{modalTitle}}</h5>
     <button type="button" class="btn-close" (click)="modal.dismiss('Cross click')" aria-hidden="true"></button>
@@ -88,41 +87,23 @@
   <div class="modal-body">
     <form class="needs-validation" [formGroup]="categoriesData">
       <div class="row">
+
+
         <div class="col">
-          <label for="validationCustom01">Nom du produit</label>
+          <label for="validationCustom01">Nom de l'artcicles</label>
           <input type="text" class="form-control"  formControlName="r_nom_produit" [(ngModel)]="ligneArticles.r_nom_produit" >
 
           <div *ngIf="f.r_nom_produit.touched && f.r_nom_produit.invalid" class="text-danger" >
             <div *ngIf="f.r_nom_produit.errors.required" class="">
-              Veuillez le nom du produit
+              Veuillez le nom du fournisseur
             </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="col">
-          <label for="validationCustom01">Prix de vente</label>
-          <input type="text" class="form-control"  formControlName="r_prix_vente" mask="00000000" [(ngModel)]="ligneArticles.r_prix_vente" >
-
-          <div *ngIf="f.r_prix_vente.touched && f.r_prix_vente.invalid" class="text-danger" >
-            <div *ngIf="f.r_prix_vente.errors.required" class="">
-              Veuillez le prix de vente
+            <div *ngIf="f.r_nom_produit.errors.minlength" >
+                <p>Veuillez un nom valide</p>
             </div>
           </div>
       </div>
-      <div class="col">
-        <label for="validationCustom01">Stock</label>
-        <input type="text" class="form-control"  formControlName="r_stock" mask="000" [(ngModel)]="ligneArticles.r_stock" >
 
-        <div *ngIf="f.r_stock.touched && f.r_stock.invalid" class="text-danger" >
-          <div *ngIf="f.r_stock.errors.required" class="">
-            Veuillez le prix de vente
-          </div>
-        </div>
-    </div>
-    </div>
-
+      </div>
       <div class="row mt-2">
         <div class="col-md-12">
           <label for="validationCustom05">Description de la catégorie</label>
@@ -133,6 +114,6 @@
   </div>
   <div class="modal-footer">
     <button type="button" title="fermer" class="btn btn-secondary" (click)="modal.close('Close click'); _resetForm()">Fermer</button>
-    <button type="button" title="Enregistrer" class="btn btn-primary" (click)="_register()">Enregistrer</button>
+    <button [disabled]="categoriesData.invalid" type="button" title="Enregistrer" class="btn btn-primary" (click)="_register()">Enregistrer</button>
   </div>
-</ng-template>
+</ng-template> -->

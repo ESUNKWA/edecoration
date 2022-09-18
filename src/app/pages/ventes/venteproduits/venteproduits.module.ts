@@ -1,20 +1,20 @@
-import { NgSelectModule } from '@ng-select/ng-select';
-import { FournisseursComponent } from './fournisseurs.component';
+import { VenteproduitsComponent } from './venteproduits.component';
+import { NgSelectModule } from '@ng-select/ng-select';;
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
-import { NgbModule, NgbNavModule, NgbPaginationModule, NgbTooltipModule } from "@ng-bootstrap/ng-bootstrap";
+import { NgbNavModule, NgbPaginationModule, NgbTooltipModule } from "@ng-bootstrap/ng-bootstrap";
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Ng2SearchPipeModule } from 'ng2-search-filter';
-import { FournisseursRoutingModule } from './fournisseurs-routing.module';
 import { UIModule } from 'src/app/shared/ui/ui.module';
 import { Ng2SmartTableModule } from 'ng2-smart-table';
+import { VenteProduitRoutingModule } from './venteproduits-routing.module';
 
 @NgModule({
-    declarations: [FournisseursComponent],
+    declarations: [VenteproduitsComponent],
     imports: [
       CommonModule,
-        FournisseursRoutingModule,
+      VenteProduitRoutingModule,
         NgbNavModule,
         NgbTooltipModule,
         UIModule,
@@ -23,9 +23,9 @@ import { Ng2SmartTableModule } from 'ng2-smart-table';
         FormsModule,
         ReactiveFormsModule,
         NgbPaginationModule,
-        NgSelectModule,
-        Ng2SearchPipeModule
+        Ng2SearchPipeModule,
+        NgSelectModule
     ]
 })
 
-export class FournisseursModule { }
+export class VenteProduitModule { }

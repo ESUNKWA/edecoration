@@ -40,7 +40,7 @@ export class ProductsComponent implements OnInit {
   produitsTab: any[] = [];
 
   constructor(private http: HttpClient, private router: Router, private artcilesServices: ArticlesService,
-    private cryptDataService: CryptDataService, private notifications: NotifService) { }
+    private cryptDataService: CryptDataService, private notifications: NotifService, private activatedRoute: ActivatedRoute) { }
 
   ngOnInit() {
     this.breadCrumbItems = [{ label: 'Ecommerce' }, { label: 'Products', active: true }];
@@ -52,6 +52,8 @@ export class ProductsComponent implements OnInit {
     //   });
 
     this._listProduits();
+    this.panier = JSON.parse(this.activatedRoute.snapshot.queryParamMap.get('panier')) || [];
+    console.log(this.panier);
 
   }
 

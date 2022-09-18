@@ -111,21 +111,9 @@ export const MENU: MenuItem[] = [
   },
     {
       id: 48,
-      label: 'Gestion des achats',
+      label: 'Gestion des fournisseurs',
       icon: 'bxs-user-detail',
-      subItems: [
-          {
-            id: 49,
-            label: 'Fournisseurs',
-            link: '/edeco/fournisseurs',
-            parentId: 48
-        },{
-          id: 49,
-          label: 'Achats de produits',
-          link: '/edeco/achats',
-          parentId: 48
-      }
-      ],
+      link: '/edeco/fournisseurs',
       code: 'admin'
   },{
     id: 48,
@@ -134,10 +122,15 @@ export const MENU: MenuItem[] = [
     subItems: [
         {
           id: 49,
-          label: 'Articles',
+          label: 'Produits',
           link: '/edeco/articles',
           parentId: 48
-      }
+      },{
+        id: 49,
+        label: 'Achats de produits',
+        link: '/edeco/achats',
+        parentId: 48
+    }
     ],
     code: 'admin'
 },{
@@ -147,10 +140,16 @@ export const MENU: MenuItem[] = [
   subItems: [
       {
         id: 49,
-        label: 'Vente',
+        label: 'Saisie une vente',
         link: '/edeco/shop/products',
         parentId: 48
-    }
+    },
+    {
+      id: 49,
+      label: 'Voir les vente',
+      link: '/edeco/venteproduits',
+      parentId: 48
+  }
   ],
   code: 'admin'
 }

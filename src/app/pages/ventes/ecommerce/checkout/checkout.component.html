@@ -17,31 +17,31 @@
                       aria-labelledby="v-pills-shipping-tab">
                       <div>
                         <h4 class="card-title">Info client</h4>
-                        <form>
+                        <form [formGroup]="clientData" >
                           <div class="row mb-4">
                             <label for="billing-name" class="col-md-2 col-form-label">Nom et prenoms du client</label>
                             <div class="col-md-10">
-                              <input type="text" class="form-control" id="billing-name" placeholder="">
+                              <input type="text" class="form-control" formControlName="r_nom" placeholder="">
                             </div>
                           </div>
                           <div class="row mb-4">
                             <label for="billing-email-address" class="col-md-2 col-form-label">Addresse email</label>
                             <div class="col-md-10">
-                              <input type="email" class="form-control" id="billing-email-address"
+                              <input type="email" class="form-control" formControlName="r_email"
                                 placeholder="">
                             </div>
                           </div>
                           <div class="row mb-4">
                             <label for="billing-phone" class="col-md-2 col-form-label">Téléphone</label>
                             <div class="col-md-10">
-                              <input type="text" class="form-control" id="billing-phone"
+                              <input type="text" class="form-control" formControlName="r_telephone"
                                 placeholder="">
                             </div>
                           </div>
                           <div class="row mb-4">
                             <label for="billing-address" class="col-md-2 col-form-label">Description</label>
                             <div class="col-md-10">
-                              <textarea class="form-control" id="billing-address" rows="3"
+                              <textarea class="form-control" formControlName="r_decription" rows="3"
                                 placeholder=""></textarea>
                             </div>
                           </div>
@@ -111,7 +111,7 @@
                   </div>
                   <div class="row mt-4">
                     <div class="col-sm-6">
-                      <a routerLink="/edeco/shop/cart" class="btn text-muted d-none d-sm-inline-block btn-link">
+                      <a (click)="navigateCart()" class="btn text-muted d-none d-sm-inline-block btn-link">
                         <i class="mdi mdi-arrow-left me-1"></i> Retour au panier </a>
                     </div> <!-- end col -->
                     <div class="col-sm-6">

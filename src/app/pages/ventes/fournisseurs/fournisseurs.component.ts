@@ -8,6 +8,7 @@ import { CryptDataService } from 'src/app/core/services/cryptojs/crypt-data.serv
 import { NotifService } from 'src/app/core/services/notif.service';
 import { UserService } from 'src/app/core/services/usersinfos/user.service';
 import { AdvancedSortableDirective } from '../../tables/advancedtable/advanced-sortable.directive';
+import { CommunesService } from 'src/app/core/services/communes/communes.service';
 
 @Component({
   selector: 'app-fournisseurs',
@@ -32,6 +33,8 @@ modeAppel: any = 'création';
   userData: any;
   term: any;
 
+  CommunesTab: any = [];
+  selectedCityDapart: any;
   //Paginations
   premiumData: any[] = [];
   paginateData: any[] = [];
@@ -50,12 +53,12 @@ modeAppel: any = 'création';
 
   constructor(private modalService: NgbModal, private fournisseurServices: FournisseursService,
     public fb: FormBuilder, private notifications: NotifService, private user: UserService,
-    private cryptDataService: CryptDataService) { }
+    private cryptDataService: CryptDataService, private communeService: CommunesService) { }
 
   ngOnInit(): void {
     this.userData = this.user._donnesUtilisateur()[0];
 
-    this.breadCrumbItems = [{ label: 'Eden décoration' }, { label: 'Catégories de produits', active: true }];
+    this.breadCrumbItems = [{ label: 'Eden décoration' }, { label: 'Fournisseurs', active: true }];
 
     this.fournisseursData = this.fb.group({
       r_ets: ['', [Validators.required, Validators.minLength(2)]],
@@ -66,9 +69,22 @@ modeAppel: any = 'création';
       p_description: ['']
     });
     this._listFournisseurs();
+    this._listCommunes();
   }
 
   get f () { return this.fournisseursData.controls;}
+
+  //Liste des communes
+  _listCommunes(): void {
+    this.communeService._getCommunes().subscribe(
+      (data: any) => {
+        this.CommunesTab = [...data._result];
+        this.selectedCityDapart = this.CommunesTab[2].value;
+      },
+      (err) => {console.log(err.stack);
+      }
+    );
+  }
 
   _listFournisseurs(): void {
 

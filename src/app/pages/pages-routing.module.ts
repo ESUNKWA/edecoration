@@ -42,11 +42,11 @@ const routes: Routes = [
   { path: 'utilisateurs', loadChildren: () => import('./utilisateurs/utilisateurs.module').then(m => m.UtilisateursModule) },
   { path: 'personnel', loadChildren: () => import('./personnel/personnel.module').then(m => m.PersonnelModule) },
 
-
   { path: 'fournisseurs', loadChildren: () => import('./ventes/fournisseurs/fournisseurs.module').then(m => m.FournisseursModule) },
   { path: 'articles', loadChildren: () => import('./ventes/articles/articles.module').then(m => m.ArticlesModule) },
   { path: 'achats', loadChildren: () => import('./ventes/achats/achats.module').then(m => m.AchatsModule) },
   { path: 'shop', loadChildren: () => import('./ventes/ecommerce/ecommerce.module').then(m => m.EcommerceModule) },
+  { path: 'venteproduits', loadChildren: () => import('./ventes/venteproduits/venteproduits.module').then(m => m.VenteProduitModule) },
 
 
   { path: 'test', loadChildren: () => import('./test/test.module').then(m => m.TestModule) },

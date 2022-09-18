@@ -1,3 +1,4 @@
+import { NgxMaskModule } from 'ngx-mask';
 import { ArticlesComponent } from './articles.component';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -22,7 +23,8 @@ import { ArticlesRoutingModule } from './articles-routing.module';
         FormsModule,
         ReactiveFormsModule,
         NgbPaginationModule,
-        Ng2SearchPipeModule
+        Ng2SearchPipeModule,
+        NgxMaskModule
     ]
 })
 

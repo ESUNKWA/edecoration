@@ -146,14 +146,12 @@
         </div>
     </div>
       <div class="col">
-        <label for="r_lieu_de_vente"><Address> géographique</Address></label>
-        <input type="text" class="form-control"  formControlName="r_lieu_de_vente" [(ngModel)]="ligneFournisseur.r_lieu_de_vente" >
-
-        <div *ngIf="f.r_lieu_de_vente.touched && f.r_lieu_de_vente.invalid" class="text-danger" >
-          <div *ngIf="f.r_lieu_de_vente.errors.required" class="">
-            Veuillez le nom du fournisseur
-          </div>
-        </div>
+        <label class="col-md-4 col-form-label">Commune</label>
+        <ng-select [items]="CommunesTab" formControlName="r_lieu_de_vente"
+                                 [(ngModel)]="selectedCityDapart"
+                                 bindValue="value"
+                                 bindLabel="label"
+                                 ></ng-select>
     </div>
 
   </div>
