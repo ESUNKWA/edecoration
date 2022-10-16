@@ -12,7 +12,7 @@ export class ArticlesService {
   env = environment;
   headers = new HttpHeaders()
                 .set('Content-Type', 'application/json');
-
+                //.set('Content-Type', 'multipart/form-data');
   constructor(private http: HttpClient ) { }
 
 
@@ -26,8 +26,8 @@ export class ArticlesService {
     return this.http.get(`${this.env.backendServer}/produits_en_ventes`, { 'headers': this.headers });
   }
 
-  _update(data: any, id: number): Observable<any>{
-    return this.http.put(`${this.env.backendServer}/produits_en_ventes/${id}`, data).pipe(catchError(this.error));
+  _update(data: any): Observable<any>{
+    return this.http.post(`${this.env.backendServer}/updated`, data).pipe(catchError(this.error));
   }
 
 

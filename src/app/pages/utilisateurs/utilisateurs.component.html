@@ -18,9 +18,10 @@
           <div class="row">
             <div class="col-12 mb-3" >
               <label class="control-label">Selectionner un employé</label>
-              <ng-select [items]="personnelList" [multiple]="false" 
+              <ng-select [items]="personnelList" [multiple]="false"
               formControlName="p_personnel"
-              (change)="_getContact(selected)"
+              bindValue="value"
+              bindLabel="label"
               name="select" [(ngModel)]="selected"></ng-select>
               <div *ngIf="form.p_personnel.touched && form.p_personnel.invalid" class="text-danger">
                 <span *ngIf="form.p_personnel.errors.required">
@@ -30,7 +31,7 @@
             </div>
             <div class=" col-12 mb-3">
               <label class="control-label">Proifil utilisateur</label>
-              <ng-select [items]="profilList" [multiple]="false" 
+              <ng-select [items]="profilList" [multiple]="false"
               formControlName="p_profil"
               bindValue="value"
               bindLabel="label"
@@ -94,14 +95,14 @@
           <div class="card-footer bg-transparent border-top">
             <div class="contact-links d-flex font-size-20">
               <div class="flex-fill">
-                <a href="javascript: void(0);" ngbTooltip="Message"><i class="bx bx-message-square-dots"></i></a>
+                <a href="javascript: void(0);" ngbTooltip="Message" (click)="details(data, content);" ><i class="bx bx-message-square-dots"></i></a>
               </div>
-              <div class="flex-fill">
+              <!-- <div class="flex-fill">
                 <a href="javascript: void(0);" ngbTooltip="Projects"><i class="bx bx-pie-chart-alt"></i></a>
               </div>
               <div class="flex-fill">
                 <a href="javascript: void(0);" ngbTooltip="Profile"><i class="bx bx-user-circle"></i></a>
-              </div>
+              </div> -->
             </div>
           </div>
         </div>

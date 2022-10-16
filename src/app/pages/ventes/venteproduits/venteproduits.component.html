@@ -1,5 +1,37 @@
 <div class="container-fluid">
-  <app-page-title title="Catégories de produits" [breadcrumbItems]="breadCrumbItems"></app-page-title>
+  <app-page-title title="Ventes des produits" [breadcrumbItems]="breadCrumbItems"></app-page-title>
+
+  <div class="row mb-2">
+    <div class="col-md-9">
+      <form [formGroup]="searchData">
+        <div class="row">
+          <div class="col">
+            <label class="col-form-label">Période du </label>
+            <input class="form-control" type="datetime-local" formControlName="p_date" value="2019-08-19"
+            id="example-datetime-local-input">
+            <div *ngIf="submit == true && searchValidate.p_date.invalid" class="text-danger">
+              <div *ngIf="searchValidate.p_date.errors.required">Veuillez selectionnez le date de livraison.</div>
+            </div>
+          </div>
+          <div class="col">
+            <label class="col-form-label">Au</label>
+            <input class="form-control" type="datetime-local" formControlName="p_date_retour" value="2019-08-19"
+            id="example-datetime-local-input">
+            <div *ngIf="submit == true && searchValidate.p_date_retour.invalid" class="text-danger">
+              <div *ngIf="searchValidate.p_date_retour.errors.required">Veuillez selectionnez le date de livraison.</div>
+            </div>
+          </div>
+
+          <div class="col">
+            <br><br>
+            <button type="submit" class="btn btn-primary" title="Saisir un nouvelle catégorie de produits" (click)="_exe_search_location()"><i class="fas fa-search"></i></button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+
   <div class="row">
     <div class="col-12">
       <div class="card">
@@ -15,7 +47,27 @@
           </ng-template>
 
           <ng-template [ngIf]="viewTable == true" >
-            <!-- Table -->
+
+
+            <div class="row" *ngIf="ventesTab.length == 0">
+              <div class="col-lg-12">
+                <div class="border p-3 rounded mt-4 text-center">
+                  <div class="d-flex align-items-center mb-3">
+                    <div class="avatar-xs me-3">
+                      <span
+                      class="avatar-title rounded-circle bg-warning bg-soft text-warning font-size-18">
+                      <i class="mdi mdi-bitcoin"></i>
+                    </span>
+                  </div>
+                  <h5 class="font-size-14 mb-0">Aucune données</h5>
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+          <div class="table-responsive " *ngIf="ventesTab.length >= 1" >
+             <!-- Table -->
           <div class="table-responsive">
             <!-- Search -->
             <div class="search-box me-2 mb-2 d-inline-block">
@@ -24,96 +76,201 @@
                 <i class="bx bx-search-alt search-icon"></i>
               </div>
             </div>
-          <!-- End search -->
+            <!-- End search -->
             <table class="table mb-0 table-striped" >
-                      <thead class="bg-dark text-white">
-                        <tr>
-                          <th>Référence</th>
-                          <th>Montant total</th>
-                          <th>Action</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr *ngFor="let article of paginateData | filter:term ;let i = index;">
-                          <td>{{article.r_reference}}</td>
-                          <td>{{article.r_mnt_total}}</td>
-                          <td>
-                            <button type="button" class="btn btn-primary"><i class="fas fa-edit"></i></button>
-                         </td>
-                        </tr>
-                      </tbody>
+              <thead class="bg-dark text-white">
+                <tr>
+                  <th>Référence</th>
+                  <th>Montant total</th>
+                  <th>Client</th>
+                  <th>Contact</th>
+                  <th>Date de vente</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let ventes of paginateData | filter:term ;let i = index;">
+                  <td>{{ventes.r_reference}}</td>
+                  <td>{{ventes.r_mnt_total | mask: 'separator':' ' }}</td>
+                  <td>{{ventes.nom_cli}} {{ventes.prenoms_cli}}</td>
+                  <td>{{ventes.r_telephone}}</td>
+                  <td>{{ventes.created_at | date}}</td>
+                  <td>
+                    <button type="button" class="btn btn-warning" title="Validation de la location" (click)="_actionLocation(largeDataModal, ventes, 'details')" ><i class="fas fa-check-square"></i></button>&nbsp;
+                    <button type="button" class="btn btn-info" title="Imprimer la facture" (click)="imprimFacture(ventes)" ><i class="fas fa-print"></i></button>&nbsp;
+
+                  </td>
+                </tr>
+              </tbody>
             </table>
             <!-- Paginations -->
             <div class="d-flex justify-content-between p-2">
               <ngb-pagination
-                [collectionSize]="collectionSize"
-                [(page)]="page"
-                [pageSize]="pageSize"
-                (pageChange)="getPremiumData()"
+              [collectionSize]="collectionSize"
+              [(page)]="page"
+              [pageSize]="pageSize"
+              (pageChange)="getPremiumData()"
               >
-              </ngb-pagination>
+            </ngb-pagination>
 
-              <select
-                class="form-control"
-                style="width: auto"
-                [(ngModel)]="pageSize"
-                (ngModelChange)="getPremiumData()"
-              >
-                <option [ngValue]="5">5 lignes</option>
-                <option [ngValue]="10">10 lignes</option>
-                <option [ngValue]="25">25 lignes</option>
-                <option [ngValue]="50">50 lignes</option>
-              </select>
-            </div>
-            <!-- Paginations -->
-          </div>
-          </ng-template>
-
-
+            <select
+            class="form-control"
+            style="width: auto"
+            [(ngModel)]="pageSize"
+            (ngModelChange)="getPremiumData()"
+            >
+            <option [ngValue]="5">5 lignes</option>
+            <option [ngValue]="10">10 lignes</option>
+            <option [ngValue]="25">25 lignes</option>
+            <option [ngValue]="50">50 lignes</option>
+          </select>
         </div>
-      </div>
+        <!-- Paginations -->
+          </div>
 
-    </div>
+          </div>
+
+    </ng-template>
+
+
   </div>
+</div>
+
+</div>
+</div>
 </div>
 
 
 <!-- Large Modal -->
-<!-- <ng-template #largeDataModal let-modal>
+<ng-template #largeDataModal let-modal>
+
   <div class="modal-header">
-    <h5 class="modal-title mt-0">{{modalTitle}}</h5>
+    <h5 class="modal-title mt-0">{{modalTitle}} &nbsp;&nbsp;&nbsp;Total facture: {{ligneVente?.r_mnt_total | mask: 'separator':' '}}</h5>
     <button type="button" class="btn-close" (click)="modal.dismiss('Cross click')" aria-hidden="true"></button>
   </div>
   <div class="modal-body">
-    <form class="needs-validation" [formGroup]="categoriesData">
-      <div class="row">
+    <!-- Status du paiement de la location -->
+    <!-- <ngb-alert [dismissible]="false" [type]="'success'">
+      <h5>ok</h5>
+    </ngb-alert> -->
+    <!-- Status du paiement de la location -->
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="card">
+          <div class="card-body">
 
+            <!-- -------------------------------------------------------------------------------------------------------------------------------------------------------- -->
+            <ul ngbNav #customNav="ngbNav" [activeId]="1" class="nav-tabs nav-tabs-custom nav-justified">
+              <li [ngbNavItem]="1">
+                <a ngbNavLink>
+                  <span class="d-block d-sm-none"><i class="fas fa-home"></i></span>
+                  <span class="d-none d-sm-block">Infos client</span>
+                </a>
+                <ng-template ngbNavContent>
+                  <ng-template [ngTemplateOutlet]="TabContent"></ng-template>
+                </ng-template>
+              </li>
+              <li [ngbNavItem]="2">
+                <a ngbNavLink>
+                  <span class="d-block d-sm-none"><i class="far fa-user"></i></span>
+                  <span class="d-none d-sm-block">Produits vendus</span>
+                </a>
+                <ng-template ngbNavContent>
+                  <ng-template [ngTemplateOutlet]="TabContent1"></ng-template>
+                </ng-template>
 
-        <div class="col">
-          <label for="validationCustom01">Nom de l'artcicles</label>
-          <input type="text" class="form-control"  formControlName="r_nom_produit" [(ngModel)]="ligneArticles.r_nom_produit" >
+              </li>
+            </ul>
+            <!-- -------------------------------------------------------------------------------------------------------------------------------------------------------- -->
+            <div [ngbNavOutlet]="customNav"></div>
 
-          <div *ngIf="f.r_nom_produit.touched && f.r_nom_produit.invalid" class="text-danger" >
-            <div *ngIf="f.r_nom_produit.errors.required" class="">
-              Veuillez le nom du fournisseur
-            </div>
-            <div *ngIf="f.r_nom_produit.errors.minlength" >
-                <p>Veuillez un nom valide</p>
-            </div>
           </div>
-      </div>
-
-      </div>
-      <div class="row mt-2">
-        <div class="col-md-12">
-          <label for="validationCustom05">Description de la catégorie</label>
-            <textarea class="form-control" rows="3" formControlName="r_description" [(ngModel)]="ligneArticles.r_description" placeholder=""></textarea>
         </div>
       </div>
-    </form>
+
+    </div>
+
   </div>
   <div class="modal-footer">
-    <button type="button" title="fermer" class="btn btn-secondary" (click)="modal.close('Close click'); _resetForm()">Fermer</button>
-    <button [disabled]="categoriesData.invalid" type="button" title="Enregistrer" class="btn btn-primary" (click)="_register()">Enregistrer</button>
-  </div>
-</ng-template> -->
+    <span class="text-danger" >Saisie par : {{ ligneVente.r_nom }} {{ ligneVente.r_prenoms }}</span>
+    <button type="button" title="fermer" class="btn btn-secondary" (click)="modal.close('Close click');">Fermer</button>
+    <!-- <button type="button" title="Enregistrer"
+      class="btn btn-primary" >Enregistrer</button> -->
+    </div>
+  </ng-template>
+
+
+
+
+  <!-- Tab Content -->
+  <ng-template #TabContent>
+    <div class="row">
+      <div class="col-12">
+        <div class="row mb-3">
+          <label class="col-md-3 col-form-label">Nom</label>
+          <div class="col-md-9">
+            <input class="form-control" name="r_nom" type="text" [(ngModel)]="ligneVente.nom_cli" placeholder="">
+
+          </div>
+        </div>
+        <div class="row mb-3">
+          <label class="col-md-3 col-form-label">Prenoms</label>
+          <div class="col-md-9">
+            <input class="form-control" name="r_prenoms" type="text" [(ngModel)]="ligneVente.prenoms_cli" placeholder="">
+          </div>
+        </div>
+        <div class="row mb-3">
+          <label class="col-md-3 col-form-label">Numéro de téléphone</label>
+          <div class="col-md-9">
+            <input class="form-control" name="r_telephone" type="tel" [(ngModel)]="ligneVente.r_telephone" mask="(000)-00-00-00-00-00" placeholder="">
+          </div>
+        </div>
+        <div class="row mb-3">
+          <label class="col-md-3 col-form-label">Adresse email</label>
+          <div class="col-md-9">
+            <input class="form-control" name="r_email" type="email" [(ngModel)]="ligneVente.r_email" placeholder="">
+          </div>
+        </div>
+        <div class="row mb-3">
+          <label class="col-md-3 col-form-label">Description</label>
+          <div class="col-md-9">
+            <textarea class="form-control" name="r_description" [(ngModel)]="ligneVente.r_description"></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </ng-template>
+
+  <!-- Tab Content -->
+  <ng-template #TabContent1>
+    <!-- Table -->
+    <!-- End search -->
+    <table class="table mb-0 table-striped" disable >
+
+      <thead class="bg-dark text-white">
+        <tr>
+          <th style="width:35%;" >Produit</th>
+          <th style="width:15%;" >Quantité</th>
+          <th style="width:10%;">Prix unitaire</th>
+          <th style="width:10%;">Sous total</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let venteProduit of detailsVenteTab ; let i = index">
+          <td style="width:10%" ><img [src]="venteProduit?.path_name" alt="product-img" title="product-img" class="avatar-md" /></td>
+          <td style="width:15%">
+            <input #inp class="form-control" [disabled]="'desactiver'" type="number" [(ngModel)]="venteProduit.r_quantite" placeholder="">
+          </td>
+          <td style="width:10%" >{{venteProduit?.r_prix_vente | mask: 'separator':' '}}</td>
+          <td style="width:10%" >{{venteProduit?.r_sous_total | mask: 'separator':' '}}</td>
+
+        </tr>
+        <tr>
+          <td colspan="3">Total</td>
+          <td >{{ligneVente.r_mnt_total | mask: 'separator':' '}} fcfa</td>
+        </tr>
+      </tbody>
+    </table>
+
+  </ng-template>

@@ -29,18 +29,25 @@
             <table class="table mb-0 table-striped" >
                       <thead class="bg-dark text-white">
                         <tr>
-                          <th style="width:30%" >Nom de l'artcle</th>
-                          <th style="width: 55%;">Quanité</th>
-                          <th style="width: 55%;">Prix d'achat</th>
-                          <th style="width:15%" *ngIf="this.userData.r_code_profil == 'admin'" >Action</th>
+                          <th style="width:10%" >Image</th>
+                          <th>Nom de l'artcle</th>
+                          <th>Quanité</th>
+                          <th>Prix d'achat</th>
+                          <th>Date d'achat</th>
+                          <th *ngIf="this.userData.r_code_profil == 'admin'" >Action</th>
                         </tr>
                       </thead>
                       <tbody>
                         <tr *ngFor="let achat of paginateData | filter:term ;let i = index;">
-                          <td style="width:30%" >{{achat.r_nom_produit}}</td>
-                          <td style="width:55%" >{{achat.r_quantite}}</td>
-                          <td style="width:55%" >{{achat.r_prix_achat}}</td>
-                          <td style="width:15%" *ngIf="this.userData.r_code_profil == 'admin'">
+                          <td>
+                            <img [src]="achat?.path_name" height="50px;" width="50px;" alt="" class="img-fluid mx-auto d-block">
+
+                          </td>
+                          <td>{{achat.r_nom_produit}}</td>
+                          <td >{{achat.r_quantite}}</td>
+                          <td >{{achat.r_prix_achat}}</td>
+                          <td>{{achat.created_at}}</td>
+                          <td *ngIf="this.userData.r_code_profil == 'admin'">
                             <button type="button" class="btn btn-primary" (click)="fctModiFourniss(largeDataModal, achat)" ><i class="fas fa-edit"></i></button>
                           </td>
                         </tr>

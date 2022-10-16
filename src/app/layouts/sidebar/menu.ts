@@ -78,20 +78,6 @@ export const MENU: MenuItem[] = [
         code: 'admin'
     },
     {
-        id: 44,
-        label: 'Formation et stage',
-        icon: 'bx-task',
-        subItems: [
-            {
-                id: 45,
-                label: 'MENUITEMS.TASKS.LIST.TASKLIST',
-                link: '/edeco/tasks/list',
-                parentId: 44
-            }
-        ],
-        code: 'admin'
-    },
-    {
         id: 48,
         label: 'Gestion des utilisateurs',
         icon: 'bxs-user-detail',
@@ -108,50 +94,55 @@ export const MENU: MenuItem[] = [
     {
       id: 2,
       label: '---------------------------',
+      code: 'exp'
   },
     {
       id: 48,
       label: 'Gestion des fournisseurs',
-      icon: 'bxs-user-detail',
+      icon: 'bxs-wallet-alt',
       link: '/edeco/fournisseurs',
       code: 'admin'
   },{
     id: 48,
     label: 'Gestion des produits',
-    icon: 'bxs-user-detail',
+    icon: 'bx bx-folder-minus',
     subItems: [
         {
           id: 49,
           label: 'Produits',
           link: '/edeco/articles',
-          parentId: 48
+          parentId: 48,
+          code: "exp"
       },{
         id: 49,
         label: 'Achats de produits',
         link: '/edeco/achats',
-        parentId: 48
+        parentId: 48,
+        code: "exp"
     }
     ],
-    code: 'admin'
+    code: 'exp'
 },{
   id: 48,
   label: 'Gestion des ventes',
-  icon: 'bxs-user-detail',
+  icon: 'bxs-shopping-bag',
   subItems: [
       {
         id: 49,
         label: 'Saisie une vente',
         link: '/edeco/shop/products',
-        parentId: 48
+        parentId: 48,
+        code: "exp"
     },
     {
       id: 49,
       label: 'Voir les vente',
       link: '/edeco/venteproduits',
-      parentId: 48
-  }
+      parentId: 48,
+      code: "exp"
+    }
   ],
-  code: 'admin'
+  code: 'exp'
 }
 ];
 

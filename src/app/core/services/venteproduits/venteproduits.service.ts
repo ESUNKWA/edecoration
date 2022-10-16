@@ -16,6 +16,10 @@ export class VenteproduitsService {
     return this.http.get(`${this.env.backendServer}/ventes_par_periode/${datedebut}/${datefin}`);
   }
 
+  _details_ventes(idvente){
+    return this.http.get(`${this.env.backendServer}/details_ventes/${idvente}`);
+  }
+
    // Handle Errors
    error(error: HttpErrorResponse) {
     let errorMessage = '';

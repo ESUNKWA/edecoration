@@ -1,9 +1,10 @@
+import { NgxMaskModule } from 'ngx-mask';
 import { VenteproduitsComponent } from './venteproduits.component';
 import { NgSelectModule } from '@ng-select/ng-select';;
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
-import { NgbNavModule, NgbPaginationModule, NgbTooltipModule } from "@ng-bootstrap/ng-bootstrap";
+import { NgbAlertModule, NgbNavModule, NgbPaginationModule, NgbTooltipModule } from "@ng-bootstrap/ng-bootstrap";
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Ng2SearchPipeModule } from 'ng2-search-filter';
 import { UIModule } from 'src/app/shared/ui/ui.module';
@@ -24,7 +25,9 @@ import { VenteProduitRoutingModule } from './venteproduits-routing.module';
         ReactiveFormsModule,
         NgbPaginationModule,
         Ng2SearchPipeModule,
-        NgSelectModule
+        NgSelectModule,
+        NgxMaskModule,
+        NgbAlertModule
     ]
 })
 

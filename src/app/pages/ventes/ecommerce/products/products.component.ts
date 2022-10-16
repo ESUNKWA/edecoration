@@ -100,7 +100,8 @@ export class ProductsComponent implements OnInit {
   }
 
   ajoutProduitPanier(product){
-
+    product.r_quantite = 1;
+    product.r_sous_total = 1 * product.r_prix_vente;
     if( this.panier.includes(product) ){
       this.notifications.sendMessage('Produit dejà ajouté au panier','warning');
       return;

@@ -22,6 +22,7 @@ import { CustomersComponent } from './customers/customers.component';
 import { OrdersComponent } from './orders/orders.component';
 import { UIModule } from 'src/app/shared/ui/ui.module';
 import { WidgetModule } from 'src/app/shared/widget/widget.module';
+import { NgxMaskModule } from 'ngx-mask';
 
 const config: DropzoneConfigInterface = {
   // Change this to your upload POST address:
@@ -46,7 +47,8 @@ const config: DropzoneConfigInterface = {
     WidgetModule,
     Ng5SliderModule,
     NgSelectModule,
-    NgbPaginationModule
+    NgbPaginationModule,
+    NgxMaskModule
   ],
   providers: [
     {

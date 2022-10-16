@@ -69,7 +69,7 @@
                   </span>
                 </div>
 
-                <img src="assets/images/product/img-1.png" alt="" class="img-fluid mx-auto d-block">
+                <img [src]="product?.path_name" height="100px;" width="130px;" alt="" class="img-fluid mx-auto d-block">
               </div>
               <div class="mt-1 text-center">
                 <h5 class="mb-1 text-truncate"><a [routerLink]="['/ecommerce/product-detail',product.id]" href="javascript: void(0);" class="text-dark">{{product.r_nom_produit}} </a>

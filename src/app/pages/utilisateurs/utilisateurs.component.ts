@@ -1,3 +1,4 @@
+import { filter } from 'rxjs/operators';
 import { Component, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -32,9 +33,10 @@ export class UtilisateursComponent implements OnInit {
   selectedprofil: any;
   viewTable: boolean = false;
   utilisateur: any;
+  infoUser: any = {};
 
   constructor(private modalService: NgbModal, private formBuilder: FormBuilder,
-    private utilisateurService: UtilisateursService, private notifications: NotifService, 
+    private utilisateurService: UtilisateursService, private notifications: NotifService,
     private profilServices: ProfilService, private userServices: UserService,) { }
 
   ngOnInit(): void {
@@ -68,25 +70,29 @@ export class UtilisateursComponent implements OnInit {
     this.userGridData = userGridData;
   }
 
-  _getContact(employer){
-    
-    this.contact = employer.contact;
-    this.idemploye = employer.value;
-    
-  }
 
 
   saveUser() {
-    
+
     this.submitted = true
     if (this.userData.invalid) {
       return;
     }
-    this.userData.value.r_login = this.contact;
-    this.userData.value.p_personnel = this.idemploye;
+
+    this.personnelList.filter((item)=>{
+
+      if( item.value == this.selected ){
+
+        this.userData.value.r_login = item.contact;
+      }
+    });
+
+
+    //this.userData.value.r_login = this.personnelList[this.selected];
+    this.userData.value.p_personnel = this.selected;
     this.userData.value.p_profil = this.selectedprofil;
     this.userData.value.p_utilisateur = this.utilisateur.r_i;
-
+    console.log(this.userData.value);
     this.utilisateurService._create(this.userData.value).subscribe(
       (data: any= {})=> {
         if(data._status == 1){
@@ -101,14 +107,14 @@ export class UtilisateursComponent implements OnInit {
       (err: any)=> {console.log(err.stack);
       }
     )
-    
+
   }
 
   _listprofils(){
     this.profilServices._list().subscribe(
       (data: any = {}) => {
         this.profilList = [...data._result];
-        
+
       },
       (err) => {console.log(err.stack)})
   }
@@ -134,8 +140,25 @@ export class UtilisateursComponent implements OnInit {
           obj.contact = parseInt(item.r_contact,10);
           this.personnelList.push(obj);
         });
-        
+
       }
     );
+  }
+
+
+  details(infoUser, content){
+    this.utilisateurService._listPersonnel().subscribe(
+      (data: any = {}) => {
+        data._result.forEach((item: any) => {
+          let obj: any = {};
+          obj.value = item.r_i;
+          obj.label = item.r_nom + ' ' + item.r_prenoms;
+          obj.contact = parseInt(item.r_contact,10);
+          this.personnelList.push(obj);
+        });
+
+      }
+    );
+    this.openModal(content);
   }
 }

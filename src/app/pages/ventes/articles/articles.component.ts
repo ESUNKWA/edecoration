@@ -1,5 +1,5 @@
 import { ArticlesService } from './../../../core/services/articles/articles.service';
-import { Component, OnInit, QueryList, ViewChildren } from '@angular/core';
+import { Component, ElementRef, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Table } from '@fullcalendar/daygrid';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -19,6 +19,7 @@ export class ArticlesComponent implements OnInit {
   // bread crum data
   breadCrumbItems: Array<{}>;
   @ViewChildren(AdvancedSortableDirective) headers: QueryList<AdvancedSortableDirective>;
+  @ViewChild('fileInput') inputEl: ElementRef;
 
   datas: Observable<Table[]>;
   modalTitle: any = '';
@@ -39,6 +40,9 @@ export class ArticlesComponent implements OnInit {
     page = 1;
     pageSize = 5; //Nbre de ligne à afficher
     collectionSize = 0;
+
+    imageURL: string;
+  formData: any =  new FormData();
 
     getPremiumData() {
       this.paginateData = this.categoriesTab.slice(
@@ -61,12 +65,41 @@ export class ArticlesComponent implements OnInit {
       r_nom_produit: ['', [Validators.required]],
       r_prix_vente: ['', [Validators.required]],
       r_stock: ['', [Validators.required]],
-      r_description: ['']
+      r_description: [''],
+      r_image: ['']
     });
     this._listArticles();
   }
 
   get f () { return this.categoriesData.controls;}
+
+  showPreview(event) {
+    const file = (event.target as HTMLInputElement).files[0];
+    this.categoriesData.patchValue({
+      r_image: file
+    });
+    this.categoriesData.get('r_image').updateValueAndValidity()
+    // File Preview
+    const reader = new FileReader();
+    reader.onload = () => {
+      this.imageURL = reader.result as string;
+    }
+    reader.readAsDataURL(file)
+  }
+
+  upload(event) {
+    let fileList: FileList = event.target.files;
+    let file: File = fileList[0];
+
+    this.formData.append('uploadFile', file, file.name);
+}
+
+onFileSelect(event) {
+  if (event.target.files.length > 0) {
+    const file = event.target.files[0];
+    this.categoriesData.get('r_image').setValue(file);
+  }
+}
 
   _listArticles(): void {
 
@@ -106,7 +139,7 @@ export class ArticlesComponent implements OnInit {
 
     this.modeAppel = 'modif';
     this.modalTitle = `Modification de l\'article [ ${this.ligneArticles.r_nom_produit} ]`;
-
+    this.imageURL = this.ligneArticles.path_name;
 
     this.largeModal(largeDataModal);
   }
@@ -130,15 +163,22 @@ export class ArticlesComponent implements OnInit {
     } */
 
 
+    this.formData.append('r_nom_produit', this.categoriesData.get('r_nom_produit').value);
+    this.formData.append('r_prix_vente', this.categoriesData.get('r_prix_vente').value);
+    this.formData.append('r_stock', this.categoriesData.get('r_stock').value);
+    this.formData.append('r_description', this.categoriesData.get('r_description').value);
 
+    this.formData.append('r_image', this.categoriesData.get('r_image').value);
+    console.log(this.categoriesData.value);
+    //return;
 
     switch (this.modeAppel) {
       case 'creation':
-        this.categoriesData.value.r_creer_par = parseInt(this.userData.r_i, 10);
-        let donnees = this.cryptDataService.crypt(this.categoriesData.value);
-          this.artcilesServices._create({p_data:donnees}).subscribe(
+        this.formData.append('r_creer_par', this.userData.r_i);
+        //this.categoriesData.value.r_creer_par = parseInt(this.userData.r_i, 10);
+        //let donnees = this.cryptDataService.crypt(this.formData);
+          this.artcilesServices._create(this.formData).subscribe(
             (dataServer: any) => {
-
               let messageAffiche = this.cryptDataService.decrypt(JSON.parse(dataServer._message));
 
               switch(dataServer._status){
@@ -168,11 +208,11 @@ export class ArticlesComponent implements OnInit {
         break;
 
       case 'modif':
-        this.categoriesData.value.r_modifier_par = parseInt(this.userData.r_i, 10);
+        this.formData.append('r_modifier_par', parseInt(this.userData.r_i, 10));
+        this.formData.append('idproduit', this.ligneArticles.id);
+        //let donneesUp = this.cryptDataService.crypt(this.categoriesData.value);
 
-        let donneesUp = this.cryptDataService.crypt(this.categoriesData.value);
-
-        this.artcilesServices._update({p_data:donneesUp}, this.ligneArticles.id).subscribe(
+        this.artcilesServices._update(this.formData).subscribe(
           (dataServer: any) => {
 
             let dataReponseDecrypt = this.cryptDataService.decrypt(dataServer);
@@ -189,16 +229,17 @@ export class ArticlesComponent implements OnInit {
 
               case 0:
                 this.notifications.sendMessage(`${result._message}`,'error');
+
                 break;
 
               case 1:
                 this.notifications.sendMessage(`${result._message}`,'success');
+                this.categoriesData.reset();
+                this._listArticles();
+                location.reload();
                 break;
             }
 
-            this.categoriesData.reset();
-            //this.notifications.sendMessage(`${dataServer._result}`,'success');
-            this._listArticles();
           },
           (err: any) => {
             console.log(err);

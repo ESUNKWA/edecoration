@@ -1,3 +1,4 @@
+import { NotifService } from 'src/app/core/services/notif.service';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
@@ -25,7 +26,8 @@ export class LoginComponent implements OnInit {
   btnspinner: boolean = false;
 
   // tslint:disable-next-line: max-line-length
-  constructor(private formBuilder: FormBuilder, private route: ActivatedRoute, private router: Router, private authenticationService: AuthenticationService) { }
+  constructor(private formBuilder: FormBuilder, private route: ActivatedRoute, private router: Router,
+    private authenticationService: AuthenticationService , private notify: NotifService) { }
 
   ngOnInit() {
     this.loginForm = this.formBuilder.group({
@@ -58,10 +60,9 @@ export class LoginComponent implements OnInit {
 
         this.authenticationService._login(this.loginForm.value).subscribe(
         (res: any = {})=>{
-
           switch(res._status){
             case 0:
-              this.error = res._result;
+              this.notify.sendMessage(res._error, 'warning');
               break;
 
             case 1:

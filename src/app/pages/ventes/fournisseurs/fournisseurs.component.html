@@ -2,7 +2,7 @@
 
 
 <div class="container-fluid">
-  <app-page-title title="Catégories de produits" [breadcrumbItems]="breadCrumbItems"></app-page-title>
+  <app-page-title title="Fournisseurse produits" [breadcrumbItems]="breadCrumbItems"></app-page-title>
   <div class="row">
     <div class="col-12">
       <div class="card">
@@ -10,7 +10,7 @@
 
           <div class="row mb-2" *ngIf="this.userData.r_code_profil == 'admin'" >
             <div class="col-md-12 ">
-              <button type="button" class="btn btn-primary nouveau" title="Saisir un nouvelle catégorie de produits" (click)="fctSaisieFourniss(largeDataModal)">Nouveau</button>
+              <button type="button" class="btn btn-primary nouveau" title="Saisir un nouveau fournisseur de produits" (click)="fctSaisieFourniss(largeDataModal)">Nouveau</button>
             </div>
           </div>
 
@@ -91,7 +91,7 @@
   <div class="modal-body">
     <form class="needs-validation" [formGroup]="fournisseursData">
 
-      <div class="row">
+      <div class="row mt-2">
 
         <div class="col">
             <label for="validationCustom01">Nom de l'établissement</label>
@@ -123,10 +123,10 @@
     </div>
 
 
-    <div class="row">
+    <div class="row mt-2">
 
-      <div class="col">
-          <label for="r_produit_fourni">Produits fourni</label>
+      <div class="col-lg-6">
+          <label for="r_produit_fourni">Produits fourni (Chaises;tables;Bâches)</label>
           <input type="text" class="form-control"  formControlName="r_produit_fourni" [(ngModel)]="ligneFournisseur.r_produit_fourni" >
 
           <div *ngIf="f.r_produit_fourni.touched && f.r_produit_fourni.invalid" class="text-danger" >
@@ -135,7 +135,7 @@
             </div>
           </div>
       </div>
-      <div class="col">
+      <div class="col-lg-3">
         <label for="r_contact">Téléphone</label>
         <input type="text" class="form-control"  formControlName="r_contact" [(ngModel)]="ligneFournisseur.r_contact" >
 
@@ -145,8 +145,8 @@
           </div>
         </div>
     </div>
-      <div class="col">
-        <label class="col-md-4 col-form-label">Commune</label>
+      <div class="col-lg-3">
+        <label class="form-label">Commune</label>
         <ng-select [items]="CommunesTab" formControlName="r_lieu_de_vente"
                                  [(ngModel)]="selectedCityDapart"
                                  bindValue="value"

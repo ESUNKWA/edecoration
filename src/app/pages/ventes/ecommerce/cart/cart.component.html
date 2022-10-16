@@ -21,19 +21,19 @@
               <tbody>
                 <tr *ngFor="let product of cartData; let i = index;">
                   <td>
-                    <img src="assets/images/product/img-1.png" alt="product-img" title="product-img" class="avatar-md" />
+                    <img [src]="product?.path_name" alt="product-img" title="product-img" class="avatar-md" />
                   </td>
                   <td>
                     <h5 class="font-size-14 text-truncate"><a routerLink="/ecommerce/product-detail"
                         class="text-dark">{{ product.r_nom_produit }}</a></h5>
                   </td>
                   <td>
-                    {{ product.r_prix_vente }}
+                    {{ product.r_prix_vente}}
                   </td>
                   <td>
                     <div style="width: 120px;">
                       <div class="input-group bootstrap-touchspin bootstrap-touchspin-injected">
-                        <input #stock type="number" [(ngModel)]="product.quantity" name="demo_vertical" (change)="setStock(stock, i)" class="form-control">
+                        <input #stock type="number" [(ngModel)]="product.r_quantite" name="demo_vertical" (change)="setStock(stock, i)" class="form-control">
                       </div>
                     </div>
                   </td>
@@ -41,7 +41,7 @@
                     {{ product?.total }}
                   </td>
                   <td>
-                    <a href="javascript:void(0);" class="action-icon text-danger"> <i
+                    <a href="javascript:void(0);" class="action-icon text-danger" (click)="deleteProductCart(product)" > <i
                         class="mdi mdi-trash-can font-size-18"></i></a>
                   </td>
                 </tr>
@@ -80,7 +80,7 @@
 
                 <tr>
                   <th>Total :</th>
-                  <th>{{ totalAchat.value }}</th>
+                  <th>{{ totalAchat }}</th>
                 </tr>
               </tbody>
             </table>

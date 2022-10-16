@@ -1,694 +1,694 @@
 <div class="container-fluid">
-    <app-page-title title="Liste des locations" [breadcrumbItems]="breadCrumbItems"></app-page-title>
+  <app-page-title title="Liste des locations" [breadcrumbItems]="breadCrumbItems"></app-page-title>
 
-    <ng-template [ngIf]="interface == 'liste'" >
+  <ng-template [ngIf]="interface == 'liste'" >
 
-      <div class="row">
-        <div class="col-12">
-          <div class="card">
-            <div class="card-body">
+    <div class="row">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-body">
 
-              <div class="mb-3">-
-                <label class="d-block mb-3">Recherche :</label>
-                <div class="form-check form-check-inline">
-                  <input class="form-check-input" #depart type="radio" (change)="_dateOption(depart.value)" checked name="inlineRadioOptions" id="inlineRadio25"
-                    value="option1">
-                  <label class="form-check-label" for="inlineRadio25">Par date de livraison</label>
-                </div>
-                <div class="form-check form-check-inline">
-                  <input class="form-check-input" #retour (change)="_dateOption(retour.value)"  type="radio" name="inlineRadioOptions" id="inlineRadio24"
-                    value="option2">
-                  <label class="form-check-label" for="inlineRadio24">Par date de retour</label>
-                </div>
-                <div class="form-check form-check-inline" >
-                  <input class="form-check-input" #periode (change)="_dateOption(periode.value)"  type="radio" name="inlineRadioOptions" id="inlineRadio2"
-                    value="option3">
-                  <label class="form-check-label" for="inlineRadio2">Par période</label>
-                </div>
+            <div class="mb-3">-
+              <label class="d-block mb-3">Recherche :</label>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" #depart type="radio" (change)="_dateOption(depart.value)" checked name="inlineRadioOptions" id="inlineRadio25"
+                value="option1">
+                <label class="form-check-label" for="inlineRadio25">Par date de livraison</label>
               </div>
-
-              <div class="row mb-2">
-                  <div class="col-md-9">
-                    <form [formGroup]="searchData">
-                      <div class="row">
-                        <div class="col">
-                          <label class="col-form-label">Type de demande de location</label>
-                          <ng-select [items]="demandeStat" [(ngModel)]="cboDefaultValue" bindLabel = "label" bindValue = "value" formControlName="p_status" ></ng-select>
-                          <div *ngIf="submit == true && searchValidate.p_status?.invalid" class="text-danger">
-                            <div *ngIf="searchValidate.p_status.errors.required">Veuillez selectionnez le status de la location.</div>
-                          </div>
-                        </div>
-                        <div class="col">
-                          <label class="col-form-label">{{libDatedete}}</label>
-                          <input class="form-control" type="datetime-local" formControlName="p_date" value="2019-08-19"
-                                      id="example-datetime-local-input">
-                            <div *ngIf="submit == true && searchValidate.p_date.invalid" class="text-danger">
-                                  <div *ngIf="searchValidate.p_date.errors.required">Veuillez selectionnez le date de livraison.</div>
-                            </div>
-                        </div>
-                        <div class="col" *ngIf="modeDate == 3">
-                          <label class="col-form-label">Date de retour</label>
-                          <input class="form-control" type="datetime-local" formControlName="p_date_retour" value="2019-08-19"
-                                      id="example-datetime-local-input">
-                            <div *ngIf="submit == true && searchValidate.p_date_retour.invalid" class="text-danger">
-                                  <div *ngIf="searchValidate.p_date_retour.errors.required">Veuillez selectionnez le date de livraison.</div>
-                            </div>
-                        </div>
-
-                        <div class="col">
-                          <br><br>
-                          <button type="submit" class="btn btn-primary" title="Saisir un nouvelle catégorie de produits" (click)="_exe_search_location()"><i class="fas fa-search"></i></button>
-                        </div>
-                      </div>
-                    </form>
-                  </div>
-                  <div class="col-md-3 ">
-                    <button style="float: right;" type="button" class="btn btn-primary nouveau" title="Saisir un nouvelle catégorie de produits" (click)="_saisie_location()">Nouveau</button>
-                  </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" #retour (change)="_dateOption(retour.value)"  type="radio" name="inlineRadioOptions" id="inlineRadio24"
+                value="option2">
+                <label class="form-check-label" for="inlineRadio24">Par date de retour</label>
               </div>
-              <div class="clearfix" >&nbsp;</div>
-        <hr>
-              <div class="clearfix" >&nbsp;</div>
-
-              <ng-template [ngIf]="viewTable == false" >
-                <app-spinner></app-spinner>
-              </ng-template>
-
-              <ng-template [ngIf]="viewTable == true" >
-
-                <div class="row" *ngIf="locationtab.length == 0">
-                  <div class="col-lg-12">
-                    <div class="border p-3 rounded mt-4 text-center">
-                        <div class="d-flex align-items-center mb-3">
-                            <div class="avatar-xs me-3">
-                                <span
-                                    class="avatar-title rounded-circle bg-warning bg-soft text-warning font-size-18">
-                                    <i class="mdi mdi-bitcoin"></i>
-                                </span>
-                            </div>
-                            <h5 class="font-size-14 mb-0">Aucune données</h5>
-                        </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="table-responsive " *ngIf="locationtab.length >= 1" >
-
-                  <div class="search-box me-2 mb-2 d-inline-block">
-                    <div class="position-relative">
-                      <input type="text" class="form-control" placeholder="Recherche..." [(ngModel)]="term" />
-                      <i class="bx bx-search-alt search-icon"></i>
-                    </div>
-                  </div>
-
-                  <table class="table mb-0 table-striped" >
-                    <thead class="bg-dark text-white">
-                      <tr>
-                        <th style="width:8%;">N° Location</th>
-                        <th style="width:15%" >Client</th>
-                        <!-- <th style="width:12%" >Téléphone</th> -->
-
-                        <th style="width:10%" >total</th>
-                        <th style="width:10%" >Remise</th>
-                        <th style="width:10%" >total remise</th>
-                        <th style="width:10%" >Date de livraison</th>
-                        <th style="width:10%" >Date de retour</th>
-                        <th style="width:5%" >Solder</th>
-                        <th style="width:5%" >Status</th>
-                        <th style="width:10%" >Action</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr *ngFor="let location of paginateData | filter:term; let i = index">
-                        <td style="width:8%" >{{location.r_num}}</td>
-                        <td style="width:15%" >{{location.r_nom + ' ' + location.r_prenoms}}</td>
-                        <!-- <td style="width:12%" >{{location.r_telephone | mask: "(000) 00-00-00-00-00"}}</td> -->
-
-                        <td style="width:10%" >{{location.r_mnt_total | mask: 'separator':' '}}</td>
-                        <td style="width:10%" *ngIf="location.r_remise == 0 || location.r_remise == null" >0</td>
-                        <td style="width:10%" *ngIf="location.r_remise > 0 && location.r_remise <= 100" >{{location.r_remise}}%</td>
-                        <td style="width:10%" *ngIf="location.r_remise > 100" >{{location.r_remise | mask: 'separator':' '}}</td>
-                        <td style="width:10%"  >{{location.r_mnt_total_remise | mask: 'separator':' '}}</td>
-                        <td style="width:10%" >{{location.r_date_envoie | date: 'dd-MM-YYYY à HH:mm:ss'}}</td>
-                        <td style="width:10%" >{{location.r_date_retour | date: 'dd-MM-YYYY à HH:mm:ss'}}</td>
-                        <td style="width:5%" *ngIf="location.r_solder==1" ><span class="badge badge-pill badge-soft-success font-size-12">Oui</span></td>
-                        <td style="width:5%" *ngIf="location.r_solder==0" ><span class="badge badge-pill badge-soft-danger font-size-12">Non</span></td>
-                        <td style="width:5%" *ngIf="location.r_status==0" ><span class="badge badge-pill badge-soft-warning font-size-12">En attente de validation</span></td>
-                        <td style="width:5%" *ngIf="location.r_status==1" ><span class="badge badge-pill badge-soft-success font-size-12">En cours d'utilisation</span></td>
-                        <td style="width:5%" *ngIf="location.r_status==2"><span class="badge badge-pill badge-soft-primary font-size-12">terminée</span></td>
-                        <td style="width:5%" *ngIf="location.r_status==3"><span class="badge badge-pill badge-soft-danger font-size-12">Annulée</span></td>
-                        <td style="width:10%">
-                          <button type="button" class="btn btn-secondary" title="Modification"
-                           (click)="_actionLocation(largeDataModal, location, 'modif')"
-                           [disabled]="location.r_status !== 0" ><i class="fas fa-edit"></i></button>&nbsp;
-                          <button type="button" class="btn btn-warning" title="Validation de la location" (click)="_actionLocation(largeDataModal, location, 'validation')" ><i class="fas fa-check-square"></i></button>&nbsp;
-                          <button type="button" class="btn btn-info" title="Imprimer la facture" (click)="_actionLocation(null, location, '')" ><i class="fas fa-print"></i></button>&nbsp;
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                  <!-- Paginations -->
-                  <div class="d-flex justify-content-between p-2">
-                    <ngb-pagination
-                      [collectionSize]="collectionSize"
-                      [(page)]="page"
-                      [pageSize]="pageSize"
-                      (pageChange)="getPremiumData()"
-                    >
-                    </ngb-pagination>
-
-                    <select
-                      class="form-control"
-                      style="width: auto"
-                      [(ngModel)]="pageSize"
-                      (ngModelChange)="getPremiumData()"
-                    >
-                      <option [ngValue]="5">5 lignes</option>
-                      <option [ngValue]="10">10 lignes</option>
-                      <option [ngValue]="25">25 lignes</option>
-                      <option [ngValue]="50">50 lignes</option>
-                    </select>
-                  </div>
-                  <!-- Paginations -->
-                </div>
-              </ng-template>
-
+              <div class="form-check form-check-inline" >
+                <input class="form-check-input" #periode (change)="_dateOption(periode.value)"  type="radio" name="inlineRadioOptions" id="inlineRadio2"
+                value="option3">
+                <label class="form-check-label" for="inlineRadio2">Par période</label>
+              </div>
             </div>
+
+            <div class="row mb-2">
+              <div class="col-md-9">
+                <form [formGroup]="searchData">
+                  <div class="row">
+                    <div class="col">
+                      <label class="col-form-label">Type de demande de location</label>
+                      <ng-select [items]="demandeStat" [(ngModel)]="cboDefaultValue" bindLabel = "label" bindValue = "value" formControlName="p_status" ></ng-select>
+                      <div *ngIf="submit == true && searchValidate.p_status?.invalid" class="text-danger">
+                        <div *ngIf="searchValidate.p_status.errors.required">Veuillez selectionnez le status de la location.</div>
+                      </div>
+                    </div>
+                    <div class="col">
+                      <label class="col-form-label">{{libDatedete}}</label>
+                      <input class="form-control" type="datetime-local" formControlName="p_date" value="2019-08-19"
+                      id="example-datetime-local-input">
+                      <div *ngIf="submit == true && searchValidate.p_date.invalid" class="text-danger">
+                        <div *ngIf="searchValidate.p_date.errors.required">Veuillez selectionnez le date de livraison.</div>
+                      </div>
+                    </div>
+                    <div class="col" *ngIf="modeDate == 3">
+                      <label class="col-form-label">Date de retour</label>
+                      <input class="form-control" type="datetime-local" formControlName="p_date_retour" value="2019-08-19"
+                      id="example-datetime-local-input">
+                      <div *ngIf="submit == true && searchValidate.p_date_retour.invalid" class="text-danger">
+                        <div *ngIf="searchValidate.p_date_retour.errors.required">Veuillez selectionnez le date de livraison.</div>
+                      </div>
+                    </div>
+
+                    <div class="col">
+                      <br><br>
+                      <button type="submit" class="btn btn-primary" title="Saisir un nouvelle catégorie de produits" (click)="_exe_search_location()"><i class="fas fa-search"></i></button>
+                    </div>
+                  </div>
+                </form>
+              </div>
+              <div class="col-md-3 ">
+                <button style="float: right;" type="button" class="btn btn-primary nouveau" title="Saisir un nouvelle catégorie de produits" (click)="_saisie_location()">Nouveau</button>
+              </div>
+            </div>
+            <div class="clearfix" >&nbsp;</div>
+            <hr>
+            <div class="clearfix" >&nbsp;</div>
+
+            <ng-template [ngIf]="viewTable == false" >
+              <app-spinner></app-spinner>
+            </ng-template>
+
+            <ng-template [ngIf]="viewTable == true" >
+
+              <div class="row" *ngIf="locationtab.length == 0">
+                <div class="col-lg-12">
+                  <div class="border p-3 rounded mt-4 text-center">
+                    <div class="d-flex align-items-center mb-3">
+                      <div class="avatar-xs me-3">
+                        <span
+                        class="avatar-title rounded-circle bg-warning bg-soft text-warning font-size-18">
+                        <i class="mdi mdi-bitcoin"></i>
+                      </span>
+                    </div>
+                    <h5 class="font-size-14 mb-0">Aucune données</h5>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="table-responsive " *ngIf="locationtab.length >= 1" >
+
+              <div class="search-box me-2 mb-2 d-inline-block">
+                <div class="position-relative">
+                  <input type="text" class="form-control" placeholder="Recherche..." [(ngModel)]="term" />
+                  <i class="bx bx-search-alt search-icon"></i>
+                </div>
+              </div>
+
+              <table class="table mb-0 table-striped" >
+                <thead class="bg-dark text-white">
+                  <tr>
+                    <th style="width:8%;">N° Location</th>
+                    <th style="width:15%" >Client</th>
+                    <!-- <th style="width:12%" >Téléphone</th> -->
+
+                    <th style="width:10%" >total</th>
+                    <th style="width:10%" >Remise</th>
+                    <th style="width:10%" >total remise</th>
+                    <th style="width:10%" >Date de livraison</th>
+                    <th style="width:10%" >Date de retour</th>
+                    <th style="width:5%" >Solder</th>
+                    <th style="width:5%" >Status</th>
+                    <th style="width:10%" >Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let location of paginateData | filter:term; let i = index">
+                    <td style="width:8%" >{{location.r_num}}</td>
+                    <td style="width:15%" >{{location.r_nom + ' ' + location.r_prenoms}}</td>
+                    <!-- <td style="width:12%" >{{location.r_telephone | mask: "(000) 00-00-00-00-00"}}</td> -->
+
+                    <td style="width:10%" >{{location.r_mnt_total | mask: 'separator':' '}}</td>
+                    <td style="width:10%" *ngIf="location.r_remise == 0 || location.r_remise == null" >0</td>
+                    <td style="width:10%" *ngIf="location.r_remise > 0 && location.r_remise <= 100" >{{location.r_remise}}%</td>
+                    <td style="width:10%" *ngIf="location.r_remise > 100" >{{location.r_remise | mask: 'separator':' '}}</td>
+                    <td style="width:10%"  >{{location.r_mnt_total_remise | mask: 'separator':' '}}</td>
+                    <td style="width:10%" >{{location.r_date_envoie | date: 'dd-MM-YYYY à HH:mm:ss'}}</td>
+                    <td style="width:10%" >{{location.r_date_retour | date: 'dd-MM-YYYY à HH:mm:ss'}}</td>
+                    <td style="width:5%" *ngIf="location.r_solder==1" ><span class="badge badge-pill badge-soft-success font-size-12">Oui</span></td>
+                    <td style="width:5%" *ngIf="location.r_solder==0" ><span class="badge badge-pill badge-soft-danger font-size-12">Non</span></td>
+                    <td style="width:5%" *ngIf="location.r_status==0" ><span class="badge badge-pill badge-soft-warning font-size-12">En attente de validation</span></td>
+                    <td style="width:5%" *ngIf="location.r_status==1" ><span class="badge badge-pill badge-soft-success font-size-12">En cours d'utilisation</span></td>
+                    <td style="width:5%" *ngIf="location.r_status==2"><span class="badge badge-pill badge-soft-primary font-size-12">terminée</span></td>
+                    <td style="width:5%" *ngIf="location.r_status==3"><span class="badge badge-pill badge-soft-danger font-size-12">Annulée</span></td>
+                    <td style="width:10%">
+                      <button type="button" class="btn btn-secondary" title="Modification"
+                      (click)="_actionLocation(largeDataModal, location, 'modif')"
+                      [disabled]="location.r_status !== 0" ><i class="fas fa-edit"></i></button>&nbsp;
+                      <button type="button" class="btn btn-warning" title="Validation de la location" (click)="_actionLocation(largeDataModal, location, 'validation')" ><i class="fas fa-check-square"></i></button>&nbsp;
+                      <button type="button" class="btn btn-info" title="Imprimer la facture" (click)="_actionLocation(null, location, '')" ><i class="fas fa-print"></i></button>&nbsp;
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              <!-- Paginations -->
+              <div class="d-flex justify-content-between p-2">
+                <ngb-pagination
+                [collectionSize]="collectionSize"
+                [(page)]="page"
+                [pageSize]="pageSize"
+                (pageChange)="getPremiumData()"
+                >
+              </ngb-pagination>
+
+              <select
+              class="form-control"
+              style="width: auto"
+              [(ngModel)]="pageSize"
+              (ngModelChange)="getPremiumData()"
+              >
+              <option [ngValue]="5">5 lignes</option>
+              <option [ngValue]="10">10 lignes</option>
+              <option [ngValue]="25">25 lignes</option>
+              <option [ngValue]="50">50 lignes</option>
+            </select>
           </div>
+          <!-- Paginations -->
         </div>
+      </ng-template>
+
+    </div>
+  </div>
+</div>
+</div>
+
+</ng-template>
+
+<!--Formulaire de saisie des locations-->
+<ng-template [ngIf]="interface == 'saisie'" >
+
+  <div class="row">
+    <div class="row mb-2">
+      <div class="col-md-12 ">
+        <button type="button" class="btn btn-primary nouveau" title="Saisir un nouvelle catégorie de produits" (click)="_affiche_location()">Liste des locations</button>
       </div>
+    </div>
+    <!--Block des saisie des location-->
+    <div class="col-md-8">
+      <form class="needs-validation" [formGroup]="locationData" >
+        <div class="row">
+          <div class="col-lg-12">
+            <div class="card">
+              <div class="card-body">
+                <h4 class="card-title mb-4">Saisie de location</h4>
+                <aw-wizard [navBarLayout]="'large-empty-symbols'">
+                  <aw-wizard-step>
+                    <ng-template awWizardStepSymbol>
+                      <i class="fas fa-cash-register"></i>
+                    </ng-template>
 
-    </ng-template>
-
-    <!--Formulaire de saisie des locations-->
-    <ng-template [ngIf]="interface == 'saisie'" >
-
-      <div class="row">
-        <div class="row mb-2">
-          <div class="col-md-12 ">
-            <button type="button" class="btn btn-primary nouveau" title="Saisir un nouvelle catégorie de produits" (click)="_affiche_location()">Liste des locations</button>
-          </div>
-        </div>
-        <!--Block des saisie des location-->
-        <div class="col-md-8">
-          <form class="needs-validation" [formGroup]="locationData" >
-            <div class="row">
-              <div class="col-lg-12">
-                <div class="card">
-                  <div class="card-body">
-                    <h4 class="card-title mb-4">Saisie de location</h4>
-                    <aw-wizard [navBarLayout]="'large-empty-symbols'">
-                      <aw-wizard-step>
-                        <ng-template awWizardStepSymbol>
-                          <i class="fas fa-cash-register"></i>
-                        </ng-template>
-
-                        <div class="row" *ngIf="tarificationTab.length == 0">
-                          <div class="col-lg-12">
-                            <div class="border p-3 rounded mt-4 text-center">
-                                <div class="d-flex align-items-center mb-3">
-                                    <div class="avatar-xs me-3">
-                                        <span
-                                            class="avatar-title rounded-circle bg-warning bg-soft text-warning font-size-18">
-                                            <i class="mdi mdi-bitcoin"></i>
-                                        </span>
-                                    </div>
-                                    <h5 class="font-size-14 mb-0">Aucune données</h5>
-                                </div>
-                            </div>
+                    <div class="row" *ngIf="tarificationTab.length == 0">
+                      <div class="col-lg-12">
+                        <div class="border p-3 rounded mt-4 text-center">
+                          <div class="d-flex align-items-center mb-3">
+                            <div class="avatar-xs me-3">
+                              <span
+                              class="avatar-title rounded-circle bg-warning bg-soft text-warning font-size-18">
+                              <i class="mdi mdi-bitcoin"></i>
+                            </span>
                           </div>
+                          <h5 class="font-size-14 mb-0">Aucune données</h5>
                         </div>
-
-
-
-                        <div *ngIf="tarificationTab.length >= 1" >
-
-                          <!-- Table -->
-                          <div class="table-responsive">
-
-                            <ng-template [ngIf]="viewTable == false" >
-                                <app-spinner></app-spinner>
-                            </ng-template>
-
-                              <ng-template [ngIf]="viewTable == true" >
-
-
-                                <!-- Search -->
-                                <div class="search-box me-2 mb-2 d-inline-block">
-                                  <div class="position-relative">
-                                    <input type="text" class="form-control" placeholder="Recherche..." [ngModelOptions]="{standalone: true}" [(ngModel)]="term" />
-                                    <i class="bx bx-search-alt search-icon"></i>
-                                  </div>
-                                </div>
-                              <!-- End search -->
-
-                                <table class="table mb-0 table-striped" >
-                                  <thead class="bg-dark text-white">
-                                    <tr>
-                                      <th style="width:5%" >Choix</th>
-                                      <th style="width:20%" >Produits</th>
-                                      <th style="width:10%" >Stock actuel</th>
-                                      <th style="width:10%" >Prix location</th>
-                                      <th style="width:10%;">Durée</th>
-                                      <th style="width:10%;">Quantité</th>
-                                      <th style="width:15%;">Montant total</th>
-                                    </tr>
-                                  </thead>
-                                  <tbody>
-                                    <tr *ngFor="let produit of tarificationTab | filter: term; let i = index">
-                                      <td style="width:5%;">
-                                        <input #inpcheck class="form-check-input" type="checkbox" (change)="_changeValcheck(inpcheck.checked,i)" >
-                                      </td>
-                                      <td style="width:20%" >{{produit?.r_libelle}}</td>
-                                      <td style="width:10%" >{{produit?.r_stock}}</td>
-                                      <td style="width:10%" >{{produit?.r_prix_location | mask: 'separator':' '}}</td>
-                                      <td style="width:10%" >{{produit?.r_duree}} jour</td>
-                                      <td style="width: 10%;">
-                                        <input #inpqte class="form-control" min="0" value="{{produit?.qte}}" type="number" [(disabled)]="!produit.check" (change)="_valueQte(inpqte.value,i)" placeholder="">
-                                      </td>
-                                      <td style="width: 15%;">
-                                        <input disabled class="form-control" type="text" value="{{produit?.total}}" mask="separator.2" placeholder="">
-                                      </td>
-                                    </tr>
-                                  </tbody>
-                                </table>
-
-                              </ng-template>
-
-
-                          </div>
-                        </div>
-
-
-
-                        <ul class="list-inline wizard mt-2">
-                          <li class="next list-inline-item float-end"><button class="btn btn-primary" [disabled]="totalLocation?.mntTotal == 0 || totalLocation?.mntTotal == undefined" awNextStep>Suivant</button>
-                          </li>
-                        </ul>
-                      </aw-wizard-step>
-
-                      <aw-wizard-step>
-                        <ng-template awWizardStepSymbol>
-                          <i class="fas fa-user-edit"></i>
-                        </ng-template>
-                        <div class="row">
-                          <div class="col-12">
-                            <div class="row mb-3">
-                              <label class="col-md-3 col-form-label">Nom</label>
-                              <div class="col-md-9">
-                                <input class="form-control" autocomplete="off" type="text" formControlName="p_nom" placeholder="">
-                                <div *ngIf="formvalidate.p_nom.touched && formvalidate.p_nom.invalid" class="text-danger">
-                                  <div *ngIf="formvalidate.p_nom.errors.required">Veuillez saisir le nom du client.</div>
-                                </div>
-                              </div>
-                            </div>
-                            <div class="row mb-3">
-                              <label class="col-md-3 col-form-label">Prenoms</label>
-                              <div class="col-md-9">
-                                <input class="form-control" autocomplete="off" type="text" formControlName="p_prenoms" placeholder="">
-                                <div *ngIf="formvalidate.p_prenoms.touched && formvalidate.p_prenoms.invalid" class="text-danger">
-                                  <div *ngIf="formvalidate.p_prenoms.errors?.required">Veuillez saisir le prenoms du client.</div>
-                                </div>
-                              </div>
-                            </div>
-                            <div class="row mb-3">
-                              <label class="col-md-3 col-form-label">Numéro de téléphone</label>
-                              <div class="col-md-9">
-                                <input class="form-control" autocomplete="off" type="text" formControlName="p_telephone" mask="00-00-00-00-00" placeholder="">
-                                <div *ngIf="formvalidate.p_telephone.touched && formvalidate.p_telephone.invalid" class="text-danger">
-                                  <div *ngIf="formvalidate.p_telephone.errors.required">Veuillez saisir le numéro de téléphone du client.</div>
-                                  <div *ngIf="formvalidate.p_telephone.errors?.minLength">Numéro de téléphone invalide.</div>
-                                </div>
-                              </div>
-                            </div>
-                            <div class="row mb-3">
-                              <label class="col-md-3 col-form-label">Adresse email</label>
-                              <div class="col-md-9">
-                                <input class="form-control" autocomplete="off" type="email" formControlName="p_email" placeholder="">
-                              </div>
-                            </div>
-                            <div class="row mb-3">
-                              <label class="col-md-3 col-form-label">Description</label>
-                              <div class="col-md-9">
-                                <textarea class="form-control" autocomplete="off" formControlName="p_description"></textarea>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        <ul class="list-inline wizard mb-0">
-                          <li class="previous list-inline-item"><button class="btn btn-primary" awPreviousStep>Précédent</button>
-                          </li>
-                          <li class="next list-inline-item float-end"><button [disabled]="formvalidate.p_nom.invalid || formvalidate.p_prenoms.invalid || formvalidate.p_telephone.invalid" class="btn btn-primary" awNextStep>Suivant</button>
-                          </li>
-                        </ul>
-                      </aw-wizard-step>
-
-                      <aw-wizard-step>
-                        <ng-template awWizardStepSymbol>
-                          <i class="fas fa-list-alt"></i>
-                        </ng-template>
-                        <div class="row">
-                          <div class="col-6">
-                            <div class="row mb-3">
-                              <label class="col-md-4 col-form-label">Date de livraison</label>
-                              <div class="col-md-8">
-                                <input class="form-control" type="datetime-local" formControlName="p_date_envoie" value="2019-08-19T13:45:00"
-                                          id="example-datetime-local-input" (change)="_getdatedebut()">
-                                <div *ngIf="formvalidate.p_date_envoie.touched && formvalidate.p_date_envoie.invalid" class="text-danger">
-                                      <div *ngIf="formvalidate.p_date_envoie.errors.required">Veuillez selectionnez le date de livraison.</div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                          <div class="col-6">
-                            <div class="row mb-3">
-                              <label class="col-md-4 col-form-label">Date de retour</label>
-                              <div class="col-md-8">
-                                <input class="form-control" type="datetime-local" formControlName="p_date_retour" value="2019-08-19T13:45:00"
-                                          id="example-datetime-local-input" (change)="_getdatefin()">
-                                <div *ngIf="formvalidate.p_date_retour.touched && formvalidate.p_date_retour.invalid" class="text-danger">
-                                    <div *ngIf="formvalidate.p_date_retour.errors.required">Veuillez selectionnez le date de retour des produits.</div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-
-                        <div class="row mb-3">
-                          <div class="col-md-6">
-                            <div class="row mb-3">
-                              <label class="col-md-4 col-form-label">Commune depart</label>
-                              <div class="col-md-8">
-                                <ng-select [items]="CommunesTab" formControlName="p_commune_depart"
-                                 [(ngModel)]="selectedCityDapart"
-                                 bindValue="value"
-                                 bindLabel="label"
-                                 ></ng-select>
-                                <div *ngIf="formvalidate.p_commune_depart.touched && formvalidate.p_commune_depart.invalid" class="text-danger">
-                                  <div *ngIf="formvalidate.p_commune_depart.errors.required">Veuillez selectionnez votre localité.</div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                          <div class="col-md-6">
-                            <div class="row mb-3">
-                              <label class="col-md-4 col-form-label">Destination</label>
-                              <div class="col-md-8">
-                                <ng-select [items]="CommunesTab" formControlName="p_commune_arrive" [(ngModel)]="selectedCityarrive" ></ng-select>
-                                <div *ngIf="formvalidate.p_commune_arrive.touched && formvalidate.p_commune_arrive.invalid" class="text-danger">
-                                  <div *ngIf="formvalidate.p_commune_arrive.errors.required">Veuillez selectionnez la commune de destination.</div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-
-                        <div class="row mb-3">
-                          <label class="col-md-2 col-form-label">Description destination</label>
-                          <div class="col-md-10">
-                            <textarea class="form-control" placeholder="Saisir le nom du quartier de destination" ></textarea>
-                          </div>
-                        </div>
-
-                        <div class="mb-2">
-                          <label class="">Gérer la logistique</label>&nbsp;
-                          <input #inplogistik class="form-check-input" type="checkbox" (click)="_gestionLogistik(inplogistik.checked)">
-                        </div>
-
-
-                        <fieldset class="form-control mb-4" *ngIf="logistik" >
-
-                          <div class="row mb-3">
-
-                            <div class="col-md-6">
-                              <div class="row mb-3">
-                                <label class="col-md-4 col-form-label">Véhicule</label>
-                                <div class="col-md-8">
-                                  <ng-select [items]="logistkTab" formControlName="p_vehicule" ></ng-select>
-                                </div>
-                              </div>
-                            </div>
-
-                            <div class="col-md-6">
-                              <div class="row mb-3">
-                                <label class="col-md-4 col-form-label">Frais de transport</label>
-                                <div class="col-md-8">
-                                  <input class="form-control" name="tel" type="text" formControlName="p_frais" placeholder="">
-                                </div>
-                              </div>
-                            </div>
-
-                          </div>
-
-                        </fieldset>
-
-
-                        <ul class="list-inline wizard mb-0">
-                          <li class="previous list-inline-item"><button class="btn btn-primary" awPreviousStep>Précédent</button>
-                          </li>
-                          <li class="next list-inline-item float-end">
-                            <button class="btn btn-primary" [disabled]=" formvalidate.p_date_envoie.invalid || formvalidate.p_date_retour.invalid || formvalidate.p_commune_arrive.invalid" awNextStep>Suivant</button>
-                          </li>
-                        </ul>
-                      </aw-wizard-step>
-
-                      <aw-wizard-step>
-                        <ng-template awWizardStepSymbol>
-                          <i class="fas fa-check-circle"></i>
-                        </ng-template>
-
-                        <div class="row justify-content-center mb-2">
-                          <div class="col-lg-12">
-                            <h5>Récapitulatif</h5>
-
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <label class="col-form-label">Nom</label>
-                                        <input class="form-control" disabled type="text" [(ngModel)]="locationData.value.p_nom" [ngModelOptions]="{standalone: true}">
-                                    </div>
-                                    <div class="col-md-6">
-                                      <label class="col-form-label">Prenoms</label>
-                                      <input class="form-control" disabled type="text" [(ngModel)]="locationData.value.p_prenoms" [ngModelOptions]="{standalone: true}">
-                                  </div>
-                                </div>
-                                <div class="row">
-                                  <div class="col-md-6">
-                                      <label class="col-form-label">Numéro de téléphone</label>
-                                      <input class="form-control" disabled type="text" mask="00-00-00-00-00" [(ngModel)]="locationData.value.p_telephone" [ngModelOptions]="{standalone: true}">
-                                  </div>
-                                  <div class="col-md-6">
-                                    <label class="col-form-label">Adresse email</label>
-                                    <input class="form-control" disabled type="email" [(ngModel)]="locationData.value.p_email" [ngModelOptions]="{standalone: true}">
-                                  </div>
-                                </div>
-
-                                <div class="row">
-                                  <div class="col-md-12">
-                                      <label class="col-form-label">Description</label>
-                                      <textarea class="form-control" disabled [(ngModel)]="locationData.value.p_description" [ngModelOptions]="{standalone: true}"></textarea>
-                                  </div>
-                                </div>
-
-                                <hr>
-
-                                <div class="row">
-                                  <div class="col-md-6">
-                                      <label class="col-form-label">Date de livraison</label>
-                                      <input class="form-control" type="datetime-local" [(ngModel)]="locationData.value.p_date_envoie" [ngModelOptions]="{standalone: true}"
-                                      disabled>
-                                  </div>
-                                  <div class="col-md-6">
-                                    <label class="col-form-label">Date de retour</label>
-                                    <input class="form-control" type="datetime-local" [(ngModel)]="locationData.value.p_date_retour" [ngModelOptions]="{standalone: true}"
-                                    disabled>
-                                  </div>
-                                </div>
-
-                                <div class="row">
-                                  <div class="col-md-6">
-                                      <label class="col-form-label">Commune depart</label>
-                                      <ng-select [items]="CommunesTab" disabled [ngModelOptions]="{standalone: true}"
-                                      [(ngModel)]="selectedCityDapart"
-                                      bindValue="value"
-                                      bindLabel="label"
-                                      ></ng-select>
-                                    </div>
-                                  <div class="col-md-6">
-                                    <label class="col-form-label">Destination</label>
-                                    <ng-select [items]="CommunesTab" disabled [ngModelOptions]="{standalone: true}" [(ngModel)]="selectedCityarrive" ></ng-select>
-                                  </div>
-                                </div>
-                          </div>
-                        </div>
-
-                        <ul class="list-inline wizard mb-0">
-                          <li class="previous list-inline-item">
-                            <button class="btn btn-primary" awPreviousStep>Précédent</button>
-                            <button class="btn btn-primary" type="button" style="float: right"
-                            (click)="_registerLocations()"
-                             awResetWizard="resetWizard"
-                             [disabled]="reglmtPartiel == null || reglmtPartiel == undefined">Enregistrer</button>
-
-                          </li>
-                        </ul>
-                      </aw-wizard-step>
-                    </aw-wizard>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
-            </div>
-          </form>
-        </div>
 
-        <!--Block des récaputilatifs-->
-        <div class="col-md-4">
-          <form class="needs-validation">
-            <div class="row">
-              <div class="col-lg-12">
-                <div class="card">
-                  <div class="card-body">
-                    <h4 class="card-title mb-4">Total Produits: ({{totalLocation.qteproduits}})</h4>
-                    <div class="mt-2" *ngFor="let prd of recapTab">
-                      <h5 class="font-size-15 text-uppercase">{{prd?.r_libelle}}</h5>
-                      <span class="text-muted mb-0">{{prd.qte}} x {{prd?.r_prix_location}} = {{prd?.total}}</span>
-                      <hr>
+
+
+                  <div *ngIf="tarificationTab.length >= 1" >
+
+                    <!-- Table -->
+                    <div class="table-responsive">
+
+                      <ng-template [ngIf]="viewTable == false" >
+                        <app-spinner></app-spinner>
+                      </ng-template>
+
+                      <ng-template [ngIf]="viewTable == true" >
+
+
+                        <!-- Search -->
+                        <div class="search-box me-2 mb-2 d-inline-block">
+                          <div class="position-relative">
+                            <input type="text" class="form-control" placeholder="Recherche..." [ngModelOptions]="{standalone: true}" [(ngModel)]="term" />
+                            <i class="bx bx-search-alt search-icon"></i>
+                          </div>
+                        </div>
+                        <!-- End search -->
+
+                        <table class="table mb-0 table-striped" >
+                          <thead class="bg-dark text-white">
+                            <tr>
+                              <th style="width:5%" >Choix</th>
+                              <th style="width:20%" >Produits</th>
+                              <th style="width:10%" >Stock actuel</th>
+                              <th style="width:10%" >Prix location</th>
+                              <th style="width:10%;">Durée</th>
+                              <th style="width:10%;">Quantité</th>
+                              <th style="width:15%;">Montant total</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr *ngFor="let produit of tarificationTab | filter: term; let i = index">
+                              <td style="width:5%;">
+                                <input #inpcheck class="form-check-input" type="checkbox" (change)="_changeValcheck(inpcheck.checked,i)" >
+                              </td>
+                              <td style="width:20%" >{{produit?.r_libelle}}</td>
+                              <td style="width:10%" >{{produit?.r_stock}}</td>
+                              <td style="width:10%" >{{produit?.r_prix_location | mask: 'separator':' '}}</td>
+                              <td style="width:10%" >{{produit?.r_duree}} jour</td>
+                              <td style="width: 10%;">
+                                <input #inpqte class="form-control" min="0" value="{{produit?.qte}}" type="number" [(disabled)]="!produit.check" (change)="_valueQte(inpqte.value,i)" placeholder="">
+                              </td>
+                              <td style="width: 15%;">
+                                <input disabled class="form-control" type="text" value="{{produit?.total}}" mask="separator.2" placeholder="">
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+
+                      </ng-template>
+
+
                     </div>
-                    <h5 class="card-title mb-4">Nombre de jours : <span class="text-info" ><strong>{{nbreJrLocation | mask: 'separator':' '}}</strong></span></h5>
-                    <h5 class="card-title mb-4">Total : <span class="text-info" ><strong>{{totalLocation?.mntTotal | mask: 'separator':' '}} x {{ nbreJrLocation }} = {{(totalLocation?.mntTotal * nbreJrLocation) | mask: 'separator':' '}}</strong></span></h5>
-                    <h5 class="card-title mb-4">Frais de transport : <span class="text-info" ><strong>{{locationData?.value.p_frais | mask: 'separator':' '}} </strong></span></h5>
-                    <h5 class="card-title mb-4">Nouveau Total : <span class="text-danger" ><strong>{{totalLocation?.mewTotal | mask: 'separator':' '}}</strong></span></h5>
+                  </div>
 
-                  <div [hidden]="formvalidate.p_date_envoie.invalid || formvalidate.p_date_retour.invalid || formvalidate.p_commune_arrive.invalid" >
-                    <fieldset class="form-group border p-3 scheduler-border">
-                      <legend class="w-auto px-2 scheduler-border">Rémises</legend>
+
+
+                  <ul class="list-inline wizard mt-2">
+                    <li class="next list-inline-item float-end"><button class="btn btn-primary" [disabled]="totalLocation?.mntTotal == 0 || totalLocation?.mntTotal == undefined" awNextStep>Suivant</button>
+                    </li>
+                  </ul>
+                </aw-wizard-step>
+
+                <aw-wizard-step>
+                  <ng-template awWizardStepSymbol>
+                    <i class="fas fa-user-edit"></i>
+                  </ng-template>
+                  <div class="row">
+                    <div class="col-12">
                       <div class="row mb-3">
-                        <label for="percent" class="col-md-5 col-form-label">en %</label>
-                        <div class="col-md-7">
-                          <input #percent class="form-control" name="percent" type="text" [(ngModel)]="remisepercent" mask="000" [disabled]="totalLocation.mntTotal == 0" (keyup)="_calculateRemise(percent.value, 'percent')" placeholder="">
+                        <label class="col-md-3 col-form-label">Nom</label>
+                        <div class="col-md-9">
+                          <input class="form-control" autocomplete="off" type="text" formControlName="p_nom" placeholder="">
+                          <div *ngIf="formvalidate.p_nom.touched && formvalidate.p_nom.invalid" class="text-danger">
+                            <div *ngIf="formvalidate.p_nom.errors.required">Veuillez saisir le nom du client.</div>
+                          </div>
                         </div>
                       </div>
                       <div class="row mb-3">
-                        <label for="remisemnt" class="col-md-5 col-form-label">Montant fixe </label>
-                        <div class="col-md-7">
-                          <input #mtnreduce class="form-control" name="remisemnt" type="text" [(ngModel)]="remisemnt" mask="0000000000" [disabled]="totalLocation.mntTotal == 0" (keyup)="_calculateRemise(mtnreduce.value, 'mntfixe')" placeholder="">
+                        <label class="col-md-3 col-form-label">Prenoms</label>
+                        <div class="col-md-9">
+                          <input class="form-control" autocomplete="off" type="text" formControlName="p_prenoms" placeholder="">
+                          <div *ngIf="formvalidate.p_prenoms.touched && formvalidate.p_prenoms.invalid" class="text-danger">
+                            <div *ngIf="formvalidate.p_prenoms.errors?.required">Veuillez saisir le prenoms du client.</div>
+                          </div>
                         </div>
                       </div>
                       <div class="row mb-3">
-                        <label for="remisenewmnt" class="col-md-5 col-form-label">Nouveau montant</label>
-                        <div class="col-md-7">
-                          <input #newMntTotal class="form-control" name="remisenewmnt" type="text" [(ngModel)]="remisenewmnt" mask="0000000000" [disabled]="totalLocation.mntTotal == 0" (keyup)="_calculateRemise(newMntTotal.value, 'newmnt')" placeholder="">
+                        <label class="col-md-3 col-form-label">Numéro de téléphone</label>
+                        <div class="col-md-9">
+                          <input class="form-control" autocomplete="off" type="text" formControlName="p_telephone" mask="00-00-00-00-00" placeholder="">
+                          <div *ngIf="formvalidate.p_telephone.touched && formvalidate.p_telephone.invalid" class="text-danger">
+                            <div *ngIf="formvalidate.p_telephone.errors.required">Veuillez saisir le numéro de téléphone du client.</div>
+                            <div *ngIf="formvalidate.p_telephone.errors?.minLength">Numéro de téléphone invalide.</div>
+                          </div>
                         </div>
                       </div>
-                    </fieldset>
-
-                    <div class="form-check form-check-inline">
-                      <input class="form-check-input" #avance type="radio" name="inlineRadioOptions" id="inline1" value="1" (change)="_moderglmnt(avance.value)">
-                      <label class="form-check-label" for="inline1">Donner une avance</label>
+                      <div class="row mb-3">
+                        <label class="col-md-3 col-form-label">Adresse email</label>
+                        <div class="col-md-9">
+                          <input class="form-control" autocomplete="off" type="email" formControlName="p_email" placeholder="">
+                        </div>
+                      </div>
+                      <div class="row mb-3">
+                        <label class="col-md-3 col-form-label">Description</label>
+                        <div class="col-md-9">
+                          <textarea class="form-control" autocomplete="off" formControlName="p_description"></textarea>
+                        </div>
+                      </div>
                     </div>
-                    <div class="form-check form-check-inline">
-                      <input class="form-check-input" #total type="radio" name="inlineRadioOptions" id="inline2" value="2" (change)="_moderglmnt(total.value)">
-                      <label class="form-check-label" for="inline2">Règler la totalité de la facture</label>
-                    </div>
+                  </div>
+                  <ul class="list-inline wizard mb-0">
+                    <li class="previous list-inline-item"><button class="btn btn-primary" awPreviousStep>Précédent</button>
+                    </li>
+                    <li class="next list-inline-item float-end"><button [disabled]="formvalidate.p_nom.invalid || formvalidate.p_prenoms.invalid || formvalidate.p_telephone.invalid" class="btn btn-primary" awNextStep>Suivant</button>
+                    </li>
+                  </ul>
+                </aw-wizard-step>
 
-                    <div class="row mb-3" *ngIf="reglmtPartiel==1">
+                <aw-wizard-step>
+                  <ng-template awWizardStepSymbol>
+                    <i class="fas fa-list-alt"></i>
+                  </ng-template>
+                  <div class="row">
+                    <div class="col-6">
+                      <div class="row mb-3">
+                        <label class="col-md-4 col-form-label">Date de livraison</label>
+                        <div class="col-md-8">
+                          <input class="form-control" type="datetime-local" formControlName="p_date_envoie" value="2019-08-19T13:45:00"
+                          id="example-datetime-local-input" (change)="_getdatedebut()">
+                          <div *ngIf="formvalidate.p_date_envoie.touched && formvalidate.p_date_envoie.invalid" class="text-danger">
+                            <div *ngIf="formvalidate.p_date_envoie.errors.required">Veuillez selectionnez le date de livraison.</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-6">
+                      <div class="row mb-3">
+                        <label class="col-md-4 col-form-label">Date de retour</label>
+                        <div class="col-md-8">
+                          <input class="form-control" type="datetime-local" formControlName="p_date_retour" value="2019-08-19T13:45:00"
+                          id="example-datetime-local-input" (change)="_getdatefin()">
+                          <div *ngIf="formvalidate.p_date_retour.touched && formvalidate.p_date_retour.invalid" class="text-danger">
+                            <div *ngIf="formvalidate.p_date_retour.errors.required">Veuillez selectionnez le date de retour des produits.</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="row mb-3">
+                    <div class="col-md-6">
+                      <div class="row mb-3">
+                        <label class="col-md-4 col-form-label">Commune depart</label>
+                        <div class="col-md-8">
+                          <ng-select [items]="CommunesTab" formControlName="p_commune_depart"
+                          [(ngModel)]="selectedCityDapart"
+                          bindValue="value"
+                          bindLabel="label"
+                          ></ng-select>
+                          <div *ngIf="formvalidate.p_commune_depart.touched && formvalidate.p_commune_depart.invalid" class="text-danger">
+                            <div *ngIf="formvalidate.p_commune_depart.errors.required">Veuillez selectionnez votre localité.</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="row mb-3">
+                        <label class="col-md-4 col-form-label">Destination</label>
+                        <div class="col-md-8">
+                          <ng-select [items]="CommunesTab" formControlName="p_commune_arrive" [(ngModel)]="selectedCityarrive" ></ng-select>
+                          <div *ngIf="formvalidate.p_commune_arrive.touched && formvalidate.p_commune_arrive.invalid" class="text-danger">
+                            <div *ngIf="formvalidate.p_commune_arrive.errors.required">Veuillez selectionnez la commune de destination.</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="row mb-3">
+                    <label class="col-md-2 col-form-label">Description destination</label>
+                    <div class="col-md-10">
+                      <textarea class="form-control" placeholder="Saisir le nom du quartier de destination" ></textarea>
+                    </div>
+                  </div>
+
+                  <div class="mb-2">
+                    <label class="">Gérer la logistique</label>&nbsp;
+                    <input #inplogistik class="form-check-input" type="checkbox" (click)="_gestionLogistik(inplogistik.checked)">
+                  </div>
+
+
+                  <fieldset class="form-control mb-4" *ngIf="logistik" >
+
+                    <div class="row mb-3">
 
                       <div class="col-md-6">
-                        <label for="mntAvance" class="col-form-label">Montant avance</label>
-                        <input #mntAvance class="form-control" name="mntAvance" type="text" mask="separator.2" (keyup)="_calculReliquat(mntAvance.value)" placeholder="">
+                        <div class="row mb-3">
+                          <label class="col-md-4 col-form-label">Véhicule</label>
+                          <div class="col-md-8">
+                            <ng-select [items]="logistkTab" formControlName="p_vehicule" ></ng-select>
+                          </div>
+                        </div>
                       </div>
-                      <div class="col-md-6 text-danger">
-                        <label for="mntAvance" class="col-form-label">Réliquat</label>
-                        <input #mntresta class="form-control text-danger text-bold" name="mntresta" type="text" [(ngModel)]="reliquat" mask="separator.2" readonly placeholder="">
+
+                      <div class="col-md-6">
+                        <div class="row mb-3">
+                          <label class="col-md-4 col-form-label">Frais de transport</label>
+                          <div class="col-md-8">
+                            <input class="form-control" name="tel" type="text" formControlName="p_frais" placeholder="">
+                          </div>
+                        </div>
+                      </div>
+
+                    </div>
+
+                  </fieldset>
+
+
+                  <ul class="list-inline wizard mb-0">
+                    <li class="previous list-inline-item"><button class="btn btn-primary" awPreviousStep>Précédent</button>
+                    </li>
+                    <li class="next list-inline-item float-end">
+                      <button class="btn btn-primary" [disabled]=" formvalidate.p_date_envoie.invalid || formvalidate.p_date_retour.invalid || formvalidate.p_commune_arrive.invalid" awNextStep>Suivant</button>
+                    </li>
+                  </ul>
+                </aw-wizard-step>
+
+                <aw-wizard-step>
+                  <ng-template awWizardStepSymbol>
+                    <i class="fas fa-check-circle"></i>
+                  </ng-template>
+
+                  <div class="row justify-content-center mb-2">
+                    <div class="col-lg-12">
+                      <h5>Récapitulatif</h5>
+
+                      <div class="row">
+                        <div class="col-md-6">
+                          <label class="col-form-label">Nom</label>
+                          <input class="form-control" disabled type="text" [(ngModel)]="locationData.value.p_nom" [ngModelOptions]="{standalone: true}">
+                        </div>
+                        <div class="col-md-6">
+                          <label class="col-form-label">Prenoms</label>
+                          <input class="form-control" disabled type="text" [(ngModel)]="locationData.value.p_prenoms" [ngModelOptions]="{standalone: true}">
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-6">
+                          <label class="col-form-label">Numéro de téléphone</label>
+                          <input class="form-control" disabled type="text" mask="00-00-00-00-00" [(ngModel)]="locationData.value.p_telephone" [ngModelOptions]="{standalone: true}">
+                        </div>
+                        <div class="col-md-6">
+                          <label class="col-form-label">Adresse email</label>
+                          <input class="form-control" disabled type="email" [(ngModel)]="locationData.value.p_email" [ngModelOptions]="{standalone: true}">
+                        </div>
+                      </div>
+
+                      <div class="row">
+                        <div class="col-md-12">
+                          <label class="col-form-label">Description</label>
+                          <textarea class="form-control" disabled [(ngModel)]="locationData.value.p_description" [ngModelOptions]="{standalone: true}"></textarea>
+                        </div>
+                      </div>
+
+                      <hr>
+
+                      <div class="row">
+                        <div class="col-md-6">
+                          <label class="col-form-label">Date de livraison</label>
+                          <input class="form-control" type="datetime-local" [(ngModel)]="locationData.value.p_date_envoie" [ngModelOptions]="{standalone: true}"
+                          disabled>
+                        </div>
+                        <div class="col-md-6">
+                          <label class="col-form-label">Date de retour</label>
+                          <input class="form-control" type="datetime-local" [(ngModel)]="locationData.value.p_date_retour" [ngModelOptions]="{standalone: true}"
+                          disabled>
+                        </div>
+                      </div>
+
+                      <div class="row">
+                        <div class="col-md-6">
+                          <label class="col-form-label">Commune depart</label>
+                          <ng-select [items]="CommunesTab" disabled [ngModelOptions]="{standalone: true}"
+                          [(ngModel)]="selectedCityDapart"
+                          bindValue="value"
+                          bindLabel="label"
+                          ></ng-select>
+                        </div>
+                        <div class="col-md-6">
+                          <label class="col-form-label">Destination</label>
+                          <ng-select [items]="CommunesTab" disabled [ngModelOptions]="{standalone: true}" [(ngModel)]="selectedCityarrive" ></ng-select>
+                        </div>
                       </div>
                     </div>
                   </div>
 
+                  <ul class="list-inline wizard mb-0">
+                    <li class="previous list-inline-item">
+                      <button class="btn btn-primary" awPreviousStep>Précédent</button>
+                      <button class="btn btn-primary" type="button" style="float: right"
+                      (click)="_registerLocations()"
+                      awResetWizard="resetWizard"
+                      [disabled]="reglmtPartiel == null || reglmtPartiel == undefined">Enregistrer</button>
+
+                    </li>
+                  </ul>
+                </aw-wizard-step>
+              </aw-wizard>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <!--Block des récaputilatifs-->
+  <div class="col-md-4">
+    <form class="needs-validation">
+      <div class="row">
+        <div class="col-lg-12">
+          <div class="card">
+            <div class="card-body">
+              <h4 class="card-title mb-4">Total Produits: ({{totalLocation.qteproduits}})</h4>
+              <div class="mt-2" *ngFor="let prd of recapTab">
+                <h5 class="font-size-15 text-uppercase">{{prd?.r_libelle}}</h5>
+                <span class="text-muted mb-0">{{prd.qte}} x {{prd?.r_prix_location}} = {{prd?.total}}</span>
+                <hr>
+              </div>
+              <h5 class="card-title mb-4">Nombre de jours : <span class="text-info" ><strong>{{nbreJrLocation | mask: 'separator':' '}}</strong></span></h5>
+              <h5 class="card-title mb-4">Total : <span class="text-info" ><strong>{{totalLocation?.mntTotal | mask: 'separator':' '}} x {{ nbreJrLocation }} = {{(totalLocation?.mntTotal * nbreJrLocation) | mask: 'separator':' '}}</strong></span></h5>
+              <h5 class="card-title mb-4">Frais de transport : <span class="text-info" ><strong>{{locationData?.value.p_frais | mask: 'separator':' '}} </strong></span></h5>
+              <h5 class="card-title mb-4">Nouveau Total : <span class="text-danger" ><strong>{{totalLocation?.mewTotal | mask: 'separator':' '}}</strong></span></h5>
+
+              <div [hidden]="formvalidate.p_date_envoie.invalid || formvalidate.p_date_retour.invalid || formvalidate.p_commune_arrive.invalid" >
+                <fieldset class="form-group border p-3 scheduler-border">
+                  <legend class="w-auto px-2 scheduler-border">Rémises</legend>
+                  <div class="row mb-3">
+                    <label for="percent" class="col-md-5 col-form-label">en %</label>
+                    <div class="col-md-7">
+                      <input #percent class="form-control" name="percent" type="text" [(ngModel)]="remisepercent" mask="000" [disabled]="totalLocation.mntTotal == 0" (keyup)="_calculateRemise(percent.value, 'percent')" placeholder="">
+                    </div>
+                  </div>
+                  <div class="row mb-3">
+                    <label for="remisemnt" class="col-md-5 col-form-label">Montant fixe </label>
+                    <div class="col-md-7">
+                      <input #mtnreduce class="form-control" name="remisemnt" type="text" [(ngModel)]="remisemnt" mask="0000000000" [disabled]="totalLocation.mntTotal == 0" (keyup)="_calculateRemise(mtnreduce.value, 'mntfixe')" placeholder="">
+                    </div>
+                  </div>
+                  <div class="row mb-3">
+                    <label for="remisenewmnt" class="col-md-5 col-form-label">Nouveau montant</label>
+                    <div class="col-md-7">
+                      <input #newMntTotal class="form-control" name="remisenewmnt" type="text" [(ngModel)]="remisenewmnt" mask="0000000000" [disabled]="totalLocation.mntTotal == 0" (keyup)="_calculateRemise(newMntTotal.value, 'newmnt')" placeholder="">
+                    </div>
+                  </div>
+                </fieldset>
+
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" #avance type="radio" name="inlineRadioOptions" id="inline1" value="1" (change)="_moderglmnt(avance.value)">
+                  <label class="form-check-label" for="inline1">Donner une avance</label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" #total type="radio" name="inlineRadioOptions" id="inline2" value="2" (change)="_moderglmnt(total.value)">
+                  <label class="form-check-label" for="inline2">Règler la totalité de la facture</label>
+                </div>
+
+                <div class="row mb-3" *ngIf="reglmtPartiel==1">
+
+                  <div class="col-md-6">
+                    <label for="mntAvance" class="col-form-label">Montant avance</label>
+                    <input #mntAvance class="form-control" name="mntAvance" type="text" mask="separator.2" (keyup)="_calculReliquat(mntAvance.value)" placeholder="">
+                  </div>
+                  <div class="col-md-6 text-danger">
+                    <label for="mntAvance" class="col-form-label">Réliquat</label>
+                    <input #mntresta class="form-control text-danger text-bold" name="mntresta" type="text" [(ngModel)]="reliquat" mask="separator.2" readonly placeholder="">
                   </div>
                 </div>
               </div>
+
             </div>
-          </form>
+          </div>
         </div>
-
       </div>
+    </form>
+  </div>
 
-    </ng-template>
+</div>
+
+</ng-template>
 </div>
 
 
 <!-- Large Modal -->
 <ng-template #largeDataModal let-modal>
 
-        <div class="modal-header">
-          <h5 class="modal-title mt-0">{{modalTitle}} &nbsp;&nbsp;&nbsp;Total facture: {{ligneLocation?.r_mnt_total | mask: 'separator':' '}}&nbsp;&nbsp;&nbsp;Rémise: {{ligneLocation?.r_remise | mask: 'separator':' '}}&nbsp;&nbsp;&nbsp;Total après rémise: {{ligneLocation?.r_mnt_total_remise | mask: 'separator':' '}}</h5>
-          <button type="button" class="btn-close" (click)="modal.dismiss('Cross click')" aria-hidden="true"></button>
-        </div>
-        <div class="modal-body">
-          <!-- Status du paiement de la location -->
-          <ngb-alert [dismissible]="false" [type]="typetext">
-            <h5>{{dkem}}</h5>
-          </ngb-alert>
-          <!-- Status du paiement de la location -->
-          <div class="row">
-            <div class="col-lg-12">
-              <div class="card">
-                <div class="card-body">
+  <div class="modal-header">
+    <h5 class="modal-title mt-0">{{modalTitle}} &nbsp;&nbsp;&nbsp;Total facture: {{ligneLocation?.r_mnt_total | mask: 'separator':' '}}&nbsp;&nbsp;&nbsp;Rémise: {{ligneLocation?.r_remise | mask: 'separator':' '}}&nbsp;&nbsp;&nbsp;Total après rémise: {{ligneLocation?.r_mnt_total_remise | mask: 'separator':' '}}</h5>
+    <button type="button" class="btn-close" (click)="modal.dismiss('Cross click')" aria-hidden="true"></button>
+  </div>
+  <div class="modal-body">
+    <!-- Status du paiement de la location -->
+    <ngb-alert [dismissible]="false" [type]="typetext">
+      <h5>{{dkem}}</h5>
+    </ngb-alert>
+    <!-- Status du paiement de la location -->
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="card">
+          <div class="card-body">
 
-    <!-- -------------------------------------------------------------------------------------------------------------------------------------------------------- -->
-                  <div [ngSwitch]="addproduct" >
-                    <!-- Détails ou consultation des locations -->
-                    <div *ngSwitchCase="false" >
-                      <ul ngbNav #customNav="ngbNav" [activeId]="1" class="nav-tabs nav-tabs-custom nav-justified">
-                        <li [ngbNavItem]="1">
-                          <a ngbNavLink>
-                            <span class="d-block d-sm-none"><i class="fas fa-home"></i></span>
-                            <span class="d-none d-sm-block">Infos client</span>
-                          </a>
-                          <ng-template ngbNavContent>
-                            <ng-template [ngTemplateOutlet]="TabContent"></ng-template>
-                          </ng-template>
-                        </li>
-                        <li [ngbNavItem]="2">
-                          <a ngbNavLink>
-                            <span class="d-block d-sm-none"><i class="far fa-user"></i></span>
-                            <span class="d-none d-sm-block">Location</span>
-                          </a>
-                          <ng-template ngbNavContent>
-                            <ng-template [ngTemplateOutlet]="TabContent1"></ng-template>
+            <!-- -------------------------------------------------------------------------------------------------------------------------------------------------------- -->
+            <div [ngSwitch]="addproduct" >
+              <!-- Détails ou consultation des locations -->
+              <div *ngSwitchCase="false" >
+                <ul ngbNav #customNav="ngbNav" [activeId]="1" class="nav-tabs nav-tabs-custom nav-justified">
+                  <li [ngbNavItem]="1">
+                    <a ngbNavLink>
+                      <span class="d-block d-sm-none"><i class="fas fa-home"></i></span>
+                      <span class="d-none d-sm-block">Infos client</span>
+                    </a>
+                    <ng-template ngbNavContent>
+                      <ng-template [ngTemplateOutlet]="TabContent"></ng-template>
+                    </ng-template>
+                  </li>
+                  <li [ngbNavItem]="2">
+                    <a ngbNavLink>
+                      <span class="d-block d-sm-none"><i class="far fa-user"></i></span>
+                      <span class="d-none d-sm-block">Location</span>
+                    </a>
+                    <ng-template ngbNavContent>
+                      <ng-template [ngTemplateOutlet]="TabContent1"></ng-template>
 
-                            <button style="float: right" type="button" class="btn btn-primary nouveau" title="Modifier" [hidden]="desactiver" (click)="updateLocation()" >Modifier</button>
+                      <button style="float: right" type="button" class="btn btn-primary nouveau" title="Modifier" [hidden]="desactiver" (click)="updateLocation()" >Modifier</button>
 
-                          </ng-template>
+                    </ng-template>
 
-                        </li>
-                        <li [hidden]="paymntTab == 'null' || btnValidation !== 'validation'" [ngbNavItem]="3">
-                          <a ngbNavLink>
-                            <span class="d-block d-sm-none"><i class="fas fa-home"></i></span>
-                            <span class="d-none d-sm-block">Paiement</span>
-                          </a>
-                          <ng-template ngbNavContent>
-                            <ng-template [ngTemplateOutlet]="payment"></ng-template>
-                          </ng-template>
-                        </li>
-                      </ul>
-                      <div [ngbNavOutlet]="customNav"></div>
-                      <div class="row mb-3" *ngIf="btnValidation == 'validation'" >
-                        <div class="col" *ngIf="ligneLocation.r_status == 0" >
-                          <button type="button" class="btn btn-success btn-label waves-light btn-block" (click)="_majStatuslocation(1,'valider la location','Cette location sera validée ?')" ><i
-                            class="bx bx-check-double label-icon"></i> Valider la commande</button>
-                        </div>
-                        <div class="col" *ngIf="ligneLocation.r_status == 1">
-                          <button type="button" class="btn btn-warning btn-label waves-light" (click)="_majStatuslocation(2,'Terminer la location','Avez vous Vérifier la quantité des produits retournés ?')"><i
-                            class="bx bx-block label-icon "></i>Terminer la location</button>
-                        </div>
-                        <div class="col" *ngIf="ligneLocation.r_status == 0" >
-                          <button type="button" style="float: right" class="btn btn-danger btn-label waves-light" (click)="_majStatuslocation(3,'Annuler la location','Voullez vous vraiment annuler la location ?')"><i
-                            class="bx bx-block label-icon "></i>Annuler la demande de la location</button>
+                  </li>
+                  <li [hidden]="paymntTab == 'null' || btnValidation !== 'validation'" [ngbNavItem]="3">
+                    <a ngbNavLink>
+                      <span class="d-block d-sm-none"><i class="fas fa-home"></i></span>
+                      <span class="d-none d-sm-block">Paiement</span>
+                    </a>
+                    <ng-template ngbNavContent>
+                      <ng-template [ngTemplateOutlet]="payment"></ng-template>
+                    </ng-template>
+                  </li>
+                </ul>
+                <div [ngbNavOutlet]="customNav"></div>
+                <div class="row mb-3" *ngIf="btnValidation == 'validation'" >
+                  <div class="col" *ngIf="ligneLocation.r_status == 0" >
+                    <button type="button" class="btn btn-success btn-label waves-light btn-block" (click)="_majStatuslocation(1,'valider la location','Cette location sera validée ?')" ><i
+                      class="bx bx-check-double label-icon"></i> Valider la commande</button>
+                    </div>
+                    <div class="col" *ngIf="ligneLocation.r_status == 1">
+                      <button type="button" class="btn btn-warning btn-label waves-light" (click)="_majStatuslocation(2,'Terminer la location','Avez vous Vérifier la quantité des produits retournés ?')"><i
+                        class="bx bx-block label-icon "></i>Terminer la location</button>
+                      </div>
+                      <div class="col" *ngIf="ligneLocation.r_status == 0" >
+                        <button type="button" style="float: right" class="btn btn-danger btn-label waves-light" (click)="_majStatuslocation(3,'Annuler la location','Voullez vous vraiment annuler la location ?')"><i
+                          class="bx bx-block label-icon "></i>Annuler la demande de la location</button>
                         </div>
                       </div>
                     </div>
                   </div>
-    <!-- -------------------------------------------------------------------------------------------------------------------------------------------------------- -->
+                  <!-- -------------------------------------------------------------------------------------------------------------------------------------------------------- -->
 
 
                 </div>
@@ -702,397 +702,397 @@
           <span class="text-danger" >Saisie par : {{ligneLocation.nom_person_eng +" " + ligneLocation.prenoms_person_engg}}</span>
           <button type="button" title="fermer" class="btn btn-secondary" (click)="modal.close('Close click');">Fermer</button>
           <!-- <button type="button" title="Enregistrer"
-           class="btn btn-primary" >Enregistrer</button> -->
-        </div>
+            class="btn btn-primary" >Enregistrer</button> -->
+          </div>
 </ng-template>
 
-  <!-- Tab Content -->
-  <ng-template #TabContent>
-    <form [formGroup]="clientsData" class="mt-3" >
-      <div class="row">
-        <div class="col-12">
-          <div class="row mb-3">
-            <label class="col-md-3 col-form-label">Nom</label>
-            <div class="col-md-9">
-              <input class="form-control" name="nom" type="text" formControlName="p_nom" [(ngModel)]="ligneLocation.r_nom" placeholder="">
-              <div *ngIf="formvalidate.p_nom.touched && formvalidate.p_nom.invalid" class="text-danger">
-                <div *ngIf="formvalidate.p_nom.errors.required">Veuillez saisir le nom du client.</div>
+        <!-- Tab Content -->
+        <ng-template #TabContent>
+          <form [formGroup]="clientsData" class="mt-3" >
+            <div class="row">
+              <div class="col-12">
+                <div class="row mb-3">
+                  <label class="col-md-3 col-form-label">Nom</label>
+                  <div class="col-md-9">
+                    <input class="form-control" name="nom" type="text" formControlName="p_nom" [(ngModel)]="ligneLocation.r_nom" placeholder="">
+                    <div *ngIf="formvalidate.p_nom.touched && formvalidate.p_nom.invalid" class="text-danger">
+                      <div *ngIf="formvalidate.p_nom.errors.required">Veuillez saisir le nom du client.</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="row mb-3">
+                  <label class="col-md-3 col-form-label">Prenoms</label>
+                  <div class="col-md-9">
+                    <input class="form-control" name="prenoms" type="text" formControlName="p_prenoms" [(ngModel)]="ligneLocation.r_prenoms" placeholder="">
+                    <div *ngIf="formvalidate.p_prenoms.touched && formvalidate.p_prenoms.invalid" class="text-danger">
+                      <div *ngIf="formvalidate.p_prenoms.errors?.required">Veuillez saisir le prenoms du client.</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="row mb-3">
+                  <label class="col-md-3 col-form-label">Numéro de téléphone</label>
+                  <div class="col-md-9">
+                    <input class="form-control" name="tel" type="text" formControlName="p_telephone" [(ngModel)]="ligneLocation.r_telephone" mask="(000)-00-00-00-00-00" placeholder="">
+                    <div *ngIf="formvalidate.p_telephone.touched && formvalidate.p_telephone.invalid" class="text-danger">
+                      <div *ngIf="formvalidate.p_telephone.errors.required">Veuillez saisir le numéro de téléphone du client.</div>
+                      <div *ngIf="formvalidate.p_telephone.errors?.minLength">Numéro de téléphone invalide.</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="row mb-3">
+                  <label class="col-md-3 col-form-label">Adresse email</label>
+                  <div class="col-md-9">
+                    <input class="form-control" name="email" type="email" formControlName="p_email" [(ngModel)]="ligneLocation.r_email" placeholder="">
+                  </div>
+                </div>
+                <div class="row mb-3">
+                  <label class="col-md-3 col-form-label">Description</label>
+                  <div class="col-md-9">
+                    <textarea class="form-control" formControlName="p_description" [(ngModel)]="ligneLocation.r_description"></textarea>
+                  </div>
+                </div>
               </div>
             </div>
+          </form>
+
+        </ng-template>
+
+        <!-- Tab Content -->
+        <ng-template #TabContent1>
+          <div class="row mt-2" >
+            <div class="col-10" >
+              <ng-select [items]="tarificationTabCiblees"
+              bindLabel="label"
+              bindValue="id"
+              [multiple]="true"
+              placeholder="Sélectionner les produits à ajouter"
+              [(ngModel)]="selectedProductIds"
+              (change)="addNewProduct($event)"
+              [hidden]="desactiver" >
+            </ng-select>
           </div>
-          <div class="row mb-3">
-            <label class="col-md-3 col-form-label">Prenoms</label>
-            <div class="col-md-9">
-              <input class="form-control" name="prenoms" type="text" formControlName="p_prenoms" [(ngModel)]="ligneLocation.r_prenoms" placeholder="">
-              <div *ngIf="formvalidate.p_prenoms.touched && formvalidate.p_prenoms.invalid" class="text-danger">
-                <div *ngIf="formvalidate.p_prenoms.errors?.required">Veuillez saisir le prenoms du client.</div>
-              </div>
-            </div>
-          </div>
-          <div class="row mb-3">
-            <label class="col-md-3 col-form-label">Numéro de téléphone</label>
-            <div class="col-md-9">
-              <input class="form-control" name="tel" type="text" formControlName="p_telephone" [(ngModel)]="ligneLocation.r_telephone" mask="(000)-00-00-00-00-00" placeholder="">
-              <div *ngIf="formvalidate.p_telephone.touched && formvalidate.p_telephone.invalid" class="text-danger">
-                <div *ngIf="formvalidate.p_telephone.errors.required">Veuillez saisir le numéro de téléphone du client.</div>
-                <div *ngIf="formvalidate.p_telephone.errors?.minLength">Numéro de téléphone invalide.</div>
-              </div>
-            </div>
-          </div>
-          <div class="row mb-3">
-            <label class="col-md-3 col-form-label">Adresse email</label>
-            <div class="col-md-9">
-              <input class="form-control" name="email" type="email" formControlName="p_email" [(ngModel)]="ligneLocation.r_email" placeholder="">
-            </div>
-          </div>
-          <div class="row mb-3">
-            <label class="col-md-3 col-form-label">Description</label>
-            <div class="col-md-9">
-              <textarea class="form-control" formControlName="p_description" [(ngModel)]="ligneLocation.r_description"></textarea>
-            </div>
+          <div class="col-2">
+            <button style="float: left;" [hidden]="desactiver"
+            type="button"
+            class="btn btn-primary mt-1"
+            title="Ajouter de nouveau produits"
+            (click)="_addProdut()" ><i class="fas fa-shopping-basket"></i></button>
           </div>
         </div>
-      </div>
-    </form>
+        <!-- Table -->
+        <!-- End search -->
+        <table class="table mb-0 table-striped" disable >
 
-  </ng-template>
+          <caption>Liste des produits</caption>
 
-  <!-- Tab Content -->
-  <ng-template #TabContent1>
-    <div class="row mt-2" >
-      <div class="col-10" >
-        <ng-select [items]="tarificationTabCiblees"
-                   bindLabel="label"
-                   bindValue="id"
-                   [multiple]="true"
-                   placeholder="Sélectionner les produits à ajouter"
-                   [(ngModel)]="selectedProductIds"
-                  (change)="addNewProduct($event)"
-                  [hidden]="desactiver" >
-        </ng-select>
-      </div>
-      <div class="col-2">
-        <button style="float: left;" [hidden]="desactiver"
-        type="button"
-        class="btn btn-primary mt-1"
-        title="Ajouter de nouveau produits"
-        (click)="_addProdut()" ><i class="fas fa-shopping-basket"></i></button>
-      </div>
-    </div>
-    <!-- Table -->
-    <!-- End search -->
-    <table class="table mb-0 table-striped" disable >
+          <thead class="bg-dark text-white">
+            <tr>
+              <th style="width:35%;" >Produit</th>
+              <th style="width:15%;" >Quantité</th>
+              <th style="width:10%;">Prix unitaire</th>
+              <th style="width:10%;">Sous total</th>
+              <th style="width:15%;" *ngIf="ligneLocation.r_status !== 0">Manquant</th>
+              <th style="width:15%;" >Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let produit of detailsLocationTab ; let i = index">
+              <td style="width:35%" >
+                <ng-select [items]="produitsTab"
+                bindLabel = "label"
+                bindValue = "value"
+                [(ngModel)]="produit.r_produit" [disabled]="desactiver" >
+              </ng-select></td>
+              <td style="width:15%">
+                <input #inp class="form-control" [disabled]="desactiver" type="number" [(ngModel)]="produit.r_quantite" (change)="_valueQte(inp.value,i)" placeholder="">
+              </td>
+              <td style="width:10%" >{{produit?.r_prix_location | mask: 'separator':' '}}</td>
+              <td style="width:10%" >{{produit?.r_sous_total | mask: 'separator':' '}}</td>
+              <td style="width:15%" *ngIf="ligneLocation.r_status !== 0">
+                <input #inpm class="form-control" type="number" value="0" [(ngModel)]="produit.r_produit_manquant" (change)="_valueQte(inpm.value,i)" placeholder="">
+              </td>
+              <td style="width:15%">
+                <button type="button" class="btn btn-warning" title="Modification" [disabled]="desactiver" ><i class="fas fa-edit"></i></button>&nbsp;
+                <button type="button" class="btn btn-danger" title="Supprimer" [disabled]="desactiver" (click)="SuprimeChamps(i)" ><i class="fas fa-trash-alt"></i></button>
+              </td>
+            </tr>
+            <!-- <tr colspan="4" >{{totalLocationModif.mntTotal}}</tr> -->
+          </tbody>
+        </table>
 
-      <caption>Liste des produits</caption>
+        <div class="clearfix" >&nbsp;</div>
 
-      <thead class="bg-dark text-white">
-        <tr>
-          <th style="width:35%;" >Produit</th>
-          <th style="width:15%;" >Quantité</th>
-          <th style="width:10%;">Prix unitaire</th>
-          <th style="width:10%;">Sous total</th>
-          <th style="width:15%;" *ngIf="ligneLocation.r_status !== 0">Manquant</th>
-          <th style="width:15%;" >Action</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let produit of detailsLocationTab ; let i = index">
-          <td style="width:35%" >
-            <ng-select [items]="produitsTab"
-            bindLabel = "label"
-            bindValue = "value"
-            [(ngModel)]="produit.r_produit" [disabled]="desactiver" >
-          </ng-select></td>
-          <td style="width:15%">
-            <input #inp class="form-control" [disabled]="desactiver" type="number" [(ngModel)]="produit.r_quantite" (change)="_valueQte(inp.value,i)" placeholder="">
-          </td>
-          <td style="width:10%" >{{produit?.r_prix_location | mask: 'separator':' '}}</td>
-          <td style="width:10%" >{{produit?.r_sous_total | mask: 'separator':' '}}</td>
-          <td style="width:15%" *ngIf="ligneLocation.r_status !== 0">
-            <input #inpm class="form-control" type="number" value="0" [(ngModel)]="produit.r_produit_manquant" (change)="_valueQte(inpm.value,i)" placeholder="">
-          </td>
-          <td style="width:15%">
-            <button type="button" class="btn btn-warning" title="Modification" [disabled]="desactiver" ><i class="fas fa-edit"></i></button>&nbsp;
-            <button type="button" class="btn btn-danger" title="Supprimer" [disabled]="desactiver" (click)="SuprimeChamps(i)" ><i class="fas fa-trash-alt"></i></button>
-          </td>
-        </tr>
-        <!-- <tr colspan="4" >{{totalLocationModif.mntTotal}}</tr> -->
-      </tbody>
-    </table>
-
-    <div class="clearfix" >&nbsp;</div>
-
-    <fieldset class="form-group border p-3 scheduler-border">
-      <legend class="w-auto px-2 scheduler-border">Détails</legend>
-      <form [formGroup]="showLocationData" class="needs-validation">
-        <div class="row">
-          <div class="col-6">
-            <div class="row mb-3">
-              <label class="col-md-4 col-form-label">Date de livraison</label>
-              <div class="col-md-8">
-                <input class="form-control" type="datetime-local" formControlName="p_date_envoie" value="2019-08-19T13:45:00"
-                          id="example-datetime-local-input" [(ngModel)]="dateEnvoie" (change)="_getdatedebutModif()">
-                <div *ngIf="formvalidate.p_date_envoie.touched && formvalidate.p_date_envoie.invalid" class="text-danger">
+        <fieldset class="form-group border p-3 scheduler-border">
+          <legend class="w-auto px-2 scheduler-border">Détails</legend>
+          <form [formGroup]="showLocationData" class="needs-validation">
+            <div class="row">
+              <div class="col-6">
+                <div class="row mb-3">
+                  <label class="col-md-4 col-form-label">Date de livraison</label>
+                  <div class="col-md-8">
+                    <input class="form-control" type="datetime-local" formControlName="p_date_envoie" value="2019-08-19T13:45:00"
+                    id="example-datetime-local-input" [(ngModel)]="dateEnvoie" (change)="_getdatedebutModif()">
+                    <div *ngIf="formvalidate.p_date_envoie.touched && formvalidate.p_date_envoie.invalid" class="text-danger">
                       <div *ngIf="formvalidate.p_date_envoie.errors.required">Veuillez selectionnez le date de livraison.</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="row mb-3">
+                  <label class="col-md-4 col-form-label">Date de retour</label>
+                  <div class="col-md-8">
+                    <input class="form-control" type="datetime-local" formControlName="p_date_retour" value="2019-08-19T13:45:00"
+                    id="example-datetime-local-input" [(ngModel)]="dateretour" (change)="_getdatefinModif()">
+                    <div *ngIf="formvalidate.p_date_retour.touched && formvalidate.p_date_retour.invalid" class="text-danger">
+                      <div *ngIf="formvalidate.p_date_retour.errors.required">Veuillez selectionnez le date de retour des produits.</div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-          <div class="col-6">
+
             <div class="row mb-3">
-              <label class="col-md-4 col-form-label">Date de retour</label>
-              <div class="col-md-8">
-                <input class="form-control" type="datetime-local" formControlName="p_date_retour" value="2019-08-19T13:45:00"
-                          id="example-datetime-local-input" [(ngModel)]="dateretour" (change)="_getdatefinModif()">
-                <div *ngIf="formvalidate.p_date_retour.touched && formvalidate.p_date_retour.invalid" class="text-danger">
-                    <div *ngIf="formvalidate.p_date_retour.errors.required">Veuillez selectionnez le date de retour des produits.</div>
+              <div class="col-md-6">
+                <div class="row mb-3">
+                  <label class="col-md-4 col-form-label">Commune depart</label>
+                  <div class="col-md-8">
+                    <ng-select  [items]="CommunesTab"
+                    formControlName="p_commune_depart"
+                    [(ngModel)]="selectedCityDapart"
+                    bindLabel = "label"
+                    bindValue = "value"></ng-select>
+                    <div *ngIf="formvalidate.p_commune_depart.touched && formvalidate.p_commune_depart.invalid" class="text-danger">
+                      <div *ngIf="formvalidate.p_commune_depart.errors.required">Veuillez selectionnez votre localité.</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="row mb-3">
+                  <label class="col-md-4 col-form-label">Destination</label>
+                  <div class="col-md-8">
+                    <ng-select [items]="CommunesTab"
+                    formControlName="p_commune_arrive"
+                    [(ngModel)]="selectedCityarrive"
+                    bindLabel = "label"
+                    bindValue = "value" ></ng-select>
+                    <div *ngIf="formvalidate.p_commune_arrive.touched && formvalidate.p_commune_arrive.invalid" class="text-danger">
+                      <div *ngIf="formvalidate.p_commune_arrive.errors.required">Veuillez selectionnez la commune de destination.</div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        </div>
 
-        <div class="row mb-3">
-          <div class="col-md-6">
             <div class="row mb-3">
-              <label class="col-md-4 col-form-label">Commune depart</label>
-              <div class="col-md-8">
-                <ng-select  [items]="CommunesTab"
-                            formControlName="p_commune_depart"
-                            [(ngModel)]="selectedCityDapart"
-                            bindLabel = "label"
-                            bindValue = "value"></ng-select>
-                <div *ngIf="formvalidate.p_commune_depart.touched && formvalidate.p_commune_depart.invalid" class="text-danger">
-                  <div *ngIf="formvalidate.p_commune_depart.errors.required">Veuillez selectionnez votre localité.</div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-6">
-            <div class="row mb-3">
-              <label class="col-md-4 col-form-label">Destination</label>
-              <div class="col-md-8">
-                <ng-select [items]="CommunesTab"
-                            formControlName="p_commune_arrive"
-                            [(ngModel)]="selectedCityarrive"
-                            bindLabel = "label"
-                            bindValue = "value" ></ng-select>
-                <div *ngIf="formvalidate.p_commune_arrive.touched && formvalidate.p_commune_arrive.invalid" class="text-danger">
-                  <div *ngIf="formvalidate.p_commune_arrive.errors.required">Veuillez selectionnez la commune de destination.</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="row mb-3">
-          <label class="col-md-2 col-form-label">Description</label>
-          <div class="col-md-10">
-            <textarea class="form-control" formControlName="p_description" ></textarea>
-          </div>
-        </div>
-
-        <div class="mb-2">
-          <label class="">Gérer la logistique</label>&nbsp;
-          <input #inplogistik class="form-check-input" [disabled]="desactiver" type="checkbox" [(ngModel)]="logistik" [ngModelOptions]="{standalone: true}">
-        </div>
-
-
-          <div class="row mb-3" *ngIf="logistik == true" >
-
-            <div class="col-md-6">
-              <div class="row mb-3">
-                <label class="col-md-4 col-form-label">Véhicule</label>
-                <div class="col-md-8">
-                  <ng-select [items]="logistkTab"
-                            [(ngModel)]="selectedVehicule"
-                            bindLabel = "label"
-                            bindValue = "value"
-                            formControlName="p_vehicule"></ng-select>
-                </div>
+              <label class="col-md-2 col-form-label">Description</label>
+              <div class="col-md-10">
+                <textarea class="form-control" formControlName="p_description" ></textarea>
               </div>
             </div>
 
-            <div class="col-md-6">
-              <div class="row mb-3">
-                <label class="col-md-4 col-form-label">Frais de transport</label>
-                <div class="col-md-8">
-                  <input class="form-control" name="tel" type="text" formControlName="p_frais" [(ngModel)]="ligneLocation.r_frais_transport" placeholder="">
-                </div>
-              </div>
+            <div class="mb-2">
+              <label class="">Gérer la logistique</label>&nbsp;
+              <input #inplogistik class="form-check-input" [disabled]="desactiver" type="checkbox" [(ngModel)]="logistik" [ngModelOptions]="{standalone: true}">
             </div>
 
-          </div>
 
-      </form>
-    </fieldset>
-
-     <!--Block des récaputilatifs-->
-     <div class="col-md-12">
-      <form class="needs-validation">
-        <div class="row">
-          <div class="col">
-            <div class="card">
-              <div class="card-body">
-                <h4 class="card-title mb-4">Total Produits: ({{totalLocationModif.qteproduits}})</h4>
-                <!-- <div class="mt-2" *ngFor="let prd of recapTab">
-                  <h5 class="font-size-15 text-uppercase">{{prd?.r_libelle}}</h5>
-                  <span class="text-muted mb-0">{{prd.qte}} x {{prd?.r_prix_location}} = {{prd?.total}}</span>
-                  <hr>
-                </div> -->
-                <h5 class="card-title mb-4">Nombre de jours : <span class="text-info" ><strong>{{nbreJrLocation | mask: 'separator':' '}}</strong></span></h5>
-                <h5 class="card-title mb-4" *ngIf="ligneLocation.r_remise <= 100">Total : <span class="text-info" ><strong>{{totalLocationModif?.mntTotal | mask: 'separator':' '}} x {{ nbreJrLocation }} = {{(totalLocationModif?.mntTotal * nbreJrLocation) | mask: 'separator':' '}}</strong></span></h5>
-                <h5 class="card-title mb-4" *ngIf="ligneLocation.r_remise > 100">Total : <span class="text-info" ><strong>{{totalLocationModif?.mntTotal | mask: 'separator':' '}} x {{ nbreJrLocation }} = {{(totalLocationModif?.mntTotal * nbreJrLocation) - ligneLocation?.r_remise | mask: 'separator':' '}}</strong></span></h5>
-                <h5 class="card-title mb-4">Frais de transport : <span class="text-info" ><strong>{{showLocationData?.value.p_frais | mask: 'separator':' '}} </strong></span></h5>
-                <h5 class="card-title mb-4">Nouveau Total : <span class="text-danger" ><strong>{{totalLocationModif?.mewTotal | mask: 'separator':' '}}</strong></span></h5>
-
-
-              </div>
-            </div>
-          </div>
-          <div class="col" hidden>
-            <fieldset class="form-group border p-3 scheduler-border">
-              <legend class="w-auto px-2 scheduler-border">Rémises</legend>
-              <div class="row mb-3">
-                <label for="percent" class="col-md-5 col-form-label">en %</label>
-                <div class="col-md-7">
-                  <input #percent class="form-control" name="percent" type="text" [(ngModel)]="remisepercent" mask="000" [disabled]="totalLocationModif.mntTotal == 0" (keyup)="_calculateRemise(percent.value, 'percent')" placeholder="">
-                </div>
-              </div>
-              <div class="row mb-3">
-                <label for="remisemnt" class="col-md-5 col-form-label">Montant fixe </label>
-                <div class="col-md-7">
-                  <input #mtnreduce class="form-control" name="remisemnt" type="text" [(ngModel)]="remisemnt" mask="0000000000" [disabled]="totalLocationModif.mntTotal == 0" (keyup)="_calculateRemise(mtnreduce.value, 'mntfixe')" placeholder="">
-                </div>
-              </div>
-              <div class="row mb-3">
-                <label for="remisenewmnt" class="col-md-5 col-form-label">Nouveau montant</label>
-                <div class="col-md-7">
-                  <input #newMntTotal class="form-control" name="remisenewmnt" type="text" [(ngModel)]="remisenewmnt" mask="0000000000" [disabled]="totalLocationModif.mntTotal == 0" (keyup)="_calculateRemise(newMntTotal.value, 'newmnt')" placeholder="">
-                </div>
-              </div>
-            </fieldset>
-
-            <div class="form-check form-check-inline">
-              <input class="form-check-input" #avance type="radio" name="inlineRadioOptions" id="inline1" value="1" (change)="_moderglmnt(avance.value)">
-              <label class="form-check-label" for="inline1">Donner une avance</label>
-            </div>
-            <div class="form-check form-check-inline">
-              <input class="form-check-input" #total type="radio" name="inlineRadioOptions" id="inline2" value="2" (change)="_moderglmnt(total.value)">
-              <label class="form-check-label" for="inline2">Règler la totalité de la facture</label>
-            </div>
-
-            <div class="row mb-3" *ngIf="reglmtPartiel==1">
+            <div class="row mb-3" *ngIf="logistik == true" >
 
               <div class="col-md-6">
-                <label for="mntAvance" class="col-form-label">Montant avance</label>
-                <input #mntAvance class="form-control" name="mntAvance" type="text" mask="0000000000" (keyup)="_calculReliquat(mntAvance.value)" placeholder="">
+                <div class="row mb-3">
+                  <label class="col-md-4 col-form-label">Véhicule</label>
+                  <div class="col-md-8">
+                    <ng-select [items]="logistkTab"
+                    [(ngModel)]="selectedVehicule"
+                    bindLabel = "label"
+                    bindValue = "value"
+                    formControlName="p_vehicule"></ng-select>
+                  </div>
+                </div>
               </div>
-              <div class="col-md-6 text-danger">
-                <label for="mntAvance" class="col-form-label">Réliquat</label>
-                <input #mntresta class="form-control text-danger text-bold" name="mntresta" type="text" [(ngModel)]="reliquat" mask="0000000000" readonly placeholder="">
+
+              <div class="col-md-6">
+                <div class="row mb-3">
+                  <label class="col-md-4 col-form-label">Frais de transport</label>
+                  <div class="col-md-8">
+                    <input class="form-control" name="tel" type="text" formControlName="p_frais" [(ngModel)]="ligneLocation.r_frais_transport" placeholder="">
+                  </div>
+                </div>
               </div>
+
             </div>
-          </div>
-          <div class="col" [hidden]="!isPenalite" >
-            <div class="card">
-              <div class="card-body">
-                <h4 class="card-title mb-4">Pénalité</h4>
 
-                <form [formGroup]="penaliteFormData" >
+          </form>
+        </fieldset>
 
-                  <div class="row" >
-                    <div class="col-md-6">
-                      <label for="validationCustom01">Montant</label>
-                      <input type="text" class="form-control" mask="separator.2" formControlName="p_mnt" [(ngModel)]="penalitaInfo.r_mnt">
+        <!--Block des récaputilatifs-->
+        <div class="col-md-12">
+          <form class="needs-validation">
+            <div class="row">
+              <div class="col">
+                <div class="card">
+                  <div class="card-body">
+                    <h4 class="card-title mb-4">Total Produits: ({{totalLocationModif.qteproduits}})</h4>
+                    <!-- <div class="mt-2" *ngFor="let prd of recapTab">
+                      <h5 class="font-size-15 text-uppercase">{{prd?.r_libelle}}</h5>
+                      <span class="text-muted mb-0">{{prd.qte}} x {{prd?.r_prix_location}} = {{prd?.total}}</span>
+                      <hr>
+                    </div> -->
+                    <h5 class="card-title mb-4">Nombre de jours : <span class="text-info" ><strong>{{nbreJrLocation | mask: 'separator':' '}}</strong></span></h5>
+                    <h5 class="card-title mb-4" *ngIf="ligneLocation.r_remise <= 100">Total : <span class="text-info" ><strong>{{totalLocationModif?.mntTotal | mask: 'separator':' '}} x {{ nbreJrLocation }} = {{(totalLocationModif?.mntTotal * nbreJrLocation) | mask: 'separator':' '}}</strong></span></h5>
+                    <h5 class="card-title mb-4" *ngIf="ligneLocation.r_remise > 100">Total : <span class="text-info" ><strong>{{totalLocationModif?.mntTotal | mask: 'separator':' '}} x {{ nbreJrLocation }} = {{(totalLocationModif?.mntTotal * nbreJrLocation) - ligneLocation?.r_remise | mask: 'separator':' '}}</strong></span></h5>
+                    <h5 class="card-title mb-4">Frais de transport : <span class="text-info" ><strong>{{showLocationData?.value.p_frais | mask: 'separator':' '}} </strong></span></h5>
+                    <h5 class="card-title mb-4">Nouveau Total : <span class="text-danger" ><strong>{{totalLocationModif?.mewTotal | mask: 'separator':' '}}</strong></span></h5>
+
+
+                  </div>
+                </div>
+              </div>
+              <div class="col" hidden>
+                <fieldset class="form-group border p-3 scheduler-border">
+                  <legend class="w-auto px-2 scheduler-border">Rémises</legend>
+                  <div class="row mb-3">
+                    <label for="percent" class="col-md-5 col-form-label">en %</label>
+                    <div class="col-md-7">
+                      <input #percent class="form-control" name="percent" type="text" [(ngModel)]="remisepercent" mask="000" [disabled]="totalLocationModif.mntTotal == 0" (keyup)="_calculateRemise(percent.value, 'percent')" placeholder="">
                     </div>
                   </div>
-                  <div class="row" >
-                    <div class="col-md-12">
-                      <label for="validationCustom01">Motif</label>
-                      <textarea class="form-control" rows="3" formControlName="p_motif" [(ngModel)]="penalitaInfo.r_motif"></textarea>
+                  <div class="row mb-3">
+                    <label for="remisemnt" class="col-md-5 col-form-label">Montant fixe </label>
+                    <div class="col-md-7">
+                      <input #mtnreduce class="form-control" name="remisemnt" type="text" [(ngModel)]="remisemnt" mask="0000000000" [disabled]="totalLocationModif.mntTotal == 0" (keyup)="_calculateRemise(mtnreduce.value, 'mntfixe')" placeholder="">
                     </div>
                   </div>
-                  <button type="button"
-                          title="Enregistrer"
-                          class="btn btn-primary mt-2"
-                          style="float: right" (click)="_addPenalite()" >Enregistrer</button>
+                  <div class="row mb-3">
+                    <label for="remisenewmnt" class="col-md-5 col-form-label">Nouveau montant</label>
+                    <div class="col-md-7">
+                      <input #newMntTotal class="form-control" name="remisenewmnt" type="text" [(ngModel)]="remisenewmnt" mask="0000000000" [disabled]="totalLocationModif.mntTotal == 0" (keyup)="_calculateRemise(newMntTotal.value, 'newmnt')" placeholder="">
+                    </div>
+                  </div>
+                </fieldset>
 
-                </form>
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" #avance type="radio" name="inlineRadioOptions" id="inline1" value="1" (change)="_moderglmnt(avance.value)">
+                  <label class="form-check-label" for="inline1">Donner une avance</label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" #total type="radio" name="inlineRadioOptions" id="inline2" value="2" (change)="_moderglmnt(total.value)">
+                  <label class="form-check-label" for="inline2">Règler la totalité de la facture</label>
+                </div>
 
+                <div class="row mb-3" *ngIf="reglmtPartiel==1">
+
+                  <div class="col-md-6">
+                    <label for="mntAvance" class="col-form-label">Montant avance</label>
+                    <input #mntAvance class="form-control" name="mntAvance" type="text" mask="0000000000" (keyup)="_calculReliquat(mntAvance.value)" placeholder="">
+                  </div>
+                  <div class="col-md-6 text-danger">
+                    <label for="mntAvance" class="col-form-label">Réliquat</label>
+                    <input #mntresta class="form-control text-danger text-bold" name="mntresta" type="text" [(ngModel)]="reliquat" mask="0000000000" readonly placeholder="">
+                  </div>
+                </div>
+              </div>
+              <div class="col" [hidden]="!isPenalite" >
+                <div class="card">
+                  <div class="card-body">
+                    <h4 class="card-title mb-4">Pénalité</h4>
+
+                    <form [formGroup]="penaliteFormData" >
+
+                      <div class="row" >
+                        <div class="col-md-6">
+                          <label for="validationCustom01">Montant</label>
+                          <input type="text" class="form-control" mask="separator.2" formControlName="p_mnt" [(ngModel)]="penalitaInfo.r_mnt">
+                        </div>
+                      </div>
+                      <div class="row" >
+                        <div class="col-md-12">
+                          <label for="validationCustom01">Motif</label>
+                          <textarea class="form-control" rows="3" formControlName="p_motif" [(ngModel)]="penalitaInfo.r_motif"></textarea>
+                        </div>
+                      </div>
+                      <button type="button"
+                      title="Enregistrer"
+                      class="btn btn-primary mt-2"
+                      style="float: right" (click)="_addPenalite()" >Enregistrer</button>
+
+                    </form>
+
+                  </div>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+
+      </ng-template>
+
+      <ng-template #payment>
+        <h3>Liste des paiements</h3>
+        <table class="table mt-1 table-striped" >
+          <thead class="bg-dark text-white">
+            <tr>
+              <th style="width:20%" >Montant</th>
+              <th style="width:10%" >Saisie le</th>
+              <th style="width:10%;">Utilisateur</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let payment of paymntTab ; let i = index">
+              <td style="width:20%" >{{payment?.p_mntverse | mask: 'separator':' '}}</td>
+              <td style="width:10%" >{{payment?.p_date_creation}}</td>
+              <td style="width:10%" >{{payment?.p_utilisateur}} </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <form [formGroup]="reglmntData">
+          <div class="row">
+            <div class="col-12">
+              <div class="row mb-3">
+                <label class="col-md-3 col-form-label">total avance</label>
+                <div class="col-md-9">
+                  <input class="form-control"
+                  style="color:rgb(31, 31, 66); font-weight: bold;"
+                  [(ngModel)]="totalPaiement"
+                  disabled
+                  formControlName="p_avancePayer"
+                  name="p_avancePayer" placeholder="">
+
+                </div>
+              </div>
+
+              <div class="row mb-3">
+                <label class="col-md-3 col-form-label">Réliquat</label>
+                <div class="col-md-9">
+                  <input class="form-control"
+                  style="color:green; font-weight: bold;"
+                  [(ngModel)]="mntPaiement"
+                  formControlName="p_mntverse"
+                  name="p_mntverse" type="text" [readonly]="mntPaiement==0" placeholder="">
+
+                </div>
+              </div>
+
+              <div class="row mb-3">
+                <label class="col-md-3 col-form-label">Description</label>
+                <div class="col-md-9">
+                  <textarea class="form-control" [readonly]="mntPaiement==0"
+                  formControlName="p_description" mask="separator.2"
+                  [(ngModel)]="desc" name="p_description" ></textarea>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </form>
-    </div>
-
-  </ng-template>
-
-  <ng-template #payment>
-    <h3>Liste des paiements</h3>
-    <table class="table mt-1 table-striped" >
-      <thead class="bg-dark text-white">
-        <tr>
-          <th style="width:20%" >Montant</th>
-          <th style="width:10%" >Saisie le</th>
-          <th style="width:10%;">Utilisateur</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let payment of paymntTab ; let i = index">
-          <td style="width:20%" >{{payment?.p_mntverse | mask: 'separator':' '}}</td>
-          <td style="width:10%" >{{payment?.p_date_creation}}</td>
-          <td style="width:10%" >{{payment?.p_utilisateur}} </td>
-        </tr>
-      </tbody>
-    </table>
-
-    <form [formGroup]="reglmntData">
-      <div class="row">
-        <div class="col-12">
-          <div class="row mb-3">
-            <label class="col-md-3 col-form-label">total avance</label>
-            <div class="col-md-9">
-              <input class="form-control"
-              style="color:rgb(31, 31, 66); font-weight: bold;"
-              [(ngModel)]="totalPaiement"
-              disabled
-              formControlName="p_avancePayer"
-              name="p_avancePayer" placeholder="">
-
+          <div class="row mb-3" >
+            <div class="col-md-9" >
+              <button type="button" title="Enregistrer"
+              class="btn btn-primary" [hidden]="mntPaiement==0" (click)="_reglmntArriere()">Enregistrer</button>
             </div>
           </div>
+        </form>
 
-          <div class="row mb-3">
-            <label class="col-md-3 col-form-label">Réliquat</label>
-            <div class="col-md-9">
-              <input class="form-control"
-              style="color:green; font-weight: bold;"
-              [(ngModel)]="mntPaiement"
-              formControlName="p_mntverse"
-              name="p_mntverse" type="text" [readonly]="mntPaiement==0" placeholder="">
-
-            </div>
-          </div>
-
-          <div class="row mb-3">
-            <label class="col-md-3 col-form-label">Description</label>
-            <div class="col-md-9">
-              <textarea class="form-control" [readonly]="mntPaiement==0"
-              formControlName="p_description" mask="separator.2"
-              [(ngModel)]="desc" name="p_description" ></textarea>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="row mb-3" >
-        <div class="col-md-9" >
-          <button type="button" title="Enregistrer"
-             class="btn btn-primary" [hidden]="mntPaiement==0" (click)="_reglmntArriere()">Enregistrer</button>
-        </div>
-      </div>
-    </form>
-
-  </ng-template>
+      </ng-template>
 
